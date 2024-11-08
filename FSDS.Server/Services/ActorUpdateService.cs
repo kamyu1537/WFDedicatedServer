@@ -25,12 +25,13 @@ public class ActorUpdateService(ILogger<ActorUpdateService> logger, ActorManager
 
     private void Update(double delta)
     {
-        manager.UpdateOwnedActors(actor =>
+        manager.UpdateAllActors(actor =>
         {
             actor.OnUpdate(delta);
 
             if (Decay(actor)) return;
             if (!actor.IsActorUpdated) return;
+            if (actor.CreatorId != SteamClient.SteamId) return;
                 
             actor.IsActorUpdated = false;
             actor.SendActorUpdate(lobby);

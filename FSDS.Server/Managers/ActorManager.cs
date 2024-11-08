@@ -58,9 +58,9 @@ public sealed class ActorManager : IDisposable
         update(actor);
     }
 
-    public void UpdateOwnedActors(Action<IActor> action)
+    public void UpdateAllActors(Action<IActor> action)
     {
-        foreach (var actor in _owned.Values)
+        foreach (var actor in _actors.Values)
         {
             action(actor);
         }
@@ -198,8 +198,27 @@ public sealed class ActorManager : IDisposable
         }
 
         _owned.TryRemove(actorId, out _);
-        var packet = ActorActionPacket.CreateQueueFreePacket(actor.ActorId);
-        _lobby.BroadcastPacket(NetChannel.ActorAction, packet);
+        var wipe = ActorActionPacket.CreateWipeActorPacket(actorId);
+        _lobby.BroadcastPacket(NetChannel.ActorAction, wipe);
+        
+        var queue = ActorActionPacket.CreateQueueFreePacket(actor.ActorId);
+        _lobby.BroadcastPacket(NetChannel.ActorAction, queue);
+    }
+
+    private int GetActorCountByType(string actorType)
+    {
+        return _owned.Values.Count(actor => actor.ActorType == actorType);
+    }
+    
+    private void RemoveActorFirstByType(string actorType)
+    {
+        var actor = _owned.Values.FirstOrDefault(a => a.ActorType == actorType);
+        if (actor == null)
+        {
+            return;
+        }
+
+        RemoveActor(actor.ActorId);
     }
 
     public void SpawnBird()
@@ -219,6 +238,12 @@ public sealed class ActorManager : IDisposable
 
     public void SpawnBird(Vector3 pos)
     {
+        var actorCount = GetActorCountByType("ambient_bird");
+        if (actorCount >= 5)
+        {
+            RemoveActorFirstByType("ambient_bird");
+        }
+        
         var bird = CreateHostActor("ambient_bird", pos);
         bird.Decay = true;
         bird.DecayTime = TimeSpan.FromSeconds(60);
@@ -234,6 +259,12 @@ public sealed class ActorManager : IDisposable
 
     public void SpawnFish(Vector3 pos, string type = "fish_spawn")
     {
+        var actorCount = GetActorCountByType(type);
+        if (actorCount >= 7)
+        {
+            RemoveActorFirstByType(type);
+        }
+        
         var fish = CreateHostActor(type, pos);
         fish.Decay = true;
         fish.DecayTime = TimeSpan.FromSeconds(type == "fish_spawn_alien" ? 1440 : 480);
@@ -320,11 +351,10 @@ public sealed class ActorManager : IDisposable
 
     public void SpawnMetal(Vector3 pos)
     {
-        var metalCount = _owned.Values.Count(actor => actor.ActorType == "metal_spawn");
-        if (metalCount > 7) // max 8
+        var actorCount = GetActorCountByType("metal_spawn");
+        if (actorCount >= 8)
         {
-            _logger.LogError("metal spawn limit reached");
-            return;
+            RemoveActorFirstByType("metal_spawn");
         }
 
         var metal = CreateHostActor("metal_spawn", pos);

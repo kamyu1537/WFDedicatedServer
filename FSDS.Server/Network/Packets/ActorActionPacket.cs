@@ -30,6 +30,16 @@ public class ActorActionPacket : IPacket
             ["params"] = Params
         };
     }
+    
+    public static ActorActionPacket CreateWipeActorPacket(long actorId)
+    {
+        return new ActorActionPacket
+        {
+            ActorId = actorId,
+            Action = "_wipe_actor",
+            Params = []
+        };
+    }
 
     public static ActorActionPacket CreateQueueFreePacket(long actorId)
     {
