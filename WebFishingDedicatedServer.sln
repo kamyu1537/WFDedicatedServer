@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FSDS.Server", "FSDS.Server\FSDS.Server.csproj", "{018DF5DE-4BA4-4691-A268-9A10C783E078}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FSDS.Godot", "FSDS.Godot\FSDS.Godot.csproj", "{C59B3923-5D5F-4B17-84D3-0F7AC892101C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{018DF5DE-4BA4-4691-A268-9A10C783E078}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{018DF5DE-4BA4-4691-A268-9A10C783E078}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{018DF5DE-4BA4-4691-A268-9A10C783E078}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{018DF5DE-4BA4-4691-A268-9A10C783E078}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C59B3923-5D5F-4B17-84D3-0F7AC892101C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C59B3923-5D5F-4B17-84D3-0F7AC892101C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C59B3923-5D5F-4B17-84D3-0F7AC892101C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C59B3923-5D5F-4B17-84D3-0F7AC892101C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

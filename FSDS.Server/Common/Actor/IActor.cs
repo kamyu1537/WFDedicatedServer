@@ -1,0 +1,22 @@
+﻿using FSDS.Godot.Types;
+using Steamworks;
+
+namespace FSDS.Server.Common.Actor;
+
+public interface IActor
+{
+    public string ActorType { get; set; }
+    public long ActorId { get; set; }
+    public SteamId CreatorId { get; set; }
+    public string Zone { get; set; }
+    public long ZoneOwner { get; set; }
+    public Vector3 Position { get; set; }
+    public Vector3 Rotation { get; set; }
+
+    public bool Decay { get; set; }
+    public TimeSpan DecayTime { get; set; }
+    public DateTimeOffset CreateTime { get; set; }
+
+    void OnCreated();
+    void OnUpdate(double delta);
+}

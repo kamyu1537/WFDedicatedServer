@@ -1,0 +1,33 @@
+<Project Sdk="Microsoft.NET.Sdk.Worker">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <UserSecretsId>dotnet-FSDS.Server-a69175ff-2087-4962-b0bd-af150730118c</UserSecretsId>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Facepunch.Steamworks" Version="2.3.3" />
+        <PackageReference Include="Facepunch.Steamworks.Library" Version="2.3.3" />
+        <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0"/>
+        <PackageReference Include="Serilog.Extensions.Hosting" Version="8.0.0" />
+        <PackageReference Include="Serilog.Sinks.Console" Version="6.0.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\FSDS.Godot\FSDS.Godot.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Include="..\..\..\.nuget\packages\facepunch.steamworks.library\2.3.3\build\x64\steam_api64.dll">
+        <Link>steam_api64.dll</Link>
+      </None>
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Update="Resources\**">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
+    </ItemGroup>
+</Project>
