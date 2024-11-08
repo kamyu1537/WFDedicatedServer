@@ -27,7 +27,7 @@ public class Session
 
     public void ProcessPackets()
     {
-        var count = 1;
+        var count = 2;
         // Console.WriteLine($"Processing {Packets.Count} packets for {SteamId}");
         while (Packets.TryDequeue(out var packet))
         {
