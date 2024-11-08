@@ -17,6 +17,8 @@ public class BaseActor : IActor
     public TimeSpan DecayTime { get; set; } = TimeSpan.Zero;
     public DateTimeOffset CreateTime { get; set; } = DateTimeOffset.UtcNow;
 
+    public bool IsActorUpdated { get; set; } = true;
+
     public virtual void OnCreated()
     {
     }

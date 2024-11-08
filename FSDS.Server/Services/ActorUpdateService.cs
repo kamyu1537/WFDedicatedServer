@@ -29,10 +29,11 @@ public class ActorUpdateService(ILogger<ActorUpdateService> logger, ActorManager
         {
             actor.OnUpdate(delta);
 
-            if (!Decay(actor))
-            {
-                actor.SendActorUpdate(lobby);
-            }
+            if (Decay(actor)) return;
+            if (!actor.IsActorUpdated) return;
+                
+            actor.IsActorUpdated = false;
+            actor.SendActorUpdate(lobby);
         });
     }
 

@@ -19,5 +19,7 @@ public class RainCloudActor : BaseActor
     {
         var vel = new Vector2(1, 0).Rotate(_direction) * Speed;
         Position += new Vector3(vel.X, 0f, vel.X) * (float)delta;
+        
+        IsActorUpdated = true;
     }
 }

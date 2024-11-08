@@ -1,5 +1,4 @@
 ﻿using System.Collections.Concurrent;
-using System.Text.Json;
 using FSDS.Godot.Binary;
 using FSDS.Server.Common;
 using FSDS.Server.Common.Helpers;
@@ -20,7 +19,6 @@ public sealed class LobbyManager : IDisposable
     
     private readonly HashSet<ulong> _banned = [];
     private readonly ConcurrentDictionary<ulong, Session> _sessions = [];
-    private readonly ConcurrentQueue<(SteamId, NetChannel, byte[])> _packets = [];
 
     private bool _created;
     private string _name = string.Empty;
@@ -221,15 +219,14 @@ public sealed class LobbyManager : IDisposable
             return;
         }
         
-        if (!_sessions.ContainsKey(steamId.Value))
+        if (!_sessions.TryGetValue(steamId.Value, out var session))
         {
             return;
         }
         
         var bytes = GodotBinaryConverter.Serialize(data);
         var compressed = GZipHelper.Compress(bytes);
-        _packets.Enqueue((steamId, channel, compressed));
-        // SteamNetworking.SendP2PPacket(steamId, compressed, nChannel: channel.Value);
+        session.Packets.Enqueue((channel, compressed));
     }
     
     public void BroadcastPacket(NetChannel channel, IPacket packet)
@@ -248,15 +245,14 @@ public sealed class LobbyManager : IDisposable
         var bytes = GodotBinaryConverter.Serialize(data);
         var compressed = GZipHelper.Compress(bytes);
         
-        foreach (var id in _sessions.Values.Select(x => x.SteamId))
+        foreach (var session in _sessions.Values)
         {
-            if (id.Value == SteamClient.SteamId.Value)
+            if (session.SteamId.Value == SteamClient.SteamId.Value)
             {
                 continue;
             }
             
-            _packets.Enqueue((id, channel, compressed));
-            // SteamNetworking.SendP2PPacket(id, compressed, nChannel: channel.Value);
+            session.Packets.Enqueue((channel, compressed));
         }
     }
     
@@ -319,20 +315,5 @@ public sealed class LobbyManager : IDisposable
         }
 
         return new string(code);
-    }
-    
-    public void ProcessPackets()
-    {
-        var count = 50;
-        while (_packets.TryDequeue(out var packet))
-        {
-            if (count-- <= 0)
-            {
-                break;
-            }
-
-            // Console.WriteLine(JsonSerializer.Serialize(GodotBinaryConverter.Deserialize(GZipHelper.Decompress(packet.Item3))));
-            SteamNetworking.SendP2PPacket(packet.Item1, packet.Item3, nChannel: packet.Item2.Value);
-        }
     }
 }

@@ -8,8 +8,8 @@ public class PacketSendService(LobbyManager lobby) : BackgroundService
     {
         while (!stoppingToken.IsCancellationRequested)
         {
-            lobby.ProcessPackets();
-            await Task.Delay(1000 / 60, stoppingToken);
+            lobby.SessionForEach(session => session.ProcessPackets());
+            await Task.Delay(1000 / 15, stoppingToken);
         }
     }
 }

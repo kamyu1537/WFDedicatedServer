@@ -93,7 +93,6 @@ public sealed class ActorManager : IDisposable
             if (_owned.TryAdd(actor.ActorId, actor))
             {
                 actor.SendInstanceActor(_lobby);
-                actor.SendActorUpdate(_lobby);
             }
             else
             {
