@@ -44,4 +44,16 @@ public static class ActorUpdatePacketExtensions
         
         lobby.BroadcastPacket(NetChannel.ActorUpdate, packet);
     }
+    
+    public static void SendActorUpdate(this IActor actor, Session target)
+    {
+        var packet = new ActorUpdatePacket
+        {
+            ActorId = actor.ActorId,
+            Position = actor.Position,
+            Rotation = actor.Rotation,
+        };
+        
+        target.Send(NetChannel.ActorUpdate, packet);
+    }
 }

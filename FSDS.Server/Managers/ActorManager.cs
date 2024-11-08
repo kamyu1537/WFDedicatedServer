@@ -45,6 +45,7 @@ public sealed class ActorManager : IDisposable
         foreach (var actor in _owned.Values)
         {
             actor.SendInstanceActor(target);
+            actor.SendActorUpdate(target);
         }
     }
 
@@ -93,6 +94,7 @@ public sealed class ActorManager : IDisposable
             if (_owned.TryAdd(actor.ActorId, actor))
             {
                 actor.SendInstanceActor(_lobby);
+                actor.SendActorUpdate(_lobby);
             }
             else
             {
@@ -246,7 +248,7 @@ public sealed class ActorManager : IDisposable
         
         var bird = CreateHostActor("ambient_bird", pos);
         bird.Decay = true;
-        bird.DecayTime = TimeSpan.FromSeconds(60);
+        bird.DecayTime = TimeSpan.FromSeconds(30);
 
         _logger.LogInformation("spawn bird at {Pos}", bird.Position);
     }
@@ -267,7 +269,7 @@ public sealed class ActorManager : IDisposable
         
         var fish = CreateHostActor(type, pos);
         fish.Decay = true;
-        fish.DecayTime = TimeSpan.FromSeconds(type == "fish_spawn_alien" ? 1440 : 480);
+        fish.DecayTime = TimeSpan.FromSeconds(type == "fish_spawn_alien" ? 60 : 30);
 
         _logger.LogInformation("spawn fish at {Pos}", fish.Position);
     }
@@ -299,7 +301,7 @@ public sealed class ActorManager : IDisposable
             Position = pos,
             Rotation = Vector3.Zero,
             Decay = true,
-            DecayTime = TimeSpan.FromSeconds(3250)
+            DecayTime = TimeSpan.FromSeconds(120)
         };
 
         SetActorDefaultValues(actor);
@@ -333,7 +335,7 @@ public sealed class ActorManager : IDisposable
 
         var portal = CreateHostActor("void_portal", pos);
         portal.Decay = true;
-        portal.DecayTime = TimeSpan.FromSeconds(3600);
+        portal.DecayTime = TimeSpan.FromSeconds(240);
 
         _logger.LogInformation("spawn void portal at {Pos}", portal.Position);
     }
@@ -359,11 +361,21 @@ public sealed class ActorManager : IDisposable
 
         var metal = CreateHostActor("metal_spawn", pos);
         metal.Decay = true;
-        metal.DecayTime = TimeSpan.FromSeconds(3600);
+        metal.DecayTime = TimeSpan.FromSeconds(300);
 
         _logger.LogInformation("spawn metal at {Pos}", metal.Position);
     }
 
+    public void SelectPlayerActor(SteamId steamId, Action<PlayerActor> action)
+    {
+        if (!_players.TryGetValue(steamId, out var player))
+        {
+            return;
+        }
+        
+        action(player);
+    }
+    
     public void SelectRandomPlayerActor(Action<PlayerActor> action)
     {
         var players = _players.Values.ToList();
