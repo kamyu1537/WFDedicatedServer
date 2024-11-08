@@ -8,8 +8,6 @@ namespace FSDS.Server.Services;
 
 public class PacketProcessService(ILogger<PacketProcessService> logger, LobbyManager lobby, PacketHandler packetHandler) : BackgroundService
 {
-    private const int Delay = 1000 / 100;
-    
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         logger.LogInformation("PacketProcessService is starting.");
@@ -19,14 +17,15 @@ public class PacketProcessService(ILogger<PacketProcessService> logger, LobbyMan
             TryProcessChannel(NetChannel.ActorUpdate);
             TryProcessChannel(NetChannel.ActorAction);
             TryProcessChannel(NetChannel.GameState);
+            
+            // TryProcessChannel(NetChannel.ActorAnimation);
 
 #if false
             TryProcessChannel(NetChannel.Chalk);
             TryProcessChannel(NetChannel.Guitar);
-            TryProcessChannel(NetChannel.ActorAnimation);
             TryProcessChannel(NetChannel.Speech);
 #endif
-            await Task.Delay(Delay, stoppingToken);
+            await Task.Yield();
         }
 
         logger.LogInformation("PacketProcessService is stopping.");
