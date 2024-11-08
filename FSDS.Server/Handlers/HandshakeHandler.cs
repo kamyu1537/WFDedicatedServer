@@ -13,10 +13,5 @@ public class HandshakeHandler : PacketHandler
 
         sender.HandshakeReceived = true;
         sender.HandshakeReceiveTime = DateTimeOffset.UtcNow;
-
-        sender.Send(NetChannel.GameState, new HandshakePacket
-        {
-            UserId = SteamClient.SteamId.Value.ToString()
-        });
     }
 }
