@@ -18,6 +18,7 @@ public interface IActor
     public DateTimeOffset CreateTime { get; set; }
 
     public bool IsActorUpdated { get; set; }
+    public long ActorUpdateCooldown { get; set; }
 
     void OnCreated();
     void OnUpdate(double delta);

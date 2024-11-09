@@ -17,6 +17,8 @@ public class BaseActor : IActor
     public DateTimeOffset CreateTime { get; set; } = DateTimeOffset.UtcNow;
 
     public bool IsActorUpdated { get; set; } = true;
+    public long ActorUpdateCooldown { get; set; }
+    
 
     public virtual void OnCreated()
     {

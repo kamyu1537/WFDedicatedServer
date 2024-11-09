@@ -28,11 +28,6 @@ public class ActorUpdateService(ILogger<ActorUpdateService> logger, ActorManager
             if (Decay(actor)) return;
 
             actor.OnUpdate(delta);
-
-            if (!actor.IsActorUpdated) return;
-            if (actor.CreatorId != SteamClient.SteamId) return;
-
-            actor.IsActorUpdated = false;
             actor.SendActorUpdate(lobby);
         });
     }

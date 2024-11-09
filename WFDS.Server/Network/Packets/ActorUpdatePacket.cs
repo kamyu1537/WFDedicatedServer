@@ -1,4 +1,5 @@
-﻿using WFDS.Godot.Types;
+﻿using Steamworks;
+using WFDS.Godot.Types;
 using WFDS.Server.Common;
 using WFDS.Server.Common.Actor;
 using WFDS.Server.Common.Extensions;
@@ -35,6 +36,18 @@ public static class ActorUpdatePacketExtensions
 {
     public static void SendActorUpdate(this IActor actor, LobbyManager lobby)
     {
+        if (actor.CreatorId != SteamClient.SteamId.Value)
+            return;
+
+        if (!actor.IsActorUpdated) return;
+        
+        actor.ActorUpdateCooldown -= 1;
+        if (actor.ActorUpdateCooldown > 0) 
+            return;
+        
+        actor.ActorUpdateCooldown = 32;
+        actor.IsActorUpdated = false;
+        
         var packet = new ActorUpdatePacket
         {
             ActorId = actor.ActorId,
