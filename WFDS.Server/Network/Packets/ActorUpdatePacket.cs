@@ -34,20 +34,8 @@ public class ActorUpdatePacket : IPacket
 
 public static class ActorUpdatePacketExtensions
 {
-    public static void SendActorUpdate(this IActor actor, LobbyManager lobby)
+    public static void SendUpdatePacket(this IActor actor, LobbyManager lobby)
     {
-        if (actor.CreatorId != SteamClient.SteamId.Value)
-            return;
-
-        if (!actor.IsActorUpdated) return;
-        
-        actor.ActorUpdateCooldown -= 1;
-        if (actor.ActorUpdateCooldown > 0) 
-            return;
-        
-        actor.ActorUpdateCooldown = 32;
-        actor.IsActorUpdated = false;
-        
         var packet = new ActorUpdatePacket
         {
             ActorId = actor.ActorId,
@@ -58,7 +46,7 @@ public static class ActorUpdatePacketExtensions
         lobby.BroadcastPacket(NetChannel.ActorUpdate, packet);
     }
 
-    public static void SendActorUpdate(this IActor actor, Session target)
+    public static void SendUpdatePacket(this IActor actor, Session target)
     {
         var packet = new ActorUpdatePacket
         {

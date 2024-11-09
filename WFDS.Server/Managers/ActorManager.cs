@@ -45,7 +45,7 @@ public sealed class ActorManager : IDisposable
         foreach (var actor in _owned.Values)
         {
             actor.SendInstanceActor(target);
-            actor.SendActorUpdate(target);
+            actor.SendUpdatePacket(target);
         }
     }
 
@@ -102,7 +102,7 @@ public sealed class ActorManager : IDisposable
             if (_owned.TryAdd(actor.ActorId, actor))
             {
                 actor.SendInstanceActor(_lobby);
-                actor.SendActorUpdate(_lobby);
+                actor.SendUpdatePacket(_lobby);
             }
             else
             {
