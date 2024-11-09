@@ -251,17 +251,11 @@ public sealed class ActorManager : IDisposable
 
     public void SpawnBird(Vector3 pos)
     {
-        var actorCount = GetActorCountByType("ambient_bird");
-        if (actorCount >= 5)
-        {
-            _logger.LogError("bird count is over");
-        }
-
         var bird = CreateHostActor("ambient_bird", pos);
         bird.Decay = true;
         bird.DecayTimer = 600; // default?
 
-        _logger.LogInformation("spawn bird at {Pos}", bird.Position);
+        _logger.LogInformation("spawn bird at {ActorId} - {Pos}", bird.ActorId, bird.Position);
     }
 
     public void SpawnFish(string type = "fish_spawn")
@@ -282,7 +276,7 @@ public sealed class ActorManager : IDisposable
         fish.Decay = true;
         fish.DecayTimer = type == "fish_spawn_alien" ? 4800 : 14400;
 
-        _logger.LogInformation("spawn fish at {Pos}", fish.Position);
+        _logger.LogInformation("spawn {ActorType} ({ActorId}) at {Pos}", fish.ActorType, fish.ActorId, fish.Position);
     }
 
     public void SpawnRainCloud()
@@ -317,7 +311,7 @@ public sealed class ActorManager : IDisposable
 
         SetActorDefaultValues(actor);
         AddActorAndPropagate(actor);
-        _logger.LogInformation("spawn rain cloud at {Pos}", actor.Position);
+        _logger.LogInformation("spawn raincloud ({ActorId}) at {Pos}", actor.ActorId, actor.Position);
     }
 
     public void SpawnVoidPortal()
@@ -348,7 +342,7 @@ public sealed class ActorManager : IDisposable
         portal.Decay = true;
         portal.DecayTimer = 36000;
 
-        _logger.LogInformation("spawn void portal at {Pos}", portal.Position);
+        _logger.LogInformation("spawn void_portal ({ActorId}}) at {Pos}", portal.ActorId, portal.Position);
     }
 
     // _spawn_metal_spot
@@ -367,14 +361,14 @@ public sealed class ActorManager : IDisposable
         var actorCount = GetActorCountByType("metal_spawn");
         if (actorCount >= 8)
         {
-            _logger.LogError("metal count is over");
+            _logger.LogError("metal spawn failed. ({Count}/8)", actorCount);
         }
 
         var metal = CreateHostActor("metal_spawn", pos);
         metal.Decay = true;
         metal.DecayTimer = 10000;
 
-        _logger.LogInformation("spawn metal at {Pos}", metal.Position);
+        _logger.LogInformation("spawn metal_spawn ({ActorId}) at {Pos}", metal.ActorId, metal.Position);
     }
 
     public void SelectPlayerActor(SteamId steamId, Action<PlayerActor> action)
