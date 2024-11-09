@@ -29,6 +29,7 @@ try
     builder.Services.AddHostedService<RequestPingScheduleService>();
     builder.Services.AddHostedService<MetalSpawnScheduleService>();
     builder.Services.AddHostedService<ActorUpdateService>();
+    builder.Services.AddHostedService<LobbyUpdateScheduleService>();
 
     var host = builder.Build();
 
