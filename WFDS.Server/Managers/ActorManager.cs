@@ -134,8 +134,10 @@ public sealed class ActorManager : IDisposable
         return actor;
     }
 
-    public bool CreatePlayerActor(SteamId playerId, long actorId, string name)
+    public bool CreatePlayerActor(SteamId playerId, long actorId, string name, out PlayerActor actor)
     {
+        actor = null!;
+        
         if (!_id.Add(actorId))
         {
             _logger.LogError("actor id already exists");
@@ -148,7 +150,7 @@ public sealed class ActorManager : IDisposable
             return false;
         }
 
-        var actor = new PlayerActor
+        actor = new PlayerActor
         {
             ActorType = "player",
             ActorId = actorId,

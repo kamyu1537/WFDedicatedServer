@@ -14,11 +14,21 @@ public class InstanceActorHandler : PacketHandler
 
         if (packet.ActorType == "player")
         {
-            var created = ActorManager.CreatePlayerActor(sender.SteamId, packet.ActorId, sender.Friend.Name);
+            if (sender.ActorCreated)
+            {
+                Logger.LogError("player actor already exists for {SteamId}", sender.SteamId);
+                return;
+            }
+            
+            var created = ActorManager.CreatePlayerActor(sender.SteamId, packet.ActorId, sender.Friend.Name, out var actor);
             if (!created)
             {
                 Logger.LogError("failed to create player actor {ActorId} {ActorType}", packet.ActorId, packet.ActorType);
+                return;
             }
+
+            sender.ActorCreated = true;
+            sender.Actor = actor;
         }
         else
         {

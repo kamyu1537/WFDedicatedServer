@@ -9,15 +9,19 @@ using WFDS.Server.Managers;
 using WFDS.Server.Packets;
 using WFDS.Server.Services;
 using Steamworks;
+using WFDS.Server.Common.Actor;
 
 namespace WFDS.Server.Common;
 
-public class Session
+public class Session : ISession
 {
-    public LobbyManager LobbyManager { get; init; } = null!;
-    public Friend Friend { get; init; }
-    public SteamId SteamId { get; init; }
+    public LobbyManager LobbyManager { get; set; } = null!;
+    public Friend Friend { get; set; }
+    public SteamId SteamId { get; set; }
     
+    public PlayerActor Actor { get; set; } = null!;
+    public bool ActorCreated { get; set; }
+
     public bool HandshakeReceived { get; set; }
     
     public DateTimeOffset ConnectTime { get; set; }
@@ -33,7 +37,7 @@ public class Session
     }
 
     public void SendMessage(string message, Color color, bool local = false)
-    {   
+    {
         Send(NetChannel.GameState, new MessagePacket
         {
             Message = message,
