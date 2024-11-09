@@ -33,4 +33,3 @@ jobs:
       with:
         files: ./publish.sh
         name: Release ${{ github.ref_name }}
-        token: ${{ secrets.GITHUB_TOKEN }}
