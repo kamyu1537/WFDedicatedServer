@@ -10,6 +10,7 @@ public interface IServerSetting
     GameLobbyType LobbyType { get; set; }
     bool Public { get; set; }
     bool Adult { get; set; }
+    string[] BannedPlayers { get; set; }
 }
 
 public class ServerSetting : IServerSetting
@@ -20,4 +21,5 @@ public class ServerSetting : IServerSetting
     public GameLobbyType LobbyType { get; set; } = GameLobbyType.Public;
     public bool Public { get; set; } = true;
     public bool Adult { get; set; }
+    public string[] BannedPlayers { get; set; } = [];
 }

@@ -29,7 +29,7 @@ public class Session
 
     public void Send(NetChannel channel, IPacket packet)
     {
-        LobbyManager.SendPacket(SteamId, channel, packet.ToDictionary());
+        LobbyManager.SendPacket(SteamId, channel, packet);
     }
 
     public void SendMessage(string message, Color color, bool local = false)

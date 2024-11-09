@@ -66,6 +66,14 @@ public sealed class ActorManager : IDisposable
             action(actor);
         }
     }
+    
+    public void SelectOwnedActors(Action<IActor> action)
+    {
+        foreach (var actor in _owned.Values)
+        {
+            action(actor);
+        }
+    }
 
     public int GetOwnedActorCount()
     {
@@ -375,18 +383,6 @@ public sealed class ActorManager : IDisposable
             return;
         }
         
-        action(player);
-    }
-    
-    public void SelectRandomPlayerActor(Action<PlayerActor> action)
-    {
-        var players = _players.Values.ToList();
-        if (players.Count == 0)
-        {
-            return;
-        }
-
-        var player = players[_random.Next() % players.Count];
         action(player);
     }
 

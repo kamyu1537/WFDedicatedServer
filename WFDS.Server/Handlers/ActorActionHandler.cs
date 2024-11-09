@@ -31,6 +31,12 @@ public class ActorActionHandler : PacketHandler
 
     private void QueueFree(Session sender, ActorActionPacket packet)
     {
+        if (packet.Params.Count != 0)
+        {
+            Logger.LogError("invalid queue_free packet from {Name}[{SteamId}] : {Data}", sender.Friend.Name, sender.SteamId, JsonSerializer.Serialize(packet.Params));
+            return;
+        }
+        
         ActorManager.SelectActor(packet.ActorId, actor =>
         {
             if (actor.CreatorId == sender.SteamId)
@@ -42,23 +48,22 @@ public class ActorActionHandler : PacketHandler
     
     private void WipeActor(Session sender, ActorActionPacket packet)
     {
-        if (packet.Params.Count == 1)
-        {
-            var param = packet.Params[0];
-            var actorId = param.GetNumber();
-                
-            ActorManager.SelectActor(actorId, actor =>
-            {
-                if (actor.CreatorId == sender.SteamId)
-                {
-                    ActorManager.RemoveActor(actorId);
-                }
-            });
-        }
-        else
+        if (packet.Params.Count != 1)
         {
             Logger.LogError("invalid _wipe_actor packet from {Name}[{SteamId}] : {Data}", sender.Friend.Name, sender.SteamId, JsonSerializer.Serialize(packet.Params));
+            return;
         }
+        
+        var param = packet.Params[0];
+        var actorId = param.GetNumber();
+                
+        ActorManager.SelectActor(actorId, actor =>
+        {
+            if (actor.CreatorId == sender.SteamId)
+            {
+                ActorManager.RemoveActor(actorId);
+            }
+        });
     }
 
     private void SetZone(Session sender, ActorActionPacket packet)

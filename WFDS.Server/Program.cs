@@ -19,7 +19,7 @@ try
     var builder = Host.CreateApplicationBuilder(args);
     
     var configuration = new ConfigurationBuilder()
-        .AddJsonFile("appsettings.json", optional: true)
+        .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
         .AddJsonFile("appsettings.local.json", optional: true)
         .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true)
         .AddEnvironmentVariables()
@@ -36,6 +36,7 @@ try
     builder.Services.AddSingleton<MapManager>();
 
     builder.Services.AddHostedService<ServerInitializeService>();
+    builder.Services.AddHostedService<ConfigurationChangeService>();
     builder.Services.AddHostedService<PacketProcessService>();
     builder.Services.AddHostedService<PacketSendService>();
 

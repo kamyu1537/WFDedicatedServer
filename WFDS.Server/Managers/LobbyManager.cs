@@ -164,18 +164,30 @@ public sealed class LobbyManager : IDisposable
         });
     }
 
-    public void BanPlayer(SteamId target)
+    public void TempBanPlayer(SteamId target, bool update = true)
     {
         if (!_banned.Add(target))
-        {
             return;
-        }
 
         SelectSession(target, session =>
         {
             _logger.LogInformation("try kicking player: {SteamId}", target);
             session.Send(NetChannel.GameState, new KickPacket());
         });
+        
+        if (update)
+            UpdateBannedPlayers();
+    }
+
+    public void BanPlayers(string[] banPlayers)
+    {
+        foreach (var banPlayer in banPlayers)
+        {
+            if (ulong.TryParse(banPlayer, out var steamId))
+            {
+                TempBanPlayer(steamId, false);
+            }
+        }
         
         UpdateBannedPlayers();
     }
