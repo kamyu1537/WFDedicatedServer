@@ -87,17 +87,22 @@ public class ActorActionHandler : PacketHandler
             return;
         }
 
-        var zone = packet.Params[0].GetString();
-        var zoneOwner = packet.Params[1].GetNumber();
-
         if (!sender.ActorCreated)
         {
             Logger.LogError("actor not created for {Name}[{SteamId}]", sender.Friend.Name, sender.SteamId);
             return;
         }
 
-        var actor = sender.Actor;
-        actor.Zone = zone;
-        actor.ZoneOwner = zoneOwner;
+        ActorManager.SelectActor(packet.ActorId, actor =>
+        {
+            if (actor.CreatorId != sender.SteamId)
+                return;
+            
+            var zone = packet.Params[0].GetString();
+            var zoneOwner = packet.Params[1].GetNumber();
+            
+            actor.Zone = zone;
+            actor.ZoneOwner = zoneOwner;
+        });
     }
 }
