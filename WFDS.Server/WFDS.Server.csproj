@@ -11,7 +11,6 @@
 
     <ItemGroup>
         <PackageReference Include="Facepunch.Steamworks" Version="2.3.3"/>
-        <PackageReference Include="Facepunch.Steamworks.Library" Version="2.3.3"/>
         <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0"/>
         <PackageReference Include="Serilog.Extensions.Hosting" Version="8.0.0"/>
         <PackageReference Include="Serilog.Sinks.Console" Version="6.0.0"/>
@@ -23,14 +22,30 @@
     </ItemGroup>
 
     <ItemGroup>
-        <None Include="..\..\..\.nuget\packages\facepunch.steamworks.library\2.3.3\build\x64\steam_api64.dll">
-            <Link>steam_api64.dll</Link>
+        <None Update="Resources\**">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </None>
     </ItemGroup>
 
     <ItemGroup>
-        <None Update="Resources\**">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        <None Include="Plugins\win64\steam_api64.dll">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <Link>steam_api64.dll</Link>
+        </None>
+
+        <None Include="Plugins\win64\steam_api64.lib">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <Link>steam_api64.lib</Link>
+        </None>
+
+        <None Include="Plugins\linux64\libsteam_api.so">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <Link>libsteam_api.so</Link>
+        </None>
+
+        <None Include="Plugins\osx\libsteam_api.bundle">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <Link>libsteam_api.bundle</Link>
         </None>
     </ItemGroup>
 </Project>
