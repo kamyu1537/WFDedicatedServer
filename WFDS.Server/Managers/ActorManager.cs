@@ -208,15 +208,14 @@ public sealed class ActorManager : IDisposable
         var wipe = ActorActionPacket.CreateWipeActorPacket(actorId);
         _lobby.BroadcastPacket(NetChannel.ActorAction, wipe);
 
-        var queue = ActorActionPacket.CreateQueueFreePacket(actor.ActorId);
-        _lobby.BroadcastPacket(NetChannel.ActorAction, queue);
-
         if (actor.CreatorId.Value != SteamClient.SteamId.Value)
         {
             return;
         }
 
         _owned.TryRemove(actorId, out _);
+        var queue = ActorActionPacket.CreateQueueFreePacket(actor.ActorId);
+        _lobby.BroadcastPacket(NetChannel.ActorAction, queue);
     }
 
     private int GetActorCountByType(string actorType)
