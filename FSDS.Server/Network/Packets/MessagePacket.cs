@@ -31,7 +31,7 @@ public class MessagePacket : IPacket
             ["message"] = Message,
             ["color"] = Color,
             ["local"] = Local,
-            ["pos"] = Position,
+            ["position"] = Position,
             ["zone"] = Zone,
             ["zone_owner"] = ZoneOwner
         };

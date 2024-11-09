@@ -75,7 +75,7 @@ public static class DictionaryExtensions
         return value as Vector3 ?? Vector3.Zero;
     }
     
-    public static string GetString(this Dictionary<object, object?> dic, string key)
+    public static string GetString(this Dictionary<object, object> dic, string key)
     {
         if (!dic.TryGetValue(key, out var value))
             return string.Empty;
@@ -83,7 +83,7 @@ public static class DictionaryExtensions
         return value as string ?? string.Empty;
     }
     
-    public static string[] GetStringArray(this Dictionary<object, object?> dic, string key)
+    public static string[] GetStringArray(this Dictionary<object, object> dic, string key)
     {
         if (!dic.TryGetValue(key, out var value))
             return [];

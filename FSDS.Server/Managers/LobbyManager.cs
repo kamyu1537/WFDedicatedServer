@@ -29,6 +29,7 @@ public sealed class LobbyManager : IDisposable
     private bool _adult;
 
     private Lobby? _lobby;
+    public string Code => _code;
 
     public LobbyManager(ILogger<LobbyManager> logger)
     {

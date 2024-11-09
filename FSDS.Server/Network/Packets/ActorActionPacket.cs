@@ -37,7 +37,7 @@ public class ActorActionPacket : IPacket
         {
             ActorId = actorId,
             Action = "_wipe_actor",
-            Params = []
+            Params = [actorId]
         };
     }
 

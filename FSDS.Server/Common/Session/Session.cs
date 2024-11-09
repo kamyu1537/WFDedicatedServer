@@ -1,5 +1,11 @@
 ﻿using System.Collections.Concurrent;
+using System.Drawing;
+using System.Numerics;
+using System.Text.Json;
+using FSDS.Godot.Binary;
+using FSDS.Server.Common.Helpers;
 using FSDS.Server.Managers;
+using FSDS.Server.Packets;
 using FSDS.Server.Services;
 using Steamworks;
 
@@ -25,6 +31,34 @@ public class Session
         LobbyManager.SendPacket(SteamId, channel, packet.ToDictionary());
     }
 
+    public void SendMessage(string message, Color color, bool local = false)
+    {   
+        Send(NetChannel.GameState, new MessagePacket
+        {
+            Message = message,
+            Color = $"{ColorTranslator.ToWin32(color):X6}".ToLower(),
+            Local = local,
+            Position = Godot.Types.Vector3.Zero,
+            Zone = "main_zone",
+            ZoneOwner = -1,
+        });
+    }
+
+    public void SendLetter(SteamId target, string body)
+    {
+        Send(NetChannel.GameState, new LetterReceivedPacket()
+        {
+            LatterId = new Random().Next(),
+            From = SteamClient.SteamId.ToString(),
+            To = target.Value.ToString(),
+            Closing = "From, ",
+            User = "[SERVER]",
+            Header = "Letter",
+            Body = body,
+            Items = [],
+        });
+    }
+
     public void ProcessPackets()
     {
         var count = 2;
@@ -36,7 +70,7 @@ public class Session
                 break;
             }
 
-            // Console.WriteLine(JsonSerializer.Serialize(GodotBinaryConverter.Deserialize(GZipHelper.Decompress(packet.Item3))));
+            // Console.WriteLine(JsonSerializer.Serialize(GodotBinaryConverter.Deserialize(GZipHelper.Decompress(packet.Item2))));
             SteamNetworking.SendP2PPacket(SteamId, packet.Item2, nChannel: packet.Item1.Value);
         }
     }

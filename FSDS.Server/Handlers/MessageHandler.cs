@@ -1,4 +1,5 @@
-﻿using FSDS.Server.Common;
+﻿using System.Drawing;
+using FSDS.Server.Common;
 using FSDS.Server.Packets;
 
 namespace FSDS.Server.Handlers;
@@ -11,6 +12,7 @@ public class MessageHandler : PacketHandler
         var packet = new MessagePacket();
         packet.Parse(data);
 
-        Logger.LogInformation("received message from {Sender} on channel {Channel} / {Message}", sender.SteamId, channel, packet.Message);
+        Logger.LogInformation("received message from {Sender} ({Zone}/{ZoneOwner}) on channel {Channel} / {Message}", sender.SteamId, packet.Zone, packet.ZoneOwner, channel, packet.Message);
+        // sender.SendMessage(packet.Message, Color.White); // test code
     }
 }
