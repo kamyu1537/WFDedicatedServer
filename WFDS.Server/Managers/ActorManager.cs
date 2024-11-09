@@ -223,7 +223,7 @@ public sealed class ActorManager : IDisposable
         return _owned.Values.Count(actor => actor.ActorType == actorType);
     }
 
-    private void RemoveActorFirstByType(string actorType)
+    public void RemoveActorFirstByType(string actorType)
     {
         var actor = _owned.Values.FirstOrDefault(a => a.ActorType == actorType);
         if (actor == null)
