@@ -12,13 +12,5 @@ public class MessageHandler : PacketHandler
         packet.Parse(data);
 
         Logger.LogInformation("received message from {Sender} ({Zone}/{ZoneOwner}) on channel {Channel} / [{Color}] {Message}", sender.SteamId, packet.Zone, packet.ZoneOwner, channel, packet.Color, packet.Message);
-        // sender.SendMessage(packet.Message, Color.White); // test code
-        // if (packet.Message == "%u: alien")
-        // {
-        //     ActorManager.SelectPlayerActor(sender.SteamId, actor =>
-        //     {
-        //         ActorManager.SpawnFish(actor.Position, "fish_spawn_alien");
-        //     });
-        // }
     }
 }
