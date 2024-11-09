@@ -13,7 +13,7 @@ public class ActorActionHandler : PacketHandler
         var packet = new ActorActionPacket();
         packet.Parse(data);
 
-        LobbyManager.SelectSession(sender.SteamId, session => { Logger.LogInformation("received actor_action from {Name}[{SteamId}] for actor {ActorId} : {Action} / {Data}", session.Friend.Name, sender.SteamId, packet.ActorId, packet.Action, JsonSerializer.Serialize(packet.Params)); });
+        Logger.LogInformation("received actor_action from {Name}[{SteamId}] for actor {ActorId} : {Action} / {Data}", sender.Friend.Name, sender.SteamId, packet.ActorId, packet.Action, JsonSerializer.Serialize(packet.Params));
         
         switch (packet.Action)
         {
@@ -76,11 +76,15 @@ public class ActorActionHandler : PacketHandler
         
         var zone = packet.Params[0].GetString();
         var zoneOwner = packet.Params[1].GetNumber();
-        
-        ActorManager.SelectPlayerActor(sender.SteamId, actor =>
+
+        if (!sender.ActorCreated)
         {
-            actor.Zone = zone;
-            actor.ZoneOwner = zoneOwner;
-        });
+            Logger.LogError("actor not created for {Name}[{SteamId}]", sender.Friend.Name, sender.SteamId);
+            return;
+        }
+        
+        var actor = sender.Actor;
+        actor.Zone = zone;
+        actor.ZoneOwner = zoneOwner;
     }
 }
