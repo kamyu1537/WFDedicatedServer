@@ -243,12 +243,12 @@ public sealed class ActorManager : IDisposable
         var actorCount = GetActorCountByType("ambient_bird");
         if (actorCount >= 5)
         {
-            RemoveActorFirstByType("ambient_bird");
+            _logger.LogError("bird count is over");
         }
         
         var bird = CreateHostActor("ambient_bird", pos);
         bird.Decay = true;
-        bird.DecayTime = TimeSpan.FromSeconds(30);
+        bird.DecayTimer = 600; // default?
 
         _logger.LogInformation("spawn bird at {Pos}", bird.Position);
     }
@@ -269,7 +269,7 @@ public sealed class ActorManager : IDisposable
         
         var fish = CreateHostActor(type, pos);
         fish.Decay = true;
-        fish.DecayTime = TimeSpan.FromSeconds(type == "fish_spawn_alien" ? 60 : 30);
+        fish.DecayTimer = type == "fish_spawn_alien" ? 4800 : 14400;
 
         _logger.LogInformation("spawn fish at {Pos}", fish.Position);
     }
@@ -301,7 +301,7 @@ public sealed class ActorManager : IDisposable
             Position = pos,
             Rotation = Vector3.Zero,
             Decay = true,
-            DecayTime = TimeSpan.FromSeconds(120)
+            DecayTimer = 32500
         };
 
         SetActorDefaultValues(actor);
@@ -335,7 +335,7 @@ public sealed class ActorManager : IDisposable
 
         var portal = CreateHostActor("void_portal", pos);
         portal.Decay = true;
-        portal.DecayTime = TimeSpan.FromSeconds(240);
+        portal.DecayTimer = 36000;
 
         _logger.LogInformation("spawn void portal at {Pos}", portal.Position);
     }
@@ -356,12 +356,12 @@ public sealed class ActorManager : IDisposable
         var actorCount = GetActorCountByType("metal_spawn");
         if (actorCount >= 8)
         {
-            RemoveActorFirstByType("metal_spawn");
+            _logger.LogError("metal count is over");
         }
 
         var metal = CreateHostActor("metal_spawn", pos);
         metal.Decay = true;
-        metal.DecayTime = TimeSpan.FromSeconds(300);
+        metal.DecayTimer = 10000;
 
         _logger.LogInformation("spawn metal at {Pos}", metal.Position);
     }

@@ -14,7 +14,7 @@ public interface IActor
     public Vector3 Rotation { get; set; }
 
     public bool Decay { get; set; }
-    public TimeSpan DecayTime { get; set; }
+    public long DecayTimer { get; set; }
     public DateTimeOffset CreateTime { get; set; }
 
     public bool IsActorUpdated { get; set; }

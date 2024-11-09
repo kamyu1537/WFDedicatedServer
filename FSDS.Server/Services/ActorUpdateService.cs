@@ -19,7 +19,7 @@ public class ActorUpdateService(ILogger<ActorUpdateService> logger, ActorManager
             prev = now;
 
             Update(delta);
-            await Task.Delay(Delay, stoppingToken);
+            await Task.Delay(1000 / 60, stoppingToken); // godot physics fps is 60
         }
     }
 
@@ -27,9 +27,10 @@ public class ActorUpdateService(ILogger<ActorUpdateService> logger, ActorManager
     {
         manager.UpdateAllActors(actor =>
         {
+            if (Decay(actor)) return;
+            
             actor.OnUpdate(delta);
 
-            if (Decay(actor)) return;
             if (!actor.IsActorUpdated) return;
             if (actor.CreatorId != SteamClient.SteamId) return;
                 
@@ -52,11 +53,9 @@ public class ActorUpdateService(ILogger<ActorUpdateService> logger, ActorManager
         }
 
         if (!actor.Decay) return false;
+        actor.DecayTimer -= 1;
 
-        var now = DateTimeOffset.UtcNow;
-        var diff = now - actor.CreateTime;
-
-        if (diff >= actor.DecayTime)
+        if (actor.DecayTimer < 1)
         {
             logger.LogInformation("decay actor {ActorId} {ActorType}", actor.ActorId, actor.ActorType);
             manager.RemoveActor(actor.ActorId);

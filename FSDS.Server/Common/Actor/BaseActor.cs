@@ -13,8 +13,8 @@ public class BaseActor : IActor
     public long ZoneOwner { get; set; } = -1;
     public Vector3 Position { get; set; } = Vector3.Zero;
     public Vector3 Rotation { get; set; } = Vector3.Zero;
-    public bool Decay { get; set; } = false;
-    public TimeSpan DecayTime { get; set; } = TimeSpan.Zero;
+    public bool Decay { get; set; }
+    public long DecayTimer { get; set; } = 600;
     public DateTimeOffset CreateTime { get; set; } = DateTimeOffset.UtcNow;
 
     public bool IsActorUpdated { get; set; } = true;
