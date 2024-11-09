@@ -1,8 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FSDS.Server", "FSDS.Server\FSDS.Server.csproj", "{018DF5DE-4BA4-4691-A268-9A10C783E078}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WFDS.Server", "WFDS.Server\WFDS.Server.csproj", "{018DF5DE-4BA4-4691-A268-9A10C783E078}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FSDS.Godot", "FSDS.Godot\FSDS.Godot.csproj", "{C59B3923-5D5F-4B17-84D3-0F7AC892101C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WFDS.Godot", "WFDS.Godot\WFDS.Godot.csproj", "{C59B3923-5D5F-4B17-84D3-0F7AC892101C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
