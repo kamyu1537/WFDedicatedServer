@@ -325,11 +325,11 @@ public sealed class LobbyManager : IDisposable
         _sessions.TryRemove(member.Id.Value, out _);
         UpdateConsoleTitle();
     }
-    
+
     private void OnLobbyMemberDataChanged(Lobby lobby, Friend member)
     {
         _logger.LogInformation("lobby member data changed: {DisplayName} [{SteamId}]", member.Name, member.Id);
-        
+
         SelectSession(member.Id, session =>
         {
             session.Friend = member;
