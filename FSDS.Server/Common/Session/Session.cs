@@ -37,7 +37,7 @@ public class Session
         Send(NetChannel.GameState, new MessagePacket
         {
             Message = message,
-            Color = color.ToHex(),
+            Color = color.ToHex(true),
             Local = local,
             Position = Godot.Types.Vector3.Zero,
             Zone = "main_zone",
