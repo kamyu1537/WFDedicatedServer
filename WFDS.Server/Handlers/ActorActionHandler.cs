@@ -8,11 +8,24 @@ namespace WFDS.Server.Handlers;
 [PacketType("actor_action")]
 public class ActorActionHandler : PacketHandler
 {
+    private static readonly string[] Actions =
+    [
+        "queue_free",
+        "_wipe_actor",
+        "_set_zone"
+    ];
+    
     public override void HandlePacket(Session sender, NetChannel channel, Dictionary<object, object> data)
     {
         var packet = new ActorActionPacket();
         packet.Parse(data);
 
+        if (!Actions.Contains(packet.Action))
+        {
+            // Logger.LogInformation("received actor_action from {Name}[{SteamId}] for actor {ActorId} : {Action} / {Data}", sender.Friend.Name, sender.SteamId, packet.ActorId, packet.Action, JsonSerializer.Serialize(packet.Params));
+            return;
+        }
+        
         Logger.LogInformation("received actor_action from {Name}[{SteamId}] for actor {ActorId} : {Action} / {Data}", sender.Friend.Name, sender.SteamId, packet.ActorId, packet.Action, JsonSerializer.Serialize(packet.Params));
 
         switch (packet.Action)
