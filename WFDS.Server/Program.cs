@@ -20,7 +20,7 @@ try
 
     var configuration = new ConfigurationBuilder()
         .AddJsonFile("appsettings.json", false, true)
-        .AddJsonFile("appsettings.local.json", true)
+        .AddJsonFile("appsettings.local.json", true, true)
         .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", true)
         .AddEnvironmentVariables()
         .Build();
