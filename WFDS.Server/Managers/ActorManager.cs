@@ -251,6 +251,13 @@ public sealed class ActorManager : IDisposable
 
     public void SpawnBird(Vector3 pos)
     {
+        var actorCount = GetActorCountByType("ambient_bird");
+        if (actorCount >= 10)
+        {
+            _logger.LogError("ambient_bird limit reached (10)");
+            return;
+        }
+        
         var bird = CreateHostActor("ambient_bird", pos);
         bird.Decay = true;
         bird.DecayTimer = 600; // default?
@@ -318,7 +325,7 @@ public sealed class ActorManager : IDisposable
     {
         if (_map.HiddenSpots.Count == 0)
         {
-            _logger.LogError("no hidden spots found");
+            _logger.LogError("no hidden_spots found");
             return;
         }
 
@@ -342,7 +349,7 @@ public sealed class ActorManager : IDisposable
         portal.Decay = true;
         portal.DecayTimer = 36000;
 
-        _logger.LogInformation("spawn void_portal ({ActorId}}) at {Pos}", portal.ActorId, portal.Position);
+        _logger.LogInformation("spawn void_portal ({ActorId}) at {Pos}", portal.ActorId, portal.Position);
     }
 
     // _spawn_metal_spot
@@ -361,7 +368,8 @@ public sealed class ActorManager : IDisposable
         var actorCount = GetActorCountByType("metal_spawn");
         if (actorCount >= 8)
         {
-            _logger.LogError("metal spawn failed. ({Count}/8)", actorCount);
+            _logger.LogError("metal_spawn limit reached (8)");
+            return;
         }
 
         var metal = CreateHostActor("metal_spawn", pos);

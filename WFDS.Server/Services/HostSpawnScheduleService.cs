@@ -3,7 +3,7 @@ using WFDS.Server.Managers;
 
 namespace WFDS.Server.Services;
 
-public class HostSpawnScheduleService(ILogger<HostSpawnScheduleService> logger, ActorManager actor) : IHostedService
+public class HostSpawnScheduleService(ILogger<HostSpawnScheduleService> logger, ActorManager actor, LobbyManager lobby) : IHostedService
 {
     private const int DefaultAlienCooldown = 6;
     private const int ResetAlienCooldown = 16;
@@ -31,6 +31,9 @@ public class HostSpawnScheduleService(ILogger<HostSpawnScheduleService> logger, 
 
     private void DoWork(object? state)
     {
+        var count = lobby.GetSessionCount();
+        if (count < 1) return;
+        
         var ownedActorCount = actor.GetOwnedActorCount();
         var ownedActorTypes = actor.GetOwnedActorTypes();
 
@@ -80,7 +83,7 @@ public class HostSpawnScheduleService(ILogger<HostSpawnScheduleService> logger, 
             type = HostSpawnTypes.VoidPortal;
         }
 
-        logger.LogInformation("spawn type: {Type}", type);
+        logger.LogDebug("select spawn type: {Type}", type);
         return type;
     }
 }

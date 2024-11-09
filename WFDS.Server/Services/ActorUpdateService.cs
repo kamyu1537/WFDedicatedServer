@@ -1,5 +1,4 @@
 ﻿using Steamworks;
-using WFDS.Server.Common;
 using WFDS.Server.Common.Actor;
 using WFDS.Server.Managers;
 using WFDS.Server.Packets;
@@ -24,16 +23,18 @@ public class ActorUpdateService(ILogger<ActorUpdateService> logger, ActorManager
 
     private void Update(double delta)
     {
+        var count = lobby.GetSessionCount();
+        if (count < 1) return;
+        
         manager.SelectActors(actor =>
         {
             if (Decay(actor)) return;
-
             actor.OnUpdate(delta);
-            CheckActorUpdate(actor, lobby);
+            CheckActorUpdate(actor);
         });
     }
 
-    private static void CheckActorUpdate(IActor actor, LobbyManager lobby)
+    private void CheckActorUpdate(IActor actor)
     {
         if (actor.CreatorId != SteamClient.SteamId.Value)
             return;
@@ -47,6 +48,7 @@ public class ActorUpdateService(ILogger<ActorUpdateService> logger, ActorManager
         actor.IsActorUpdated = false;
 
         actor.SendUpdatePacket(lobby);
+        logger.LogDebug("send actor update {ActorId} {ActorType}", actor.ActorId, actor.ActorType);
     }
 
     private bool Decay(IActor actor)

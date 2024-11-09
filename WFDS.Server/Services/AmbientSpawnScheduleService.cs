@@ -2,7 +2,7 @@
 
 namespace WFDS.Server.Services;
 
-public class AmbientSpawnScheduleService(ActorManager actor) : IHostedService
+public class AmbientSpawnScheduleService(ActorManager actor, LobbyManager lobby) : IHostedService
 {
     private static readonly TimeSpan Period = TimeSpan.FromSeconds(10);
     private readonly Random _random = new();
@@ -23,6 +23,9 @@ public class AmbientSpawnScheduleService(ActorManager actor) : IHostedService
     // _on_ambient_spawn_timer_timeout
     private void DoWork(object? state)
     {
+        var count = lobby.GetSessionCount();
+        if (count < 1) return;
+        
         var index = _random.Next() % 3;
 
         if (index == 2)

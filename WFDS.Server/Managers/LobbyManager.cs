@@ -206,6 +206,11 @@ public sealed class LobbyManager : IDisposable
     {
         _lobby?.SetData("banned_players", string.Join(",", _banned));
     }
+    
+    public int GetSessionCount()
+    {
+        return _sessions.Count;
+    }
 
     public bool IsSessionExists(SteamId steamId)
     {
