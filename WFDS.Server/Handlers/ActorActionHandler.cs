@@ -13,8 +13,8 @@ public class ActorActionHandler : PacketHandler
         var packet = new ActorActionPacket();
         packet.Parse(data);
 
-        PrintReceiveLog(sender, packet);
-
+        LobbyManager.SelectSession(sender.SteamId, session => { Logger.LogInformation("received actor_action from {Name}[{SteamId}] for actor {ActorId} : {Action} / {Data}", session.Friend.Name, sender.SteamId, packet.ActorId, packet.Action, JsonSerializer.Serialize(packet.Params)); });
+        
         switch (packet.Action)
         {
             case "queue_free":
@@ -23,17 +23,10 @@ public class ActorActionHandler : PacketHandler
             case "_wipe_actor":
                 WipeActor(sender, packet);
                 break;
+            case "_set_zone":
+                SetZone(sender, packet);
+                break;
         }
-    }
-
-    private void PrintReceiveLog(Session sender, ActorActionPacket packet)
-    {
-        if (packet.Action != "queue_free" && packet.Action != "_wipe_actor")
-        {
-            return;
-        }
-        
-        LobbyManager.SelectSession(sender.SteamId, session => { Logger.LogInformation("received actor_action from {Name}[{SteamId}] for actor {ActorId} : {Action} / {Data}", session.Friend.Name, sender.SteamId, packet.ActorId, packet.Action, JsonSerializer.Serialize(packet.Params)); });
     }
 
     private void QueueFree(Session sender, ActorActionPacket packet)
@@ -66,5 +59,23 @@ public class ActorActionHandler : PacketHandler
         {
             Logger.LogError("invalid _wipe_actor packet from {Name}[{SteamId}] : {Data}", sender.Friend.Name, sender.SteamId, JsonSerializer.Serialize(packet.Params));
         }
+    }
+
+    private void SetZone(Session sender, ActorActionPacket packet)
+    {
+        if (packet.Params.Count != 2)
+        {
+            Logger.LogError("invalid _set_zone packet from {Name}[{SteamId}] : {Data}", sender.Friend.Name, sender.SteamId, JsonSerializer.Serialize(packet.Params));
+            return;
+        }
+        
+        var zone = packet.Params[0].GetString();
+        var zoneOwner = packet.Params[1].GetNumber();
+        
+        ActorManager.SelectPlayerActor(sender.SteamId, actor =>
+        {
+            actor.Zone = zone;
+            actor.ZoneOwner = zoneOwner;
+        });
     }
 }
