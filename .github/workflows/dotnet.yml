@@ -19,8 +19,12 @@ jobs:
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: 8.0.x
+    - name: Restore dependencies
+      run: dotnet restore
+    - name: Build
+      run: dotnet build --configuration Release --no-restore
     - name: Publish
-      run: dotnet publish --configuration Release --self-contained --output ./publish
+      run: dotnet publish --configuration Release --no-build --output ./publish
     - name: Zip
       run: Compress-Archive -Path ./publish/* -DestinationPath ./publish.zip
     - name: Create Release
