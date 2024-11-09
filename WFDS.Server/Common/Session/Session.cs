@@ -62,16 +62,8 @@ public class Session : ISession
 
     public void ProcessPackets()
     {
-        var count = 2;
-        // Console.WriteLine($"Processing {Packets.Count} packets for {SteamId}");
-        while (Packets.TryDequeue(out var packet))
+        if (Packets.TryDequeue(out var packet))
         {
-            if (count-- <= 0)
-            {
-                break;
-            }
-
-            // Console.WriteLine(JsonSerializer.Serialize(GodotBinaryConverter.Deserialize(GZipHelper.Decompress(packet.Item2))));
             SteamNetworking.SendP2PPacket(SteamId, packet.Item2, nChannel: packet.Item1.Value);
         }
     }
