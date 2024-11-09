@@ -107,6 +107,7 @@ public sealed class LobbyManager : IDisposable
         SetPublic(_public);
 
         UpdateBannedPlayers();
+        UpdateConsoleTitle();
     }
 
     public void SetPublic(bool @public)
@@ -296,18 +297,21 @@ public sealed class LobbyManager : IDisposable
         };
 
         _sessions.TryAdd(member.Id.Value, session);
+        UpdateConsoleTitle();
     }
 
     private void OnLobbyMemberLeave(Lobby lobby, Friend member)
     {
         _logger.LogInformation("lobby member left: {DisplayName} [{SteamId}]", member.Name, member.Id);
         _sessions.TryRemove(member.Id.Value, out _);
+        UpdateConsoleTitle();
     }
 
     private void OnLobbyMemberDisconnected(Lobby lobby, Friend member)
     {
         _logger.LogWarning("lobby member disconnected: {DisplayName} [{SteamId}]", member.Name, member.Id);
         _sessions.TryRemove(member.Id.Value, out _);
+        UpdateConsoleTitle();
     }
 
     private void OnP2PSessionRequest(SteamId requester)
@@ -351,5 +355,10 @@ public sealed class LobbyManager : IDisposable
                 KickPlayer(session.SteamId);
             }
         }
+    }
+
+    private void UpdateConsoleTitle()
+    {
+        Console.Title = $"[{_sessions.Count}/{_cap}] {_name} [{_code}]";
     }
 }
