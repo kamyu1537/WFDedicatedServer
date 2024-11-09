@@ -277,7 +277,7 @@ public sealed class LobbyManager : IDisposable
             return;
         }
 
-        _logger.LogInformation("lobby created: {LobbyId} [{RoomCode}]", lobby.Id, _code);
+        _logger.LogInformation("lobby created: id({LobbyId}) roomCode({RoomCode}) lobbyType({LobbyType}) public({Public}) adult({Adult}) cap({Cap})", lobby.Id, _code, _lobbyType, _public, _adult, _cap);
 
         _lobby = lobby;
         SetupLobby(lobby);
