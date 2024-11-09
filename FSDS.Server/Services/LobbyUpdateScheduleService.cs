@@ -23,5 +23,6 @@ public class LobbyUpdateScheduleService(LobbyManager lobby) : IHostedService
     private void DoWork(object? state)
     {
         lobby.UpdateBrowserValue();
+        lobby.KickNoHandshakePlayers();
     }
 }

@@ -153,25 +153,30 @@ public sealed class LobbyManager : IDisposable
 
         SelectSession(target, session =>
         {
-            _logger.LogInformation("kicking player: {SteamId}", target);
+            _logger.LogInformation("try kicking player: {SteamId}", target);
             session.Send(NetChannel.GameState, new KickPacket());
-            _sessions.TryRemove(target.Value, out _);
         });
     }
 
-    public void BanPlayer(ulong steamId)
+    public void BanPlayer(SteamId target)
     {
-        if (!_banned.Add(steamId))
+        if (!_banned.Add(target))
         {
             return;
         }
 
+        SelectSession(target, session =>
+        {
+            _logger.LogInformation("try kicking player: {SteamId}", target);
+            session.Send(NetChannel.GameState, new KickPacket());
+        });
+        
         UpdateBannedPlayers();
     }
 
-    public void RemoveBanPlayer(ulong steamId)
+    public void RemoveBanPlayer(SteamId target)
     {
-        if (!_banned.Remove(steamId))
+        if (!_banned.Remove(target))
         {
             return;
         }
@@ -181,10 +186,7 @@ public sealed class LobbyManager : IDisposable
 
     private void UpdateBannedPlayers()
     {
-        if (_lobby.HasValue)
-        {
-            _lobby.Value.SetData("banned_players", string.Join(",", _banned));
-        }
+        _lobby?.SetData("banned_players", string.Join(",", _banned));
     }
 
     public bool IsSessionExists(SteamId steamId)
@@ -332,5 +334,17 @@ public sealed class LobbyManager : IDisposable
         var random = new Random();
 
         _lobby.Value.SetData("server_browser_value", (random.Next() % 20).ToString());
+    }
+    
+    public void KickNoHandshakePlayers()
+    {
+        var now = DateTimeOffset.UtcNow;
+        foreach (var session in _sessions.Values)
+        {
+            if (!session.HandshakeReceived && now - session.ConnectTime > TimeSpan.FromSeconds(30)) // 30초 이상 핸드셰이크를 받지 않은 플레이어는 강퇴
+            {
+                KickPlayer(session.SteamId);
+            }
+        }
     }
 }
