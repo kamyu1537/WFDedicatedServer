@@ -17,7 +17,8 @@ public interface IActor
     public long DecayTimer { get; set; }
     public DateTimeOffset CreateTime { get; set; }
 
-    public bool IsActorUpdated { get; set; }
+    public bool IsDeadActor { get; set; }
+    public long ActorUpdateDefaultCooldown { get; set; }
     public long ActorUpdateCooldown { get; set; }
 
     void OnCreated();

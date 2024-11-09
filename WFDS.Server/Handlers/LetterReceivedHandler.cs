@@ -20,6 +20,6 @@ public class LetterReceivedHandler : PacketHandler
         packet.LatterId = new Random().Next();
         (packet.From, packet.To) = (packet.To, packet.From);
 
-        sender.Send(NetChannel.GameState, packet);
+        sender.SendPacket(NetChannel.GameState, packet);
     }
 }

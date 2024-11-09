@@ -30,23 +30,23 @@ public abstract class PacketHandler : IPacketHandler
         return this;
     }
 
-    protected void Send(SteamId target, NetChannel channel, IPacket packet)
+    protected void SendPacket(SteamId target, NetChannel channel, IPacket packet, string zone = "", long zoneOwner = -1)
     {
-        Send(target, channel, packet.ToDictionary());
+        SendPacket(target, channel, packet.ToDictionary(), zone, zoneOwner);
     }
 
-    protected void Send(SteamId target, NetChannel channel, Dictionary<object, object> data)
+    protected void SendPacket(SteamId target, NetChannel channel, Dictionary<object, object> data, string zone, long zoneOwner = -1)
     {
-        LobbyManager.SendPacket(target, channel, data);
+        LobbyManager.SendPacket(target, channel, data, zone, zoneOwner);
     }
 
-    protected void Broadcast(NetChannel channel, IPacket packet)
+    protected void Broadcast(NetChannel channel, IPacket packet, string zone = "", long zoneOwner = -1)
     {
-        LobbyManager.BroadcastPacket(channel, packet.ToDictionary());
+        LobbyManager.BroadcastPacket(channel, packet.ToDictionary(), zone, zoneOwner);
     }
 
-    protected void Broadcast(NetChannel channel, Dictionary<object, object> data)
+    protected void Broadcast(NetChannel channel, Dictionary<object, object> data, string zone = "", long zoneOwner = -1)
     {
-        LobbyManager.BroadcastPacket(channel, data);
+        LobbyManager.BroadcastPacket(channel, data, zone, zoneOwner);
     }
 }

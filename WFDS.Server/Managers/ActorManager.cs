@@ -261,6 +261,7 @@ public sealed class ActorManager : IDisposable
         var bird = CreateHostActor("ambient_bird", pos);
         bird.Decay = true;
         bird.DecayTimer = 600; // default?
+        bird.IsDeadActor = true;
 
         _logger.LogInformation("spawn bird at {ActorId} - {Pos}", bird.ActorId, bird.Position);
     }
@@ -282,6 +283,7 @@ public sealed class ActorManager : IDisposable
         var fish = CreateHostActor(type, pos);
         fish.Decay = true;
         fish.DecayTimer = type == "fish_spawn_alien" ? 4800 : 14400;
+        fish.ActorUpdateDefaultCooldown = type == "fish_spawn_alien" ? 8 : 32;
 
         _logger.LogInformation("spawn {ActorType} ({ActorId}) at {Pos}", fish.ActorType, fish.ActorId, fish.Position);
     }
@@ -313,7 +315,8 @@ public sealed class ActorManager : IDisposable
             Position = pos,
             Rotation = Vector3.Zero,
             Decay = true,
-            DecayTimer = 32500
+            DecayTimer = 32500,
+            ActorUpdateDefaultCooldown = 8
         };
 
         SetActorDefaultValues(actor);

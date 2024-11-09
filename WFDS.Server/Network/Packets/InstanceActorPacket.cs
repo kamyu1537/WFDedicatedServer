@@ -77,6 +77,6 @@ public static class InstanceActorExtensions
 
     public static void SendInstanceActor(this IActor actor, Session target)
     {
-        target.Send(NetChannel.GameState, actor.ToPacket());
+        target.SendPacket(NetChannel.GameState, actor.ToPacket());
     }
 }

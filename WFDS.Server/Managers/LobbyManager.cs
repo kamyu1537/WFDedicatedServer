@@ -160,7 +160,7 @@ public sealed class LobbyManager : IDisposable
         SelectSession(target, session =>
         {
             _logger.LogInformation("try kick player: {SteamId}", target);
-            session.Send(NetChannel.GameState, new KickPacket());
+            session.SendPacket(NetChannel.GameState, new KickPacket());
         });
     }
 
@@ -172,7 +172,7 @@ public sealed class LobbyManager : IDisposable
         SelectSession(target, session =>
         {
             _logger.LogInformation("try ban player: {SteamId}", target);
-            session.Send(NetChannel.GameState, new BanPacket());
+            session.SendPacket(NetChannel.GameState, new BanPacket());
         });
 
         if (update)
@@ -235,14 +235,29 @@ public sealed class LobbyManager : IDisposable
         action(session);
         return true;
     }
-
-    public void SendPacket(SteamId steamId, NetChannel channel, IPacket packet)
+    
+    private static bool IsInZone(Session session, string zone, long zoneOwner)
     {
-        var data = packet.ToDictionary();
-        SendPacket(steamId, channel, data);
+        if (string.IsNullOrEmpty(zone))
+        {
+            return true;
+        }
+        
+        if (!session.ActorCreated)
+        {
+            return false;
+        }
+
+        return session.Actor.Zone == zone && (zoneOwner == -1 || session.Actor.ZoneOwner == zoneOwner);
     }
 
-    public void SendPacket(SteamId steamId, NetChannel channel, object data)
+    public void SendPacket(SteamId steamId, NetChannel channel, IPacket packet, string zone = "", long zoneOwner = -1)
+    {
+        var data = packet.ToDictionary();
+        SendPacket(steamId, channel, data, zone);
+    }
+
+    public void SendPacket(SteamId steamId, NetChannel channel, object data, string zone = "", long zoneOwner = -1)
     {
         if (!_lobby.HasValue)
         {
@@ -253,19 +268,24 @@ public sealed class LobbyManager : IDisposable
         {
             return;
         }
+        
+        if (!IsInZone(session, zone, zoneOwner))
+        {
+            return;
+        }
 
         var bytes = GodotBinaryConverter.Serialize(data);
         var compressed = GZipHelper.Compress(bytes);
         session.Packets.Enqueue((channel, compressed));
     }
 
-    public void BroadcastPacket(NetChannel channel, IPacket packet)
+    public void BroadcastPacket(NetChannel channel, IPacket packet, string zone = "", long zoneOwner = -1)
     {
         var data = packet.ToDictionary();
-        BroadcastPacket(channel, data);
+        BroadcastPacket(channel, data, zone, zoneOwner);
     }
 
-    public void BroadcastPacket(NetChannel channel, object data)
+    public void BroadcastPacket(NetChannel channel, object data, string zone = "", long zoneOwner = -1)
     {
         if (!_lobby.HasValue)
         {
@@ -278,6 +298,11 @@ public sealed class LobbyManager : IDisposable
         foreach (var session in _sessions.Values)
         {
             if (session.SteamId.Value == SteamClient.SteamId.Value)
+            {
+                continue;
+            }
+
+            if (!IsInZone(session, zone, zoneOwner))
             {
                 continue;
             }

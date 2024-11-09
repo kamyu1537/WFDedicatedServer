@@ -2,7 +2,7 @@
 
 namespace WFDS.Server.Services;
 
-public class MetalSpawnScheduleService(ActorManager actor) : IHostedService
+public class MetalSpawnScheduleService(ActorManager actor, LobbyManager lobby) : IHostedService
 {
     private static readonly TimeSpan Period = TimeSpan.FromSeconds(20);
     private Timer? _timer;
@@ -21,6 +21,9 @@ public class MetalSpawnScheduleService(ActorManager actor) : IHostedService
 
     private void DoWork(object? state)
     {
+        var count = lobby.GetSessionCount();
+        if (count < 1) return;
+        
         actor.SpawnMetal();
     }
 }

@@ -1,8 +1,11 @@
 ﻿using System.Collections.Concurrent;
+using System.Text.Json;
 using Steamworks;
+using WFDS.Godot.Binary;
 using WFDS.Godot.Types;
 using WFDS.Server.Common.Actor;
 using WFDS.Server.Common.Extensions;
+using WFDS.Server.Common.Helpers;
 using WFDS.Server.Managers;
 using WFDS.Server.Packets;
 using Color = System.Drawing.Color;
@@ -27,14 +30,14 @@ public class Session : ISession
 
     public ConcurrentQueue<(NetChannel, byte[])> Packets { get; } = [];
 
-    public void Send(NetChannel channel, IPacket packet)
+    public void SendPacket(NetChannel channel, IPacket packet, string zone = "", long zoneOwner = -1)
     {
-        LobbyManager.SendPacket(SteamId, channel, packet);
+        LobbyManager.SendPacket(SteamId, channel, packet, zone, zoneOwner);
     }
 
     public void SendMessage(string message, Color color, bool local = false)
     {
-        Send(NetChannel.GameState, new MessagePacket
+        SendPacket(NetChannel.GameState, new MessagePacket
         {
             Message = message,
             Color = color.ToHex(true),
@@ -47,7 +50,7 @@ public class Session : ISession
 
     public void SendLetter(SteamId target, string body)
     {
-        Send(NetChannel.GameState, new LetterReceivedPacket
+        SendPacket(NetChannel.GameState, new LetterReceivedPacket
         {
             LatterId = new Random().Next(),
             From = SteamClient.SteamId.ToString(),

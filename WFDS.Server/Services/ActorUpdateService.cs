@@ -36,19 +36,18 @@ public class ActorUpdateService(ILogger<ActorUpdateService> logger, ActorManager
 
     private void CheckActorUpdate(IActor actor)
     {
+        if (actor.IsDeadActor)
+            return;
+        
         if (actor.CreatorId != SteamClient.SteamId.Value)
             return;
-
-        if (!actor.IsActorUpdated) return;
         
         actor.ActorUpdateCooldown -= 1;
         if (actor.ActorUpdateCooldown > 0) return;
         
-        actor.ActorUpdateCooldown = 32;
-        actor.IsActorUpdated = false;
+        actor.ActorUpdateCooldown = actor.ActorUpdateDefaultCooldown;
 
         actor.SendUpdatePacket(lobby);
-        logger.LogDebug("send actor update {ActorId} {ActorType}", actor.ActorId, actor.ActorType);
     }
 
     private bool Decay(IActor actor)

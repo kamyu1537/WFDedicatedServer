@@ -13,6 +13,6 @@ public class RequestActorsHandler : PacketHandler
 
         var packet = new ActorRequestSendPacket();
         ActorManager.SelectOwnedActors(actor => packet.Actors.Add(new ActorSavedData(actor.ActorType, actor.ActorId, (long)actor.CreatorId.Value)));
-        sender.Send(NetChannel.GameState, packet);
+        sender.SendPacket(NetChannel.GameState, packet);
     }
 }

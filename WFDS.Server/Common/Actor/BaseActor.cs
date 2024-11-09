@@ -16,7 +16,8 @@ public class BaseActor : IActor
     public long DecayTimer { get; set; } = 600;
     public DateTimeOffset CreateTime { get; set; } = DateTimeOffset.UtcNow;
 
-    public bool IsActorUpdated { get; set; } = true;
+    public bool IsDeadActor { get; set; }
+    public long ActorUpdateDefaultCooldown { get; set; } = 32;
     public long ActorUpdateCooldown { get; set; }
     
 
