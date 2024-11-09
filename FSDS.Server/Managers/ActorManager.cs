@@ -49,7 +49,7 @@ public sealed class ActorManager : IDisposable
         }
     }
 
-    public void UpdateActor(long actorId, Action<IActor> update)
+    public void SelectActor(long actorId, Action<IActor> update)
     {
         if (!_actors.TryGetValue(actorId, out var actor))
         {
@@ -59,7 +59,7 @@ public sealed class ActorManager : IDisposable
         update(actor);
     }
 
-    public void UpdateAllActors(Action<IActor> action)
+    public void SelectActors(Action<IActor> action)
     {
         foreach (var actor in _actors.Values)
         {

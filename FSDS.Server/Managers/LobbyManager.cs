@@ -151,7 +151,7 @@ public sealed class LobbyManager : IDisposable
             return;
         }
 
-        SessionExecute(target, session =>
+        SelectSession(target, session =>
         {
             _logger.LogInformation("kicking player: {SteamId}", target);
             session.Send(NetChannel.GameState, new KickPacket());
@@ -192,7 +192,7 @@ public sealed class LobbyManager : IDisposable
         return _sessions.ContainsKey(steamId.Value);
     }
 
-    public void SessionForEach(Action<Session> action)
+    public void SelectSessions(Action<Session> action)
     {
         foreach (var session in _sessions.Values)
         {
@@ -200,7 +200,7 @@ public sealed class LobbyManager : IDisposable
         }
     }
 
-    public bool SessionExecute(SteamId target, Action<Session> action)
+    public bool SelectSession(SteamId target, Action<Session> action)
     {
         if (!_sessions.TryGetValue(target.Value, out var session))
         {
@@ -306,7 +306,7 @@ public sealed class LobbyManager : IDisposable
     private void OnP2PSessionRequest(SteamId requester)
     {
         _logger.LogWarning("P2P session request: {SteamId}", requester);
-        SessionExecute(requester, _ => { SteamNetworking.AcceptP2PSessionWithUser(requester); });
+        SelectSession(requester, _ => { SteamNetworking.AcceptP2PSessionWithUser(requester); });
     }
 
     private static string GenerationRoomCode()

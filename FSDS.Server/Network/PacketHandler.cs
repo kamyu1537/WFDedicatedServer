@@ -51,7 +51,7 @@ public class PacketHandler
             }
 
             PrintDebugLog(typeName, dic, sender, channel);
-            _lobbyManager.SessionExecute(sender, session =>
+            _lobbyManager.SelectSession(sender, session =>
             {
                 session.PingReceiveTime = DateTimeOffset.UtcNow;
 

@@ -25,7 +25,7 @@ public class ActorUpdateService(ILogger<ActorUpdateService> logger, ActorManager
 
     private void Update(double delta)
     {
-        manager.UpdateAllActors(actor =>
+        manager.SelectActors(actor =>
         {
             if (Decay(actor)) return;
             

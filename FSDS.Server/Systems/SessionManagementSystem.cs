@@ -18,7 +18,7 @@ public class SessionManagementSystem(LobbyManager lobbyManager)
         }
         _time = 0;
         
-        lobbyManager.SessionForEach(session =>
+        lobbyManager.SelectSessions(session =>
         {
             if (session.HandshakeReceived)
             {
