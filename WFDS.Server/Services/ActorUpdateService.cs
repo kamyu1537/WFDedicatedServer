@@ -7,8 +7,6 @@ namespace WFDS.Server.Services;
 
 public class ActorUpdateService(ILogger<ActorUpdateService> logger, ActorManager manager, LobbyManager lobby) : BackgroundService
 {
-    private const int Delay = 1000 / 10;
-
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         var prev = DateTime.UtcNow.Ticks;

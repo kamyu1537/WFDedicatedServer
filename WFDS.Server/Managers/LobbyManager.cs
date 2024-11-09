@@ -38,6 +38,7 @@ public sealed class LobbyManager : IDisposable
         SteamMatchmaking.OnLobbyMemberJoined += OnLobbyMemberJoined;
         SteamMatchmaking.OnLobbyMemberLeave += OnLobbyMemberLeave;
         SteamMatchmaking.OnLobbyMemberDisconnected += OnLobbyMemberDisconnected;
+        SteamMatchmaking.OnLobbyMemberDataChanged += OnLobbyMemberDataChanged;
         SteamNetworking.OnP2PSessionRequest += OnP2PSessionRequest;
     }
 
@@ -57,6 +58,7 @@ public sealed class LobbyManager : IDisposable
         SteamMatchmaking.OnLobbyMemberJoined -= OnLobbyMemberJoined;
         SteamMatchmaking.OnLobbyMemberLeave -= OnLobbyMemberLeave;
         SteamMatchmaking.OnLobbyMemberDisconnected -= OnLobbyMemberDisconnected;
+        SteamMatchmaking.OnLobbyMemberDataChanged -= OnLobbyMemberDataChanged;
         SteamNetworking.OnP2PSessionRequest -= OnP2PSessionRequest;
 
         _banned.Clear();
@@ -322,6 +324,20 @@ public sealed class LobbyManager : IDisposable
         _logger.LogWarning("lobby member disconnected: {DisplayName} [{SteamId}]", member.Name, member.Id);
         _sessions.TryRemove(member.Id.Value, out _);
         UpdateConsoleTitle();
+    }
+    
+    private void OnLobbyMemberDataChanged(Lobby lobby, Friend member)
+    {
+        _logger.LogInformation("lobby member data changed: {DisplayName} [{SteamId}]", member.Name, member.Id);
+        
+        SelectSession(member.Id, session =>
+        {
+            session.Friend = member;
+            if (session.ActorCreated)
+            {
+                session.Actor.Name = member.Name;
+            }
+        });
     }
 
     private void OnP2PSessionRequest(SteamId requester)
