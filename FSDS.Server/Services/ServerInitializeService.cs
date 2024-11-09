@@ -19,7 +19,7 @@ public class ServerInitializeService(
         SteamNetworking.AllowP2PPacketRelay(true);
 
         map.LoadSpawnPoints();
-        lobby.CreateLobby("kamyu's korea server [dev]", GameLobbyType.Public, true, false);
+        lobby.CreateLobby("korea server - dev", GameLobbyType.Public, true, false);
 
         while (!stoppingToken.IsCancellationRequested)
         {

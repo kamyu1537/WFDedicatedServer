@@ -16,7 +16,7 @@ public sealed class LobbyManager : IDisposable
     private const string GameVersion = "1.09";
 
     private readonly ILogger<LobbyManager> _logger;
-    
+
     private readonly HashSet<ulong> _banned = [];
     private readonly ConcurrentDictionary<ulong, Session> _sessions = [];
 
@@ -58,11 +58,11 @@ public sealed class LobbyManager : IDisposable
         SteamMatchmaking.OnLobbyMemberLeave -= OnLobbyMemberLeave;
         SteamMatchmaking.OnLobbyMemberDisconnected -= OnLobbyMemberDisconnected;
         SteamNetworking.OnP2PSessionRequest -= OnP2PSessionRequest;
-        
+
         _banned.Clear();
         _sessions.Clear();
     }
-    
+
     public void CreateLobby(string name, GameLobbyType lobbyType, bool @public, bool adult, int cap = MaxPlayers)
     {
         if (_created)
@@ -71,14 +71,14 @@ public sealed class LobbyManager : IDisposable
         }
 
         // _code = GenerationRoomCode();
-        _code = "KAMYU";
+        _code = "KOREA";
         _name = name;
         _public = @public;
         _lobbyType = lobbyType;
         _adult = adult;
         _cap = cap;
         _created = true;
-        
+
         SteamMatchmaking.CreateLobbyAsync(_cap);
     }
 
@@ -87,21 +87,19 @@ public sealed class LobbyManager : IDisposable
         lobby.SetData("mode", LobbyMode);
         lobby.SetData("ref", LobbyRef);
         lobby.SetData("version", GameVersion);
-        lobby.SetData("server_browser_value", "7");
+        lobby.SetData("server_browser_value", "0");
 
 
         lobby.SetData("name", _name);
         lobby.SetData("lobby_name", _name);
-        
-        lobby.SetData("code", _code);
         lobby.SetData("cap", _cap.ToString());
+        lobby.SetData("age_limit", _adult ? "true" : "");
 
         lobby.SetData("banned_players", "");
-        lobby.SetData("age_limit", _adult ? "true" : "");
 
         SetLobbyType(_lobbyType);
         SetPublic(_public);
-        
+
         UpdateBannedPlayers();
     }
 
@@ -111,7 +109,7 @@ public sealed class LobbyManager : IDisposable
         {
             return;
         }
-        
+
         _lobby.Value.SetJoinable(@public);
     }
 
@@ -130,7 +128,13 @@ public sealed class LobbyManager : IDisposable
             _ => "code_only"
         };
 
-        _lobby.Value.SetData("type",lobbyType);
+        _lobby.Value.SetData("type", lobbyType);
+        _lobby.Value.SetData("public", _lobbyType == GameLobbyType.Public ? "true" : "false");
+        
+        if (_lobbyType is GameLobbyType.Public or GameLobbyType.CodeOnly)
+        {
+            _lobby.Value.SetData("code", _code);
+        }
     }
 
     public void KickPlayer(SteamId target)
@@ -178,7 +182,7 @@ public sealed class LobbyManager : IDisposable
     {
         if (_lobby.HasValue)
         {
-            _lobby.Value.SetData("banned_players", string.Join(",", _banned));   
+            _lobby.Value.SetData("banned_players", string.Join(",", _banned));
         }
     }
 
@@ -186,7 +190,7 @@ public sealed class LobbyManager : IDisposable
     {
         return _sessions.ContainsKey(steamId.Value);
     }
-    
+
     public void SessionForEach(Action<Session> action)
     {
         foreach (var session in _sessions.Values)
@@ -194,7 +198,7 @@ public sealed class LobbyManager : IDisposable
             action(session);
         }
     }
-    
+
     public bool SessionExecute(SteamId target, Action<Session> action)
     {
         if (!_sessions.TryGetValue(target.Value, out var session))
@@ -211,24 +215,24 @@ public sealed class LobbyManager : IDisposable
         var data = packet.ToDictionary();
         SendPacket(steamId, channel, data);
     }
-    
+
     public void SendPacket(SteamId steamId, NetChannel channel, object data)
     {
         if (!_lobby.HasValue)
         {
             return;
         }
-        
+
         if (!_sessions.TryGetValue(steamId.Value, out var session))
         {
             return;
         }
-        
+
         var bytes = GodotBinaryConverter.Serialize(data);
         var compressed = GZipHelper.Compress(bytes);
         session.Packets.Enqueue((channel, compressed));
     }
-    
+
     public void BroadcastPacket(NetChannel channel, IPacket packet)
     {
         var data = packet.ToDictionary();
@@ -241,21 +245,21 @@ public sealed class LobbyManager : IDisposable
         {
             return;
         }
-        
+
         var bytes = GodotBinaryConverter.Serialize(data);
         var compressed = GZipHelper.Compress(bytes);
-        
+
         foreach (var session in _sessions.Values)
         {
             if (session.SteamId.Value == SteamClient.SteamId.Value)
             {
                 continue;
             }
-            
+
             session.Packets.Enqueue((channel, compressed));
         }
     }
-    
+
     private void OnLobbyCreated(Result result, Lobby lobby)
     {
         if (result != Result.OK)
@@ -265,10 +269,10 @@ public sealed class LobbyManager : IDisposable
         }
 
         _logger.LogInformation("lobby created: {LobbyId} [{RoomCode}]", lobby.Id, _code);
-        
+
         _lobby = lobby;
         SetupLobby(lobby);
-        
+        UpdateBrowserValue();
     }
 
     private void OnLobbyMemberJoined(Lobby lobby, Friend member)
@@ -282,7 +286,7 @@ public sealed class LobbyManager : IDisposable
             SteamId = member.Id,
             ConnectTime = DateTimeOffset.UtcNow
         };
-        
+
         _sessions.TryAdd(member.Id.Value, session);
     }
 
@@ -303,7 +307,7 @@ public sealed class LobbyManager : IDisposable
         _logger.LogWarning("P2P session request: {SteamId}", requester);
         SessionExecute(requester, _ => { SteamNetworking.AcceptP2PSessionWithUser(requester); });
     }
-    
+
     private static string GenerationRoomCode()
     {
         const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
@@ -315,5 +319,17 @@ public sealed class LobbyManager : IDisposable
         }
 
         return new string(code);
+    }
+
+    public void UpdateBrowserValue()
+    {
+        if (!_lobby.HasValue)
+        {
+            return;
+        }
+
+        var random = new Random();
+
+        _lobby.Value.SetData("server_browser_value", (random.Next() % 20).ToString());
     }
 }
