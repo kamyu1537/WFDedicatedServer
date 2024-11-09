@@ -183,7 +183,7 @@ public sealed class ActorManager : IDisposable
 
     public void RemoveActor(long actorId)
     {
-        if (!_actors.Remove(actorId, out var actor))
+        if (!_actors.TryRemove(actorId, out var actor))
         {
             return;
         }
@@ -194,17 +194,19 @@ public sealed class ActorManager : IDisposable
         }
 
         _id.Return(actorId);
+        
+        var wipe = ActorActionPacket.CreateWipeActorPacket(actorId);
+        _lobby.BroadcastPacket(NetChannel.ActorAction, wipe);
+        
+        var queue = ActorActionPacket.CreateQueueFreePacket(actor.ActorId);
+        _lobby.BroadcastPacket(NetChannel.ActorAction, queue);
+        
         if (actor.CreatorId.Value != SteamClient.SteamId.Value)
         {
             return;
         }
 
         _owned.TryRemove(actorId, out _);
-        var wipe = ActorActionPacket.CreateWipeActorPacket(actorId);
-        _lobby.BroadcastPacket(NetChannel.ActorAction, wipe);
-        
-        var queue = ActorActionPacket.CreateQueueFreePacket(actor.ActorId);
-        _lobby.BroadcastPacket(NetChannel.ActorAction, queue);
     }
 
     private int GetActorCountByType(string actorType)
