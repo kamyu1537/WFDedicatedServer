@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Numerics;
 using System.Text.Json;
 using FSDS.Godot.Binary;
+using FSDS.Server.Common.Extensions;
 using FSDS.Server.Common.Helpers;
 using FSDS.Server.Managers;
 using FSDS.Server.Packets;
@@ -36,7 +37,7 @@ public class Session
         Send(NetChannel.GameState, new MessagePacket
         {
             Message = message,
-            Color = $"{ColorTranslator.ToWin32(color):X6}".ToLower(),
+            Color = color.ToHex(),
             Local = local,
             Position = Godot.Types.Vector3.Zero,
             Zone = "main_zone",
