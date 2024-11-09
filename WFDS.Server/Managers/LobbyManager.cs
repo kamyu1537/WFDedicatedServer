@@ -157,7 +157,7 @@ public sealed class LobbyManager : IDisposable
 
         SelectSession(target, session =>
         {
-            _logger.LogInformation("try kicking player: {SteamId}", target);
+            _logger.LogInformation("try kick player: {SteamId}", target);
             session.Send(NetChannel.GameState, new KickPacket());
         });
     }
@@ -169,8 +169,8 @@ public sealed class LobbyManager : IDisposable
 
         SelectSession(target, session =>
         {
-            _logger.LogInformation("try kicking player: {SteamId}", target);
-            session.Send(NetChannel.GameState, new KickPacket());
+            _logger.LogInformation("try ban player: {SteamId}", target);
+            session.Send(NetChannel.GameState, new BanPacket());
         });
 
         if (update)
@@ -357,14 +357,15 @@ public sealed class LobbyManager : IDisposable
 
     public void KickNoHandshakePlayers()
     {
-        var now = DateTimeOffset.UtcNow;
-        foreach (var session in _sessions.Values)
-        {
-            if (!session.HandshakeReceived && now - session.ConnectTime > TimeSpan.FromSeconds(30)) // 30초 이상 핸드셰이크를 받지 않은 플레이어는 강퇴
-            {
-                KickPlayer(session.SteamId);
-            }
-        }
+        // 잠시 로직 비활성화
+        // var now = DateTimeOffset.UtcNow;
+        // foreach (var session in _sessions.Values)
+        // {
+        //     if (!session.HandshakeReceived && now - session.ConnectTime > TimeSpan.FromMinutes(5)) // 5분 이상 핸드셰이크를 받지 않은 플레이어는 강퇴
+        //     {
+        //         KickPlayer(session.SteamId);
+        //     }
+        // }
     }
 
     private void UpdateConsoleTitle()
