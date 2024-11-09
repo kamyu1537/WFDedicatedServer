@@ -12,7 +12,7 @@ public class MessageHandler : PacketHandler
         var packet = new MessagePacket();
         packet.Parse(data);
 
-        Logger.LogInformation("received message from {Sender} ({Zone}/{ZoneOwner}) on channel {Channel} / {Message}", sender.SteamId, packet.Zone, packet.ZoneOwner, channel, packet.Message);
+        Logger.LogInformation("received message from {Sender} ({Zone}/{ZoneOwner}) on channel {Channel} / [{Color}] {Message}", sender.SteamId, packet.Zone, packet.ZoneOwner, channel, packet.Color, packet.Message);
         // sender.SendMessage(packet.Message, Color.White); // test code
     }
 }

@@ -19,7 +19,7 @@ public class ServerInitializeService(
         SteamNetworking.AllowP2PPacketRelay(true);
 
         map.LoadSpawnPoints();
-        lobby.CreateLobby("korea server - dev", GameLobbyType.CodeOnly, true, false);
+        lobby.CreateLobby("korea server", GameLobbyType.Public, true, false, 24);
 
         while (!stoppingToken.IsCancellationRequested)
         {
