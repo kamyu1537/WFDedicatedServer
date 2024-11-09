@@ -374,14 +374,14 @@ public sealed class LobbyManager : IDisposable
     public void KickNoHandshakePlayers()
     {
         // 잠시 로직 비활성화
-        // var now = DateTimeOffset.UtcNow;
-        // foreach (var session in _sessions.Values)
-        // {
-        //     if (!session.HandshakeReceived && now - session.ConnectTime > TimeSpan.FromMinutes(5)) // 5분 이상 핸드셰이크를 받지 않은 플레이어는 강퇴
-        //     {
-        //         KickPlayer(session.SteamId);
-        //     }
-        // }
+        var now = DateTimeOffset.UtcNow;
+        foreach (var session in _sessions.Values)
+        {
+            if (!session.HandshakeReceived && now - session.ConnectTime > TimeSpan.FromMinutes(5))
+            {
+                KickPlayer(session.SteamId);
+            }
+        }
     }
 
     private void UpdateConsoleTitle()
