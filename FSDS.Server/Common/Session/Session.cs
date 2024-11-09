@@ -13,7 +13,7 @@ namespace FSDS.Server.Common;
 
 public class Session
 {
-    public LobbyManager LobbyManager { get; init; }
+    public LobbyManager LobbyManager { get; init; } = null!;
     public Friend Friend { get; init; }
     public SteamId SteamId { get; init; }
     

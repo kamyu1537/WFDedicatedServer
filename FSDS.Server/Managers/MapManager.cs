@@ -94,10 +94,10 @@ public class MapManager(ILogger<MapManager> logger)
         };
     }
 
-    private static Dictionary<object, object?> GetProperties(string info)
+    private static Dictionary<object, object> GetProperties(string info)
     {
         var substring = info.Substring(6, info.Length - 7);
-        var properties = new Dictionary<object, object?>();
+        var properties = new Dictionary<object, object>();
         var split = substring.Split(' ');
         foreach (var property in split)
         {
@@ -119,7 +119,7 @@ public class MapManager(ILogger<MapManager> logger)
             }
             
 
-            properties.Add(key, value);
+            properties.Add(key, value!);
         }
 
         return properties;

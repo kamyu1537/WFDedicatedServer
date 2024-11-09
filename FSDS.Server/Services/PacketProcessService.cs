@@ -6,7 +6,7 @@ using Steamworks;
 
 namespace FSDS.Server.Services;
 
-public class PacketProcessService(ILogger<PacketProcessService> logger, LobbyManager lobby, PacketHandler packetHandler) : BackgroundService
+public class PacketProcessService(ILogger<PacketProcessService> logger, PacketHandler packetHandler) : BackgroundService
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
