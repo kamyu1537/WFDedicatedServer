@@ -1,7 +1,7 @@
+using Serilog;
 using WFDS.Server;
 using WFDS.Server.Managers;
 using WFDS.Server.Services;
-using Serilog;
 
 Log.Logger = new LoggerConfiguration()
     .Enrich.FromLogContext()
@@ -17,14 +17,14 @@ Log.Logger = new LoggerConfiguration()
 try
 {
     var builder = Host.CreateApplicationBuilder(args);
-    
+
     var configuration = new ConfigurationBuilder()
-        .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-        .AddJsonFile("appsettings.local.json", optional: true)
-        .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true)
+        .AddJsonFile("appsettings.json", false, true)
+        .AddJsonFile("appsettings.local.json", true)
+        .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", true)
         .AddEnvironmentVariables()
         .Build();
-    
+
     builder.Services.Configure<ServerSetting>(configuration.GetSection("Server"));
 
     builder.Services.AddSerilog();
@@ -48,7 +48,7 @@ try
     builder.Services.AddHostedService<LobbyUpdateScheduleService>();
 
     var host = builder.Build();
-    
+
     await host.RunAsync();
 }
 catch (Exception ex)

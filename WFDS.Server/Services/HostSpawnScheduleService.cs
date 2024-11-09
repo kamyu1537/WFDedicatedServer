@@ -18,7 +18,7 @@ public class HostSpawnScheduleService(ILogger<HostSpawnScheduleService> logger, 
     public Task StartAsync(CancellationToken cancellationToken)
     {
         _rainChance = _random.NextSingle() * 0.02f;
-        
+
         _timer = new Timer(DoWork, null, TimeSpan.Zero, Period);
         return Task.CompletedTask;
     }

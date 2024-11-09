@@ -1,11 +1,10 @@
 ﻿using System.Collections.Concurrent;
+using Steamworks;
+using Steamworks.Data;
 using WFDS.Godot.Binary;
 using WFDS.Server.Common;
 using WFDS.Server.Common.Helpers;
 using WFDS.Server.Packets;
-using Microsoft.Extensions.Options;
-using Steamworks;
-using Steamworks.Data;
 
 namespace WFDS.Server.Managers;
 
@@ -23,14 +22,13 @@ public sealed class LobbyManager : IDisposable
 
     private bool _created;
     private string _name = string.Empty;
-    private string _code = string.Empty;
     private GameLobbyType _lobbyType = GameLobbyType.Public;
     private int _cap;
     private bool _public;
     private bool _adult;
 
     private Lobby? _lobby;
-    public string Code => _code;
+    public string Code { get; private set; } = string.Empty;
 
     public LobbyManager(ILogger<LobbyManager> logger)
     {
@@ -72,10 +70,10 @@ public sealed class LobbyManager : IDisposable
             return;
         }
 
-        _code = code;
-        if (_code.Length < 5 || _code.Length > 6 || string.IsNullOrWhiteSpace(_code))
+        Code = code;
+        if (Code.Length < 5 || Code.Length > 6 || string.IsNullOrWhiteSpace(Code))
         {
-            _code = GenerationRoomCode();
+            Code = GenerationRoomCode();
         }
 
         _name = serverName;
@@ -137,10 +135,10 @@ public sealed class LobbyManager : IDisposable
 
         _lobby.Value.SetData("type", lobbyType);
         _lobby.Value.SetData("public", _lobbyType == GameLobbyType.Public ? "true" : "false");
-        
+
         if (_lobbyType is GameLobbyType.Public or GameLobbyType.CodeOnly)
         {
-            _lobby.Value.SetData("code", _code);
+            _lobby.Value.SetData("code", Code);
         }
     }
 
@@ -174,7 +172,7 @@ public sealed class LobbyManager : IDisposable
             _logger.LogInformation("try kicking player: {SteamId}", target);
             session.Send(NetChannel.GameState, new KickPacket());
         });
-        
+
         if (update)
             UpdateBannedPlayers();
     }
@@ -188,7 +186,7 @@ public sealed class LobbyManager : IDisposable
                 TempBanPlayer(steamId, false);
             }
         }
-        
+
         UpdateBannedPlayers();
     }
 
@@ -289,7 +287,7 @@ public sealed class LobbyManager : IDisposable
             return;
         }
 
-        _logger.LogInformation("lobby created: id({LobbyId}) roomCode({RoomCode}) lobbyType({LobbyType}) public({Public}) adult({Adult}) cap({Cap})", lobby.Id, _code, _lobbyType, _public, _adult, _cap);
+        _logger.LogInformation("lobby created: id({LobbyId}) roomCode({RoomCode}) lobbyType({LobbyType}) public({Public}) adult({Adult}) cap({Cap})", lobby.Id, Code, _lobbyType, _public, _adult, _cap);
 
         _lobby = lobby;
         SetupLobby(lobby);
@@ -356,7 +354,7 @@ public sealed class LobbyManager : IDisposable
 
         _lobby.Value.SetData("server_browser_value", (random.Next() % 20).ToString());
     }
-    
+
     public void KickNoHandshakePlayers()
     {
         var now = DateTimeOffset.UtcNow;
@@ -371,6 +369,6 @@ public sealed class LobbyManager : IDisposable
 
     private void UpdateConsoleTitle()
     {
-        Console.Title = $"[{_sessions.Count}/{_cap}] {_name} [{_code}]";
+        Console.Title = $"[{_sessions.Count}/{_cap}] {_name} [{Code}]";
     }
 }

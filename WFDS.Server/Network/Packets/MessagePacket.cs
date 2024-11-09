@@ -12,7 +12,7 @@ public class MessagePacket : IPacket
     public Vector3 Position { get; set; } = Vector3.Zero;
     public string Zone { get; set; } = string.Empty;
     public long ZoneOwner { get; set; }
-    
+
     public void Parse(Dictionary<object, object> data)
     {
         Message = data.GetString("message");
@@ -22,7 +22,7 @@ public class MessagePacket : IPacket
         Zone = data.GetString("zone");
         ZoneOwner = data.GetInt("zone_owner");
     }
-    
+
     public Dictionary<object, object> ToDictionary()
     {
         return new Dictionary<object, object>

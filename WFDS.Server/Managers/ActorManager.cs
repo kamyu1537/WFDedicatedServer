@@ -1,10 +1,10 @@
 ﻿using System.Collections.Concurrent;
+using Steamworks;
 using WFDS.Godot.Types;
 using WFDS.Server.Common;
 using WFDS.Server.Common.Actor;
 using WFDS.Server.Common.Types;
 using WFDS.Server.Packets;
-using Steamworks;
 
 namespace WFDS.Server.Managers;
 
@@ -66,7 +66,7 @@ public sealed class ActorManager : IDisposable
             action(actor);
         }
     }
-    
+
     public void SelectOwnedActors(Action<IActor> action)
     {
         foreach (var actor in _owned.Values)
@@ -137,7 +137,7 @@ public sealed class ActorManager : IDisposable
     public bool CreatePlayerActor(SteamId playerId, long actorId, string name, out PlayerActor actor)
     {
         actor = null!;
-        
+
         if (!_id.Add(actorId))
         {
             _logger.LogError("actor id already exists");
@@ -204,13 +204,13 @@ public sealed class ActorManager : IDisposable
         }
 
         _id.Return(actorId);
-        
+
         var wipe = ActorActionPacket.CreateWipeActorPacket(actorId);
         _lobby.BroadcastPacket(NetChannel.ActorAction, wipe);
-        
+
         var queue = ActorActionPacket.CreateQueueFreePacket(actor.ActorId);
         _lobby.BroadcastPacket(NetChannel.ActorAction, queue);
-        
+
         if (actor.CreatorId.Value != SteamClient.SteamId.Value)
         {
             return;
@@ -223,7 +223,7 @@ public sealed class ActorManager : IDisposable
     {
         return _owned.Values.Count(actor => actor.ActorType == actorType);
     }
-    
+
     private void RemoveActorFirstByType(string actorType)
     {
         var actor = _owned.Values.FirstOrDefault(a => a.ActorType == actorType);
@@ -257,7 +257,7 @@ public sealed class ActorManager : IDisposable
         {
             _logger.LogError("bird count is over");
         }
-        
+
         var bird = CreateHostActor("ambient_bird", pos);
         bird.Decay = true;
         bird.DecayTimer = 600; // default?
@@ -278,7 +278,7 @@ public sealed class ActorManager : IDisposable
         {
             RemoveActorFirstByType(type);
         }
-        
+
         var fish = CreateHostActor(type, pos);
         fish.Decay = true;
         fish.DecayTimer = type == "fish_spawn_alien" ? 4800 : 14400;
@@ -384,7 +384,7 @@ public sealed class ActorManager : IDisposable
         {
             return;
         }
-        
+
         action(player);
     }
 

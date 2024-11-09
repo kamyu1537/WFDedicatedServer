@@ -8,7 +8,7 @@ public enum NetChannels
     Chalk,
     Guitar,
     ActorAnimation,
-    Speech,
+    Speech
 }
 
 public class NetChannel
@@ -20,16 +20,16 @@ public class NetChannel
     public static NetChannel Guitar { get; } = new(NetChannels.Guitar, "guitar");
     public static NetChannel ActorAnimation { get; } = new(NetChannels.ActorAnimation, "actor_animation");
     public static NetChannel Speech { get; } = new(NetChannels.Speech, "speech");
-    
+
     public int Value { get; }
     public string Name { get; }
-    
+
     private NetChannel(NetChannels type, string name)
     {
         Value = (int)type;
         Name = name;
     }
-    
+
     public override string ToString()
     {
         return Name;

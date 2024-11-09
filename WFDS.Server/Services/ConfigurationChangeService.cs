@@ -10,7 +10,7 @@ public class ConfigurationChangeService(
 {
     private IDisposable? _reloadToken;
     private bool _disposed;
-    
+
     public Task StartAsync(CancellationToken cancellationToken)
     {
         RegisterConfigurationChangeCallback();
@@ -27,16 +27,16 @@ public class ConfigurationChangeService(
     {
         _reloadToken?.Dispose();
         _disposed = true;
-        
+
         _reloadToken = configuration.GetReloadToken().RegisterChangeCallback(OnConfigurationChange, null);
     }
-    
+
     private void OnConfigurationChange(object? obj)
     {
         if (!_disposed) return;
         _disposed = false;
         RegisterConfigurationChangeCallback();
-        
+
         var section = configuration.GetSection("Server");
         var setting = section.Get<ServerSetting>();
 
@@ -45,7 +45,7 @@ public class ConfigurationChangeService(
             logger.LogError("failed to load server settings");
             return;
         }
-        
+
         logger.LogInformation("reload banned players list: {Array}", string.Join(',', setting.BannedPlayers));
         lobby.BanPlayers(setting.BannedPlayers);
     }

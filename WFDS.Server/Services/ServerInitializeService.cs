@@ -1,7 +1,6 @@
-using WFDS.Server.Common;
-using WFDS.Server.Managers;
 using Microsoft.Extensions.Options;
 using Steamworks;
+using WFDS.Server.Managers;
 
 namespace WFDS.Server.Services;
 
@@ -21,7 +20,7 @@ public class ServerInitializeService(
         SteamNetworking.AllowP2PPacketRelay(true);
 
         map.LoadSpawnPoints();
-        
+
         lobby.CreateLobby(
             settings.Value.ServerName,
             settings.Value.RoomCode,

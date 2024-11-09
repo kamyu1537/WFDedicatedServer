@@ -1,13 +1,13 @@
-﻿using WFDS.Server.Common;
+﻿using Steamworks;
+using WFDS.Server.Common;
 using WFDS.Server.Common.Extensions;
-using Steamworks;
 
 namespace WFDS.Server.Packets;
 
 public class RequestPingPacket : IPacket
 {
     public SteamId Sender { get; set; } = 0;
-    
+
     public void Parse(Dictionary<object, object> data)
     {
         Sender = data.GetParseULong("sender");
@@ -18,7 +18,7 @@ public class RequestPingPacket : IPacket
         return new Dictionary<object, object>
         {
             ["type"] = "request_ping",
-            ["sender"] = Sender.Value.ToString(),
+            ["sender"] = Sender.Value.ToString()
         };
     }
 }

@@ -18,7 +18,7 @@ public class LetterReceivedPacket : IPacket
     {
         LatterId = data.GetNumber("letter_id");
         To = data.GetString("to");
-        
+
         var dic = data.GetObjectDictionary("data");
         From = dic.GetString("from");
         Header = dic.GetString("header");

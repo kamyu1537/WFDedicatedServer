@@ -30,7 +30,7 @@ public class ActorActionPacket : IPacket
             ["params"] = Params
         };
     }
-    
+
     public static ActorActionPacket CreateWipeActorPacket(long actorId)
     {
         return new ActorActionPacket

@@ -6,7 +6,7 @@ namespace WFDS.Server.Packets;
 public class HandshakePacket : IPacket
 {
     public string UserId { get; set; } = string.Empty;
-    
+
     public void Parse(Dictionary<object, object> data)
     {
         UserId = data.GetString("user_id");

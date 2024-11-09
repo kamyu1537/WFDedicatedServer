@@ -1,7 +1,7 @@
-﻿using WFDS.Server.Common;
+﻿using Steamworks;
+using WFDS.Server.Common;
 using WFDS.Server.Managers;
 using WFDS.Server.Packets;
-using Steamworks;
 
 namespace WFDS.Server.Services;
 
@@ -27,7 +27,7 @@ public class RequestPingScheduleService(LobbyManager lobbyManager) : IHostedServ
     {
         lobbyManager.BroadcastPacket(NetChannel.GameState, new RequestPingPacket
         {
-            Sender = SteamClient.SteamId,
+            Sender = SteamClient.SteamId
         });
     }
 }

@@ -1,5 +1,4 @@
-﻿using System.Drawing;
-using WFDS.Server.Common;
+﻿using WFDS.Server.Common;
 using WFDS.Server.Packets;
 
 namespace WFDS.Server.Handlers;

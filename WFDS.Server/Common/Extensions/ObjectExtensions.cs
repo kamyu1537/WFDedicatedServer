@@ -11,7 +11,7 @@ public static class ObjectExtensions
             _ => 0
         };
     }
-    
+
     public static string GetString(this object obj)
     {
         return obj switch

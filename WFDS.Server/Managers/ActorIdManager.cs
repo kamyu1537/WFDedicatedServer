@@ -21,7 +21,7 @@ public class ActorIdManager
             return _ids.Remove(id);
         }
     }
-    
+
     public long Next()
     {
         lock (_lock)
@@ -31,7 +31,7 @@ public class ActorIdManager
             {
                 id = _random.Next();
             } while (_ids.Contains(id));
-            
+
             _ids.Add(id);
             return id;
         }

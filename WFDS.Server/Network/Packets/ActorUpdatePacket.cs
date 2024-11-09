@@ -11,7 +11,7 @@ public class ActorUpdatePacket : IPacket
     public long ActorId { get; set; }
     public Vector3 Position { get; set; } = Vector3.Zero;
     public Vector3 Rotation { get; set; } = Vector3.Zero;
-    
+
     public void Parse(Dictionary<object, object> data)
     {
         ActorId = data.GetNumber("actor_id");
@@ -39,21 +39,21 @@ public static class ActorUpdatePacketExtensions
         {
             ActorId = actor.ActorId,
             Position = actor.Position,
-            Rotation = actor.Rotation,
+            Rotation = actor.Rotation
         };
-        
+
         lobby.BroadcastPacket(NetChannel.ActorUpdate, packet);
     }
-    
+
     public static void SendActorUpdate(this IActor actor, Session target)
     {
         var packet = new ActorUpdatePacket
         {
             ActorId = actor.ActorId,
             Position = actor.Position,
-            Rotation = actor.Rotation,
+            Rotation = actor.Rotation
         };
-        
+
         target.Send(NetChannel.ActorUpdate, packet);
     }
 }

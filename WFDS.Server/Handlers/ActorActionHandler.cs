@@ -14,7 +14,7 @@ public class ActorActionHandler : PacketHandler
         packet.Parse(data);
 
         Logger.LogInformation("received actor_action from {Name}[{SteamId}] for actor {ActorId} : {Action} / {Data}", sender.Friend.Name, sender.SteamId, packet.ActorId, packet.Action, JsonSerializer.Serialize(packet.Params));
-        
+
         switch (packet.Action)
         {
             case "queue_free":
@@ -36,7 +36,7 @@ public class ActorActionHandler : PacketHandler
             Logger.LogError("invalid queue_free packet from {Name}[{SteamId}] : {Data}", sender.Friend.Name, sender.SteamId, JsonSerializer.Serialize(packet.Params));
             return;
         }
-        
+
         ActorManager.SelectActor(packet.ActorId, actor =>
         {
             if (actor.CreatorId == sender.SteamId)
@@ -45,7 +45,7 @@ public class ActorActionHandler : PacketHandler
             }
         });
     }
-    
+
     private void WipeActor(Session sender, ActorActionPacket packet)
     {
         if (packet.Params.Count != 1)
@@ -53,10 +53,10 @@ public class ActorActionHandler : PacketHandler
             Logger.LogError("invalid _wipe_actor packet from {Name}[{SteamId}] : {Data}", sender.Friend.Name, sender.SteamId, JsonSerializer.Serialize(packet.Params));
             return;
         }
-        
+
         var param = packet.Params[0];
         var actorId = param.GetNumber();
-                
+
         ActorManager.SelectActor(actorId, actor =>
         {
             if (actor.CreatorId == sender.SteamId)
@@ -73,7 +73,7 @@ public class ActorActionHandler : PacketHandler
             Logger.LogError("invalid _set_zone packet from {Name}[{SteamId}] : {Data}", sender.Friend.Name, sender.SteamId, JsonSerializer.Serialize(packet.Params));
             return;
         }
-        
+
         var zone = packet.Params[0].GetString();
         var zoneOwner = packet.Params[1].GetNumber();
 
@@ -82,7 +82,7 @@ public class ActorActionHandler : PacketHandler
             Logger.LogError("actor not created for {Name}[{SteamId}]", sender.Friend.Name, sender.SteamId);
             return;
         }
-        
+
         var actor = sender.Actor;
         actor.Zone = zone;
         actor.ZoneOwner = zoneOwner;

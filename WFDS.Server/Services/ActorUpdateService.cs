@@ -1,7 +1,7 @@
-﻿using WFDS.Server.Common.Actor;
+﻿using Steamworks;
+using WFDS.Server.Common.Actor;
 using WFDS.Server.Managers;
 using WFDS.Server.Packets;
-using Steamworks;
 
 namespace WFDS.Server.Services;
 
@@ -28,12 +28,12 @@ public class ActorUpdateService(ILogger<ActorUpdateService> logger, ActorManager
         manager.SelectActors(actor =>
         {
             if (Decay(actor)) return;
-            
+
             actor.OnUpdate(delta);
 
             if (!actor.IsActorUpdated) return;
             if (actor.CreatorId != SteamClient.SteamId) return;
-                
+
             actor.IsActorUpdated = false;
             actor.SendActorUpdate(lobby);
         });

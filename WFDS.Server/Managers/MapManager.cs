@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using System.Text.Json;
 using WFDS.Godot.Types;
 using WFDS.Server.Common.Extensions;
 using WFDS.Server.Common.Types;
@@ -8,12 +9,12 @@ namespace WFDS.Server.Managers;
 public class MapManager(ILogger<MapManager> logger)
 {
     private const string MapPath = "Resources/main_zone.tscn";
-    
+
     public readonly List<PositionNode> FishSpawnPoints = [];
     public readonly List<PositionNode> TrashPoints = [];
     public readonly List<PositionNode> ShorelinePoints = [];
     public readonly List<PositionNode> HiddenSpots = [];
-    
+
 
     public void LoadSpawnPoints()
     {
@@ -28,7 +29,7 @@ public class MapManager(ILogger<MapManager> logger)
             .Where(x => x != null)
             .Select(x => x!)
             .ToArray();
-        
+
         FishSpawnPoints.Clear();
         TrashPoints.Clear();
         ShorelinePoints.Clear();
@@ -111,13 +112,13 @@ public class MapManager(ILogger<MapManager> logger)
             object? value;
             if (key == "groups")
             {
-                value = System.Text.Json.JsonSerializer.Deserialize<string[]>(string.Join('=', propertySplit.Skip(1)));    
+                value = JsonSerializer.Deserialize<string[]>(string.Join('=', propertySplit.Skip(1)));
             }
             else
             {
-                value = System.Text.Json.JsonSerializer.Deserialize<string>(string.Join('=', propertySplit.Skip(1)));    
+                value = JsonSerializer.Deserialize<string>(string.Join('=', propertySplit.Skip(1)));
             }
-            
+
 
             properties.Add(key, value!);
         }

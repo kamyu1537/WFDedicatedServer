@@ -1,7 +1,8 @@
 ﻿using System.Reflection;
+using System.Text.Json;
+using Steamworks;
 using WFDS.Server.Common;
 using WFDS.Server.Managers;
-using Steamworks;
 
 namespace WFDS.Server.Services;
 
@@ -27,11 +28,11 @@ public class PacketHandler
             .Where(x => x is { Item1: not null, Item2: not null })
             .Select(x => (x.Item1!.PacketType, x.Item2!))
             .Select(x => (x.Item1, x.Item2.Initialize(
-                x.Item1, 
+                x.Item1,
                 lobbyManager,
-                actorManager, 
+                actorManager,
                 loggerFactory.CreateLogger(x.Item2.GetType().Name
-            )))).ToDictionary(x => x.Item1, x => x.Item2);
+                )))).ToDictionary(x => x.Item1, x => x.Item2);
     }
 
 
@@ -73,8 +74,8 @@ public class PacketHandler
         {
             return;
         }
-        
-        var json = System.Text.Json.JsonSerializer.Serialize(data);
+
+        var json = JsonSerializer.Serialize(data);
         _logger.LogDebug("received packet from {Sender} on channel {Channel} : {Data}", sender, channel, json);
     }
 }

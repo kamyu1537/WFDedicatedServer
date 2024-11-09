@@ -2,7 +2,6 @@
 using WFDS.Server.Common;
 using WFDS.Server.Common.Actor;
 using WFDS.Server.Common.Extensions;
-using WFDS.Server.Common.Types;
 using WFDS.Server.Managers;
 
 namespace WFDS.Server.Packets;
@@ -12,10 +11,10 @@ public class InstanceActorPacket : IPacket
     public string ActorType { get; set; } = string.Empty;
     public long ActorId { get; set; }
     public long CreatorId { get; set; }
-    
+
     public string Zone { get; set; } = string.Empty;
     public long ZoneOwner { get; set; }
-    
+
     public Vector3 Position { get; set; } = Vector3.Zero;
     public Vector3 Rotation { get; set; } = Vector3.Zero;
 
@@ -23,7 +22,7 @@ public class InstanceActorPacket : IPacket
     {
         var param = data.GetObjectDictionary("params");
 
-        ActorType = param.GetString("actor_type");        
+        ActorType = param.GetString("actor_type");
         ActorId = param.GetNumber("actor_id");
         CreatorId = param.GetLong("creator_id");
 
@@ -70,12 +69,12 @@ public static class InstanceActorExtensions
             Rotation = actor.Rotation
         };
     }
-    
+
     public static void SendInstanceActor(this IActor actor, LobbyManager lobby)
     {
         lobby.BroadcastPacket(NetChannel.GameState, actor.ToPacket());
     }
-    
+
     public static void SendInstanceActor(this IActor actor, Session target)
     {
         target.Send(NetChannel.GameState, actor.ToPacket());

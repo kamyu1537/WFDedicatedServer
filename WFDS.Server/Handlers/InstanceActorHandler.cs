@@ -19,7 +19,7 @@ public class InstanceActorHandler : PacketHandler
                 Logger.LogError("player actor already exists for {SteamId}", sender.SteamId);
                 return;
             }
-            
+
             var created = ActorManager.CreatePlayerActor(sender.SteamId, packet.ActorId, sender.Friend.Name, out var actor);
             if (!created)
             {
