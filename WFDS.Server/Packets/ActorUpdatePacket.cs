@@ -43,7 +43,7 @@ public static class ActorUpdatePacketExtensions
             Rotation = actor.Rotation
         };
 
-        lobby.BroadcastPacket(NetChannel.ActorUpdate, packet, actor.Zone);
+        lobby.BroadcastPacket(NetChannel.ActorUpdate, packet, actor.Zone, actor.ZoneOwner);
     }
 
     public static void SendUpdatePacket(this IActor actor, Session target)
@@ -55,6 +55,6 @@ public static class ActorUpdatePacketExtensions
             Rotation = actor.Rotation
         };
 
-        target.SendPacket(NetChannel.ActorUpdate, packet, actor.Zone);
+        target.SendPacket(NetChannel.ActorUpdate, packet, actor.Zone, actor.ZoneOwner);
     }
 }
