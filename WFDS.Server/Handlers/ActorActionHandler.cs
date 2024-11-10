@@ -9,11 +9,10 @@ namespace WFDS.Server.Handlers;
 [PacketType("actor_action")]
 public class ActorActionHandler : PacketHandler
 {
-    private static readonly string[] Actions =
+    private static readonly string[] AllowedActions =
     [
         "queue_free",
         "_wipe_actor",
-        "_activate",
         "_set_zone"
     ];
 
@@ -22,7 +21,7 @@ public class ActorActionHandler : PacketHandler
         var packet = new ActorActionPacket();
         packet.Parse(data);
 
-        if (!Actions.Contains(packet.Action))
+        if (!AllowedActions.Contains(packet.Action))
         {
             // Logger.LogInformation("received actor_action from {Name}[{SteamId}] for actor {ActorId} : {Action} / {Data}", sender.Friend.Name, sender.SteamId, packet.ActorId, packet.Action, JsonSerializer.Serialize(packet.Params));
             return;

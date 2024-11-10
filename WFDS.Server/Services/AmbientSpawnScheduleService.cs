@@ -4,13 +4,13 @@ namespace WFDS.Server.Services;
 
 public class AmbientSpawnScheduleService(ActorManager actor, LobbyManager lobby) : IHostedService
 {
-    private static readonly TimeSpan Period = TimeSpan.FromSeconds(10);
+    private static readonly TimeSpan AmbientSpawnTimeoutPeriod = TimeSpan.FromSeconds(10);
     private readonly Random _random = new();
     private Timer? _timer;
 
     public Task StartAsync(CancellationToken cancellationToken)
     {
-        _timer = new Timer(DoWork, null, TimeSpan.Zero, Period);
+        _timer = new Timer(DoWork, null, TimeSpan.Zero, AmbientSpawnTimeoutPeriod);
         return Task.CompletedTask;
     }
 

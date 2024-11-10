@@ -9,7 +9,7 @@ public class HostSpawnScheduleService(ILogger<HostSpawnScheduleService> logger, 
     private const int DefaultAlienCooldown = 6;
     private const int ResetAlienCooldown = 16;
 
-    private static readonly TimeSpan Period = TimeSpan.FromSeconds(10);
+    private static readonly TimeSpan HostSpawnTimeoutPeriod = TimeSpan.FromSeconds(10);
     private readonly Random _random = new();
     private Timer? _timer;
 
@@ -20,7 +20,7 @@ public class HostSpawnScheduleService(ILogger<HostSpawnScheduleService> logger, 
     {
         _rainChance = _random.NextSingle() * 0.02f;
 
-        _timer = new Timer(DoWork, null, TimeSpan.Zero, Period);
+        _timer = new Timer(DoWork, null, TimeSpan.Zero, HostSpawnTimeoutPeriod);
         return Task.CompletedTask;
     }
 

@@ -4,12 +4,12 @@ namespace WFDS.Server.Services;
 
 public class LobbyUpdateScheduleService(LobbyManager lobby) : IHostedService
 {
-    private static readonly TimeSpan RepeatTime = TimeSpan.FromSeconds(30);
+    private static readonly TimeSpan LobbyUpdateTimeoutPeriod = TimeSpan.FromSeconds(30);
     private Timer? _timer;
 
     public Task StartAsync(CancellationToken cancellationToken)
     {
-        _timer = new Timer(DoWork, null, TimeSpan.Zero, RepeatTime);
+        _timer = new Timer(DoWork, null, TimeSpan.Zero, LobbyUpdateTimeoutPeriod);
         return Task.CompletedTask;
     }
 

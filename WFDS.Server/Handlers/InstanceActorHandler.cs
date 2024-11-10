@@ -17,7 +17,7 @@ public class InstanceActorHandler : PacketHandler
         else CreateRemoteActor(sender, packet);
     }
     
-    private static readonly string[] HostActors =
+    private static readonly string[] OnlyHostActors =
     [
         "fish_spawn",
         "fish_spawn_alien",
@@ -29,7 +29,7 @@ public class InstanceActorHandler : PacketHandler
 
     private static bool IsHostActor(InstanceActorPacket packet)
     {
-        return HostActors.Contains(packet.ActorType);
+        return OnlyHostActors.Contains(packet.ActorType);
     }
 
     private void CreateRemoteActor(Session sender, InstanceActorPacket packet)

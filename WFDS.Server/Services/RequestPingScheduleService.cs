@@ -7,12 +7,12 @@ namespace WFDS.Server.Services;
 
 public class RequestPingScheduleService(LobbyManager lobbyManager) : IHostedService
 {
-    private static readonly TimeSpan RepeatTime = TimeSpan.FromSeconds(8);
+    private static readonly TimeSpan RequestPingTimeoutPeriod = TimeSpan.FromSeconds(8);
     private Timer? _timer;
 
     public Task StartAsync(CancellationToken cancellationToken)
     {
-        _timer = new Timer(DoWork, null, TimeSpan.Zero, RepeatTime);
+        _timer = new Timer(DoWork, null, TimeSpan.Zero, RequestPingTimeoutPeriod);
         return Task.CompletedTask;
     }
 

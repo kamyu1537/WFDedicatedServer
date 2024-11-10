@@ -4,12 +4,12 @@ namespace WFDS.Server.Services;
 
 public class MetalSpawnScheduleService(ILogger<MetalSpawnScheduleService> logger, ActorManager actor, LobbyManager lobby) : IHostedService
 {
-    private static readonly TimeSpan Period = TimeSpan.FromSeconds(20);
+    private static readonly TimeSpan MetalSpawnTimeoutPeriod = TimeSpan.FromSeconds(20);
     private Timer? _timer;
 
     public Task StartAsync(CancellationToken cancellationToken)
     {
-        _timer = new Timer(DoWork, null, TimeSpan.Zero, Period);
+        _timer = new Timer(DoWork, null, TimeSpan.Zero, MetalSpawnTimeoutPeriod);
         return Task.CompletedTask;
     }
 
