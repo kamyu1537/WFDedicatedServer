@@ -1,4 +1,5 @@
 ﻿using Steamworks;
+using WFDS.Common.Types;
 using WFDS.Godot.Types;
 
 namespace WFDS.Server.Common.Actor;
@@ -22,6 +23,10 @@ public interface IActor
     long ActorUpdateCooldown { get; set; }
 
     void OnCreated();
-    void OnRemoved();
+    void OnRemoved(ActorRemoveTypes type);
     void OnUpdate(double delta);
+    void OnCosmeticsUpdated(Cosmetics cosmetics);
+    void OnHeldItemUpdated(GameItem item);
+    void OnZoneUpdated(string zone, long zoneOwner);
+    void OnActorUpdated(Vector3 position, Vector3 rotation);
 }

@@ -1,4 +1,5 @@
-﻿using WFDS.Server.Network;
+﻿using WFDS.Common.Types;
+using WFDS.Server.Network;
 
 namespace WFDS.Server.Packets;
 

@@ -20,4 +20,9 @@ public static class ObjectExtensions
             _ => string.Empty
         };
     }
+    
+    public static Dictionary<object, object> GetObjectDictionary(this object obj)
+    {
+        return obj is Dictionary<object, object> dic ? dic : new Dictionary<object, object>();
+    }
 }

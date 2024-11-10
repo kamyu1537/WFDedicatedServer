@@ -1,6 +1,7 @@
 ﻿using System.Collections.Concurrent;
 using System.Collections.Immutable;
 using Steamworks;
+using WFDS.Common.Types;
 using WFDS.Godot.Types;
 using WFDS.Server.Common;
 using WFDS.Server.Common.Actor;
@@ -76,13 +77,12 @@ public sealed class ActorManager(
     private bool AddActorAndPropagate(IActor actor)
     {
         logger.LogInformation("try add actor {ActorId} {ActorType} - {Position}", actor.ActorId, actor.ActorType, actor.Position);
-
-        actor.OnCreated();
         if (!_actors.TryAdd(actor.ActorId, actor))
         {
             return false;
         }
-
+        
+        actor.OnCreated();
         if (actor is PlayerActor player)
         {
             if (!_players.TryAdd(player.CreatorId, player))
@@ -216,7 +216,7 @@ public sealed class ActorManager(
         action(player);
     }
 
-    public void RemoveActor(long actorId)
+    public void RemoveActor(long actorId, ActorRemoveTypes removeType = ActorRemoveTypes.None)
     {
         if (!_actors.TryRemove(actorId, out var actor))
         {
@@ -228,7 +228,7 @@ public sealed class ActorManager(
             logger.LogError("player not found {SteamId}", actor.CreatorId);
         }
 
-        actor.OnRemoved();
+        actor.OnRemoved(removeType);
         id.Return(actorId);
 
         var wipe = ActorActionPacket.CreateWipeActorPacket(actorId);
@@ -253,7 +253,7 @@ public sealed class ActorManager(
         return _owned.Values.Count(actor => actor.ActorType == actorType);
     }
 
-    public void RemoveActorFirstByType(string actorType)
+    public void RemoveActorFirstByType(string actorType, ActorRemoveTypes removeType = ActorRemoveTypes.None)
     {
         var actor = _owned.Values.FirstOrDefault(a => a.ActorType == actorType);
         if (actor == null)
@@ -261,7 +261,7 @@ public sealed class ActorManager(
             return;
         }
 
-        RemoveActor(actor.ActorId);
+        RemoveActor(actor.ActorId, removeType);
     }
 
     public void SpawnAmbientBirdActor()
@@ -284,7 +284,7 @@ public sealed class ActorManager(
         var actorCount = GetActorCountByType("ambient_bird");
         if (actorCount >= 10)
         {
-            RemoveActorFirstByType("ambient_bird");
+            RemoveActorFirstByType("ambient_bird", ActorRemoveTypes.ActorCountOver);
         }
 
         if (TryCreateHostActor<AmbientBirdActor>(pos, out var bird))
@@ -304,7 +304,7 @@ public sealed class ActorManager(
         var actorCount = GetActorCountByType("fish_spawn");
         if (actorCount >= 7)
         {
-            RemoveActorFirstByType("fish_spawn");
+            RemoveActorFirstByType("fish_spawn", ActorRemoveTypes.ActorCountOver);
         }
 
         return TryCreateHostActor<FishSpawnActor>(pos, out var fish) ? fish : null;
@@ -321,7 +321,7 @@ public sealed class ActorManager(
         var actorCount = GetActorCountByType("fish_spawn_alien");
         if (actorCount >= 7)
         {
-            RemoveActorFirstByType("fish_spawn_alien");
+            RemoveActorFirstByType("fish_spawn_alien", ActorRemoveTypes.ActorCountOver);
         }
 
         return TryCreateHostActor<FishSpawnAlienActor>(pos, out var fish) ? fish : null;

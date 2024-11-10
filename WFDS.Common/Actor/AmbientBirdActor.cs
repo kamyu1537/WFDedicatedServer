@@ -1,4 +1,5 @@
 ﻿using Steamworks;
+using WFDS.Common.Types;
 using WFDS.Godot.Types;
 
 namespace WFDS.Server.Common.Actor;
@@ -25,11 +26,27 @@ public class AmbientBirdActor : IActor
     {
     }
 
-    public void OnRemoved()
+    public void OnRemoved(ActorRemoveTypes type)
     {
     }
 
     public void OnUpdate(double delta)
+    {
+    }
+
+    public void OnCosmeticsUpdated(Cosmetics cosmetics)
+    {
+    }
+
+    public void OnHeldItemUpdated(GameItem item)
+    {
+    }
+
+    public void OnZoneUpdated(string zone, long zoneOwner)
+    {
+    }
+
+    public void OnActorUpdated(Vector3 position, Vector3 rotation)
     {
     }
 }

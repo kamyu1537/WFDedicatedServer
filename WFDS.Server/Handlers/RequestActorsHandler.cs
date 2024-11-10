@@ -1,5 +1,5 @@
-﻿using WFDS.Server.Common;
-using WFDS.Server.Common.Actor;
+﻿using WFDS.Common.Types;
+using WFDS.Server.Common;
 using WFDS.Server.Network;
 using WFDS.Server.Packets;
 
@@ -13,7 +13,7 @@ public class RequestActorsHandler : PacketHandler
         Logger.LogInformation("received request_actors from {Sender} on channel {Channel}", sender.SteamId, channel);
 
         var packet = new ActorRequestSendPacket();
-        ActorManager.SelectOwnedActors(actor => packet.Actors.Add(new ActorSavedData(actor.ActorType, actor.ActorId, (long)actor.CreatorId.Value)));
+        ActorManager.SelectOwnedActors(actor => packet.Actors.Add(ActorReplicationData.FromActor(actor)));
         sender.SendPacket(NetChannel.GameState, packet);
         
         // update all actors

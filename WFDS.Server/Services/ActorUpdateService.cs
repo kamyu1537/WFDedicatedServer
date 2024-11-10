@@ -1,4 +1,5 @@
 ﻿using Steamworks;
+using WFDS.Common.Types;
 using WFDS.Server.Common.Actor;
 using WFDS.Server.Managers;
 
@@ -42,7 +43,7 @@ public class ActorUpdateService(ILogger<ActorUpdateService> logger, ActorManager
             {
                 actor.IsDeadActor = true;
                 logger.LogInformation("remove actor {ActorId} {ActorType} (owner not found)", actor.ActorId, actor.ActorType);
-                manager.RemoveActor(actor.ActorId);
+                manager.RemoveActor(actor.ActorId, ActorRemoveTypes.OwnerNotFound);
             }
 
             return false;
@@ -55,7 +56,7 @@ public class ActorUpdateService(ILogger<ActorUpdateService> logger, ActorManager
         {
             actor.IsDeadActor = true;
             logger.LogInformation("decay actor {ActorId} {ActorType}", actor.ActorId, actor.ActorType);
-            manager.RemoveActor(actor.ActorId);
+            manager.RemoveActor(actor.ActorId, ActorRemoveTypes.Decay);
             return true;
         }
 

@@ -1,4 +1,5 @@
 ﻿using System.Text.Json;
+using WFDS.Common.Types;
 using WFDS.Server.Common;
 using WFDS.Server.Common.Extensions;
 using WFDS.Server.Network;
@@ -13,7 +14,9 @@ public class ActorActionHandler : PacketHandler
     [
         "queue_free",
         "_wipe_actor",
-        "_set_zone"
+        "_set_zone",
+        "_update_cosmetics",
+        "_update_held_item"
     ];
 
     public override void HandlePacket(Session sender, NetChannel channel, Dictionary<object, object> data)
@@ -40,6 +43,12 @@ public class ActorActionHandler : PacketHandler
             case "_set_zone":
                 SetZone(sender, packet);
                 break;
+            case "_update_cosmetics":
+                UpdateCosmetics(sender, packet);
+                break;
+            case "_update_held_item":
+                UpdateHeldItem(sender, packet);
+                break;
         }
     }
 
@@ -55,7 +64,7 @@ public class ActorActionHandler : PacketHandler
         {
             if (actor.CreatorId == sender.SteamId)
             {
-                ActorManager.RemoveActor(packet.ActorId);
+                ActorManager.RemoveActor(packet.ActorId, ActorRemoveTypes.QueueFree);
             }
         });
     }
@@ -75,7 +84,7 @@ public class ActorActionHandler : PacketHandler
         {
             if (actor.CreatorId == sender.SteamId)
             {
-                ActorManager.RemoveActor(actorId);
+                ActorManager.RemoveActor(actorId, ActorRemoveTypes.WipeActor);
             }
         });
 
@@ -83,7 +92,7 @@ public class ActorActionHandler : PacketHandler
         {
             if (actor.CreatorId == sender.SteamId)
             {
-                ActorManager.RemoveActor(actorId);
+                ActorManager.RemoveActor(actorId, ActorRemoveTypes.WipeActor);
             }
         });
     }
@@ -110,8 +119,47 @@ public class ActorActionHandler : PacketHandler
             var zone = packet.Params[0].GetString();
             var zoneOwner = packet.Params[1].GetNumber();
 
-            actor.Zone = zone;
-            actor.ZoneOwner = zoneOwner;
+            actor.OnZoneUpdated(zone, zoneOwner);
+        });
+    }
+
+    private void UpdateCosmetics(Session sender, ActorActionPacket packet)
+    {
+        if (packet.Params.Count != 1)
+        {
+            Logger.LogError("invalid _update_cosmetics packet from {Name}[{SteamId}] : {Data}", sender.Friend.Name, sender.SteamId, JsonSerializer.Serialize(packet.Params));
+            return;
+        }
+
+        ActorManager.SelectActor(packet.ActorId, actor =>
+        {
+            if (actor.CreatorId != sender.SteamId)
+                return;
+
+            var dic = packet.Params[0].GetObjectDictionary();
+            var cosmetics = new Cosmetics();
+            cosmetics.Parse(dic);
+            actor.OnCosmeticsUpdated(cosmetics);
+        });
+    }
+
+    private void UpdateHeldItem(Session sender, ActorActionPacket packet)
+    {
+        if (packet.Params.Count != 1)
+        {
+            Logger.LogError("invalid _update_held_item packet from {Name}[{SteamId}] : {Data}", sender.Friend.Name, sender.SteamId, JsonSerializer.Serialize(packet.Params));
+            return;
+        }
+
+        ActorManager.SelectActor(packet.ActorId, actor =>
+        {
+            if (actor.CreatorId != sender.SteamId)
+                return;
+
+            var dic = packet.Params[0].GetObjectDictionary();
+            var item = new GameItem();
+            item.Parse(dic);
+            actor.OnHeldItemUpdated(item);
         });
     }
 }
@@ -120,7 +168,7 @@ public class ActorActionHandler : PacketHandler
  * actor.queue_free()
  * actor._wipe_actor(number actor_id)
  * actor._set_zone(string current_zone, long current_zone_owner)
- * actor._change_id(Dictionary<object, object> data) - data: {"id": "empty", "ref": 0, "size": 1.0, "quality": QUALITY_NORMAL}
+ * actor._change_id(Dictionary<object, object> data) - data: {"id": "empty", "ref": 0, "size": 1.0, "quality": QUALITY_NORMAL} - 아쿠아리움
  *
  * actor._sync_create_bubble(string text) - chat bubble
  * actor._sync_level_bubble() - level up bubble
@@ -134,8 +182,8 @@ public class ActorActionHandler : PacketHandler
  *
  * actor._talk(string letter, float voice_pitch)
  * actor._face_emote(string emote)
- * actor._play_particle(string particle_id, Vector3 position, bool global)
- * actor._play_sfx(string sfx_id, Vector3 position, float pitch)
+ * actor._play_particle(string particle_id, Vector3 position, bool global) - maybe can call server
+ * actor._play_sfx(string sfx_id, Vector3 position, float pitch) - maybe can call server
  *
  * actor._update_cosmetics(new) - fallback{"species": "species_cat", "pattern": "pattern_none", "primary_color": "pcolor_white", "secondary_color": "scolor_tan", "hat": "hat_none", "undershirt": "shirt_none", "overshirt": "overshirt_none", "title": "title_rank_1", "bobber": "bobber_default", "eye": "eye_halfclosed", "nose": "nose_cat", "mouth": "mouth_default", "accessory": [], "tail": "tail_cat", "legs": "legs_none"}
  * actor._update_held_item(RawItem held_item) - fallback {"id": "empty_hand", "ref": 0, "size": 1.0, "quality": ITEM_QUALITIES.NORMAL, "tags": []}

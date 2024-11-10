@@ -1,4 +1,5 @@
 ﻿using Steamworks;
+using WFDS.Common.Types;
 using WFDS.Godot.Types;
 
 namespace WFDS.Server.Common.Actor;
@@ -18,16 +19,41 @@ public class PlayerActor : IActor
     public bool IsDeadActor { get; set; } = true;
     public long ActorUpdateDefaultCooldown => 0;
     public long ActorUpdateCooldown { get; set; }
+    
+    public GameItem HeldItem { get; set; } = GameItem.CreateDefault();
+    public Cosmetics Cosmetics { get; set; } = Cosmetics.CreateDefault();
 
     public void OnCreated()
     {
     }
     
-    public void OnRemoved()
+    public void OnRemoved(ActorRemoveTypes type)
     {
     }
 
     public void OnUpdate(double delta)
     {
+    }
+
+    public void OnCosmeticsUpdated(Cosmetics cosmetics)
+    {
+        Cosmetics = cosmetics;
+    }
+    
+    public void OnHeldItemUpdated(GameItem item)
+    {
+        HeldItem = item;
+    }
+
+    public void OnZoneUpdated(string zone, long zoneOwner)
+    {
+        Zone = zone;
+        ZoneOwner = zoneOwner;
+    }
+    
+    public void OnActorUpdated(Vector3 position, Vector3 rotation)
+    {
+        Position = position;
+        Rotation = rotation;
     }
 }

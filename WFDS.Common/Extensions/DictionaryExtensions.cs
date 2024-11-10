@@ -32,6 +32,14 @@ public static class DictionaryExtensions
 
         return value is int result ? result : 0;
     }
+    
+    public static float GetFloat(this Dictionary<object, object> dic, string key)
+    {
+        if (!dic.TryGetValue(key, out var value))
+            return 0;
+
+        return value is float result ? result : 0;
+    }
 
     public static long GetLong(this Dictionary<object, object> dic, string key)
     {

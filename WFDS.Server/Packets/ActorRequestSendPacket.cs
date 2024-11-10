@@ -1,11 +1,12 @@
-﻿using WFDS.Server.Common.Actor;
+﻿using WFDS.Common.Types;
+using WFDS.Server.Common.Actor;
 using WFDS.Server.Network;
 
 namespace WFDS.Server.Packets;
 
 public class ActorRequestSendPacket : IPacket
 {
-    public List<ActorSavedData> Actors { get; set; } = [];
+    public List<ActorReplicationData> Actors { get; set; } = [];
 
     public void Parse(Dictionary<object, object> data)
     {

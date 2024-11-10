@@ -1,6 +1,7 @@
 ﻿using System.Collections.Concurrent;
 using Steamworks;
 using Steamworks.Data;
+using WFDS.Common.Types;
 using WFDS.Godot.Binary;
 using WFDS.Server.Common;
 using WFDS.Server.Common.Helpers;

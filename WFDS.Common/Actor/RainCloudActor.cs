@@ -1,4 +1,5 @@
 ﻿using Steamworks;
+using WFDS.Common.Types;
 using WFDS.Godot.Types;
 
 namespace WFDS.Server.Common.Actor;
@@ -24,13 +25,11 @@ public class RainCloudActor : IActor
 
     public void OnCreated()
     {
-        CreateTime = DateTimeOffset.UtcNow;
-        
         var center = (Position - new Vector3(30, 40, -50)).Normalized();
         _direction = new Vector2(center.X, center.Z).Angle();
     }
     
-    public void OnRemoved()
+    public void OnRemoved(ActorRemoveTypes type)
     {
     }
 
@@ -38,5 +37,21 @@ public class RainCloudActor : IActor
     {
         var vel = new Vector2(1, 0).Rotate(_direction) * Speed;
         Position += new Vector3(vel.X, 0f, vel.X) * (float)delta;
+    }
+    
+    public void OnCosmeticsUpdated(Cosmetics cosmetics)
+    {
+    }
+
+    public void OnHeldItemUpdated(GameItem item)
+    {
+    }
+
+    public void OnZoneUpdated(string zone, long zoneOwner)
+    {
+    }
+
+    public void OnActorUpdated(Vector3 position, Vector3 rotation)
+    {
     }
 }

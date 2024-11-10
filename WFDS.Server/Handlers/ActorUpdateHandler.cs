@@ -14,8 +14,7 @@ public class ActorUpdateHandler : PacketHandler
 
         ActorManager.SelectActor(packet.ActorId, actor =>
         {
-            actor.Position = packet.Position;
-            actor.Rotation = packet.Rotation;
+            actor.OnActorUpdated(packet.Position, packet.Rotation);
         });
     }
 }
