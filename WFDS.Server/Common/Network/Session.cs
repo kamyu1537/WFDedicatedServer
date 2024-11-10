@@ -1,20 +1,22 @@
 ﻿using System.Collections.Concurrent;
-using System.Text.Json;
 using Steamworks;
-using WFDS.Godot.Binary;
 using WFDS.Godot.Types;
 using WFDS.Server.Common.Actor;
 using WFDS.Server.Common.Extensions;
-using WFDS.Server.Common.Helpers;
+using WFDS.Server.Common.Packet;
 using WFDS.Server.Managers;
 using WFDS.Server.Packets;
 using Color = System.Drawing.Color;
 
-namespace WFDS.Server.Common;
+namespace WFDS.Server.Common.Network;
 
-public class Session : ISession
+public sealed class Session : ISession, IDisposable
 {
     public LobbyManager LobbyManager { get; set; } = null!;
+    public ILogger Logger { get; set; } = null!;
+    
+    public bool Disposed { get; set; }
+
     public Friend Friend { get; set; }
     public SteamId SteamId { get; set; }
 
@@ -62,12 +64,62 @@ public class Session : ISession
             Items = []
         });
     }
-
-    public void ProcessPackets()
+    
+    public void Kick()
     {
+        ClearPacketQueue();
+        LobbyManager.KickPlayer(SteamId);
+        ProcessPackets();
+    }
+
+    public void Ban()
+    {
+        ClearPacketQueue();
+        LobbyManager.TempBanPlayer(SteamId);
+        ProcessPackets();
+    }
+
+    public void ServerClose()
+    {
+        ClearPacketQueue();
+        LobbyManager.ServerClose(SteamId);
+        ProcessPackets();
+    }
+
+    public void ProcessPacket()
+    {
+        if (Disposed) return;
+        
         if (Packets.TryDequeue(out var packet))
         {
             SteamNetworking.SendP2PPacket(SteamId, packet.Item2, nChannel: packet.Item1.Value);
         }
+    }
+    
+    private void ClearPacketQueue()
+    {
+        Packets.Clear();
+    }
+    
+    private void ProcessPackets()
+    {
+        if (Disposed) return;
+        
+        while (Packets.TryDequeue(out var packet))
+        {
+            SteamNetworking.SendP2PPacket(SteamId, packet.Item2, nChannel: packet.Item1.Value);
+        }
+    }
+
+    public void Dispose()
+    {
+        if (Disposed) return;
+        Disposed = true;
+        
+        Packets.Clear();
+
+        LobbyManager = null!;
+        Logger = null!;
+        Actor = null!;
     }
 }

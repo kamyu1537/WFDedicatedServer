@@ -1,4 +1,4 @@
-﻿namespace WFDS.Server.Common;
+﻿namespace WFDS.Server.Common.Packet;
 
 [AttributeUsage(AttributeTargets.Class, Inherited = false)]
 public class PacketTypeAttribute(string packetType) : Attribute

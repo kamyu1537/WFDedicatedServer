@@ -35,20 +35,27 @@ try
     builder.Services.AddSingleton<ActorManager>();
     builder.Services.AddSingleton<MapManager>();
 
-    builder.Services.AddHostedService<ServerInitializeService>();
+    // lobby
+    builder.Services.AddHostedService<MainWorker>();
     builder.Services.AddHostedService<ConfigurationChangeService>();
+    builder.Services.AddHostedService<LobbyUpdateScheduleService>();
+    
+    // packet
     builder.Services.AddHostedService<PacketProcessService>();
     builder.Services.AddHostedService<PacketSendService>();
-
+    
+    // spawn
     builder.Services.AddHostedService<HostSpawnScheduleService>();
     builder.Services.AddHostedService<AmbientSpawnScheduleService>();
     builder.Services.AddHostedService<RequestPingScheduleService>();
     builder.Services.AddHostedService<MetalSpawnScheduleService>();
+    
+    // actor
     builder.Services.AddHostedService<ActorUpdateService>();
-    builder.Services.AddHostedService<LobbyUpdateScheduleService>();
+    builder.Services.AddHostedService<ActorActionService>();
 
+    // server start
     var host = builder.Build();
-
     await host.RunAsync();
 }
 catch (Exception ex)

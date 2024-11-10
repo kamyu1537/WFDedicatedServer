@@ -1,4 +1,4 @@
-﻿namespace WFDS.Server.Common;
+﻿namespace WFDS.Server.Common.Packet;
 
 public interface IPacket
 {

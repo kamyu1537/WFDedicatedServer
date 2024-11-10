@@ -4,6 +4,8 @@ using Steamworks.Data;
 using WFDS.Godot.Binary;
 using WFDS.Server.Common;
 using WFDS.Server.Common.Helpers;
+using WFDS.Server.Common.Network;
+using WFDS.Server.Common.Packet;
 using WFDS.Server.Packets;
 
 namespace WFDS.Server.Managers;
@@ -16,6 +18,7 @@ public sealed class LobbyManager : IDisposable
     private const string GameVersion = "1.09";
 
     private readonly ILogger<LobbyManager> _logger;
+    private readonly ILoggerFactory _loggerFactory;
 
     private readonly HashSet<ulong> _banned = [];
     private readonly ConcurrentDictionary<ulong, Session> _sessions = [];
@@ -30,9 +33,10 @@ public sealed class LobbyManager : IDisposable
     private Lobby? _lobby;
     public string Code { get; private set; } = string.Empty;
 
-    public LobbyManager(ILogger<LobbyManager> logger)
+    public LobbyManager(ILogger<LobbyManager> logger, ILoggerFactory loggerFactory)
     {
         _logger = logger;
+        _loggerFactory = loggerFactory;
 
         SteamMatchmaking.OnLobbyCreated += OnLobbyCreated;
         SteamMatchmaking.OnLobbyMemberJoined += OnLobbyMemberJoined;
@@ -46,12 +50,8 @@ public sealed class LobbyManager : IDisposable
     {
         if (_lobby.HasValue)
         {
-            var lobby = _lobby.Value;
             _lobby = null;
             SetPublic(false);
-
-            BroadcastPacket(NetChannel.GameState, new ServerClosePacket());
-            lobby.Leave();
         }
 
         SteamMatchmaking.OnLobbyCreated -= OnLobbyCreated;
@@ -144,6 +144,40 @@ public sealed class LobbyManager : IDisposable
         }
     }
 
+    public async Task LeaveLobbyAsync()
+    {
+        if (_lobby.HasValue)
+        {
+            while (_sessions.Count > 0)
+            {
+                await Task.Delay(500);
+            }   
+        }
+        
+        _lobby?.Leave();
+    }
+    
+    public void ServerClose(SteamId target)
+    {
+        if (!_lobby.HasValue)
+        {
+            return;
+        }
+
+        if (target.Value == SteamClient.SteamId)
+        {
+            return;
+        }
+
+        SelectSession(target, session =>
+        {
+            _logger.LogInformation("try kick player: {SteamId}", target);
+            session.SendPacket(NetChannel.GameState, new ServerClosePacket());
+        });
+        
+        SteamNetworking.CloseP2PSessionWithUser(target);
+    }
+
     public void KickPlayer(SteamId target)
     {
         if (!_lobby.HasValue)
@@ -162,6 +196,8 @@ public sealed class LobbyManager : IDisposable
             _logger.LogInformation("try kick player: {SteamId}", target);
             session.SendPacket(NetChannel.GameState, new KickPacket());
         });
+        
+        SteamNetworking.CloseP2PSessionWithUser(target);
     }
 
     public void TempBanPlayer(SteamId target, bool update = true)
@@ -174,6 +210,8 @@ public sealed class LobbyManager : IDisposable
             _logger.LogInformation("try ban player: {SteamId}", target);
             session.SendPacket(NetChannel.GameState, new BanPacket());
         });
+        
+        SteamNetworking.CloseP2PSessionWithUser(target);
 
         if (update)
             UpdateBannedPlayers();
@@ -225,15 +263,14 @@ public sealed class LobbyManager : IDisposable
         }
     }
 
-    public bool SelectSession(SteamId target, Action<Session> action)
+    public void SelectSession(SteamId target, Action<Session> action)
     {
         if (!_sessions.TryGetValue(target.Value, out var session))
         {
-            return false;
+            return;
         }
 
         action(session);
-        return true;
     }
     
     private static bool IsInZone(Session session, string zone, long zoneOwner)
@@ -250,11 +287,11 @@ public sealed class LobbyManager : IDisposable
 
         return session.Actor.Zone == zone && (zoneOwner == -1 || session.Actor.ZoneOwner == zoneOwner);
     }
-
+    
     public void SendPacket(SteamId steamId, NetChannel channel, IPacket packet, string zone = "", long zoneOwner = -1)
     {
         var data = packet.ToDictionary();
-        SendPacket(steamId, channel, data, zone);
+        SendPacket(steamId, channel, data, zone, zoneOwner);
     }
 
     public void SendPacket(SteamId steamId, NetChannel channel, object data, string zone = "", long zoneOwner = -1)
@@ -311,6 +348,21 @@ public sealed class LobbyManager : IDisposable
         }
     }
 
+    private void RemoveSession(Friend member)
+    {
+        _logger.LogWarning("try remove session: {DisplayName} [{SteamId}]", member.Name, member.Id);
+        SteamNetworking.CloseP2PSessionWithUser(member.Id);
+        
+        if (!_sessions.TryRemove(member.Id.Value, out var session))
+        {
+            _logger.LogWarning("failed to remove session: {DisplayName} [{SteamId}]", member.Name, member.Id);
+            return;
+        }
+        
+        session.Dispose();
+        UpdateConsoleTitle();
+    }
+
     private void OnLobbyCreated(Result result, Lobby lobby)
     {
         if (result != Result.OK)
@@ -330,29 +382,41 @@ public sealed class LobbyManager : IDisposable
     {
         _logger.LogInformation("lobby member joined: {DisplayName} [{SteamId}]", member.Name, member.Id);
 
+        var logger = _loggerFactory.CreateLogger("session_" + member.Id);
         var session = new Session
         {
             LobbyManager = this,
+            Logger = logger,
             Friend = member,
             SteamId = member.Id,
             ConnectTime = DateTimeOffset.UtcNow
         };
 
-        _sessions.TryAdd(member.Id.Value, session);
+        if (!_sessions.TryAdd(member.Id.Value, session))
+        {
+            _logger.LogWarning("failed to add session: {DisplayName} [{SteamId}]", member.Name, member.Id);
+            session.Kick();
+            return;
+        }
+        
         UpdateConsoleTitle();
     }
 
     private void OnLobbyMemberLeave(Lobby lobby, Friend member)
     {
+        SteamNetworking.CloseP2PSessionWithUser(member.Id);
+        
         _logger.LogInformation("lobby member left: {DisplayName} [{SteamId}]", member.Name, member.Id);
-        _sessions.TryRemove(member.Id.Value, out _);
+        RemoveSession(member);
         UpdateConsoleTitle();
     }
 
     private void OnLobbyMemberDisconnected(Lobby lobby, Friend member)
     {
+        SteamNetworking.CloseP2PSessionWithUser(member.Id);
+        
         _logger.LogWarning("lobby member disconnected: {DisplayName} [{SteamId}]", member.Name, member.Id);
-        _sessions.TryRemove(member.Id.Value, out _);
+        RemoveSession(member);
         UpdateConsoleTitle();
     }
 

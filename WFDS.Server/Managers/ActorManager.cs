@@ -3,40 +3,36 @@ using Steamworks;
 using WFDS.Godot.Types;
 using WFDS.Server.Common;
 using WFDS.Server.Common.Actor;
+using WFDS.Server.Common.Network;
 using WFDS.Server.Common.Types;
 using WFDS.Server.Packets;
 
 namespace WFDS.Server.Managers;
 
-public sealed class ActorManager : IDisposable
+public sealed class ActorManager(
+    ILogger<ActorManager> logger,
+    MapManager map,
+    LobbyManager lobby,
+    ActorIdManager id)
+    : IDisposable
 {
     private const string Zone = "main_zone";
     private readonly Random _random = new();
-
-    private readonly ILogger<ActorManager> _logger;
-    private readonly MapManager _map;
-    private readonly LobbyManager _lobby;
-    private readonly ActorIdManager _id;
 
     private readonly ConcurrentDictionary<long, IActor> _owned = [];
     private readonly ConcurrentDictionary<long, IActor> _actors = [];
     private readonly ConcurrentDictionary<SteamId, PlayerActor> _players = [];
 
-    public ActorManager(
-        ILogger<ActorManager> logger,
-        MapManager map,
-        LobbyManager lobby,
-        ActorIdManager id
-    )
-    {
-        _logger = logger;
-        _map = map;
-        _lobby = lobby;
-        _id = id;
-    }
-
     public void Dispose()
     {
+        foreach (var actor in _actors.Values)
+        {
+            RemoveActor(actor.ActorId);
+        }
+        
+        _owned.Clear();
+        _actors.Clear();
+        _players.Clear();
     }
 
 
@@ -94,19 +90,19 @@ public sealed class ActorManager : IDisposable
         {
             if (!_players.TryAdd(actor.CreatorId, (PlayerActor)actor))
             {
-                _logger.LogError("player already exists");
+                logger.LogError("player already exists");
             }
         }
         else if (actor.CreatorId == SteamClient.SteamId.Value)
         {
             if (_owned.TryAdd(actor.ActorId, actor))
             {
-                actor.SendInstanceActor(_lobby);
-                actor.SendUpdatePacket(_lobby);
+                actor.SendInstanceActor(lobby);
+                actor.SendUpdatePacket(lobby);
             }
             else
             {
-                _logger.LogError("actor already exists");
+                logger.LogError("actor already exists");
             }
         }
     }
@@ -123,7 +119,7 @@ public sealed class ActorManager : IDisposable
         var actor = new BaseActor
         {
             ActorType = actorType,
-            ActorId = _id.Next(),
+            ActorId = id.Next(),
             CreatorId = SteamClient.SteamId,
             Position = position,
             Rotation = Vector3.Zero
@@ -138,15 +134,15 @@ public sealed class ActorManager : IDisposable
     {
         actor = null!;
 
-        if (!_id.Add(actorId))
+        if (!id.Add(actorId))
         {
-            _logger.LogError("actor id already exists");
+            logger.LogError("actor id already exists {ActorId} {ActorType}", actorId, "player");
             return false;
         }
 
         if (_players.ContainsKey(playerId))
         {
-            _logger.LogError("player already exists");
+            logger.LogError("player already exists {SteamId}", playerId);
             return false;
         }
 
@@ -169,9 +165,9 @@ public sealed class ActorManager : IDisposable
 
     public bool CreateRemoteActor(SteamId owner, long actorId, string actorType)
     {
-        if (!_id.Add(actorId))
+        if (!id.Add(actorId))
         {
-            _logger.LogError("actor id already exists");
+            logger.LogError("actor id already exists {ActorId} {ActorType}", actorId, actorType);
             return false;
         }
 
@@ -203,19 +199,23 @@ public sealed class ActorManager : IDisposable
             _players.TryRemove(actor.CreatorId, out _);
         }
 
-        _id.Return(actorId);
+        id.Return(actorId);
 
         var wipe = ActorActionPacket.CreateWipeActorPacket(actorId);
-        _lobby.BroadcastPacket(NetChannel.ActorAction, wipe);
+        lobby.BroadcastPacket(NetChannel.ActorAction, wipe);
 
         if (actor.CreatorId.Value != SteamClient.SteamId.Value)
         {
             return;
         }
 
-        _owned.TryRemove(actorId, out _);
+        if (!_owned.TryRemove(actorId, out _))
+        {
+            return;
+        }
+        
         var queue = ActorActionPacket.CreateQueueFreePacket(actor.ActorId);
-        _lobby.BroadcastPacket(NetChannel.ActorAction, queue);
+        lobby.BroadcastPacket(NetChannel.ActorAction, queue);
     }
 
     private int GetActorCountByType(string actorType)
@@ -237,7 +237,7 @@ public sealed class ActorManager : IDisposable
     public void SpawnBird()
     {
         var count = _random.Next() % 3 + 1;
-        var point = _map.TrashPoints[_random.Next() % _map.TrashPoints.Count];
+        var point = map.TrashPoints[_random.Next() % map.TrashPoints.Count];
 
         for (var i = 0; i < count; i++)
         {
@@ -254,7 +254,7 @@ public sealed class ActorManager : IDisposable
         var actorCount = GetActorCountByType("ambient_bird");
         if (actorCount >= 10)
         {
-            _logger.LogError("ambient_bird limit reached (10)");
+            logger.LogError("ambient_bird limit reached (10)");
             return;
         }
         
@@ -263,12 +263,12 @@ public sealed class ActorManager : IDisposable
         bird.DecayTimer = 600; // default?
         bird.IsDeadActor = true;
 
-        _logger.LogInformation("spawn bird at {ActorId} - {Pos}", bird.ActorId, bird.Position);
+        logger.LogInformation("spawn bird at {ActorId} - {Pos}", bird.ActorId, bird.Position);
     }
 
     public void SpawnFish(string type = "fish_spawn")
     {
-        var point = _map.FishSpawnPoints[_random.Next() % _map.FishSpawnPoints.Count];
+        var point = map.FishSpawnPoints[_random.Next() % map.FishSpawnPoints.Count];
         SpawnFish(point.Transform.Origin, type);
     }
 
@@ -285,7 +285,7 @@ public sealed class ActorManager : IDisposable
         fish.DecayTimer = type == "fish_spawn_alien" ? 4800 : 14400;
         fish.ActorUpdateDefaultCooldown = type == "fish_spawn_alien" ? 8 : 32;
 
-        _logger.LogInformation("spawn {ActorType} ({ActorId}) at {Pos}", fish.ActorType, fish.ActorId, fish.Position);
+        logger.LogInformation("spawn {ActorType} ({ActorId}) at {Pos}", fish.ActorType, fish.ActorId, fish.Position);
     }
 
     public void SpawnRainCloud()
@@ -301,14 +301,14 @@ public sealed class ActorManager : IDisposable
     {
         if (_owned.Values.Any(actor => actor.ActorType == "raincloud"))
         {
-            _logger.LogError("raincloud already exists");
+            logger.LogError("raincloud already exists");
             return;
         }
 
         var actor = new RainCloudActor
         {
             ActorType = "raincloud",
-            ActorId = _id.Next(),
+            ActorId = id.Next(),
             CreatorId = SteamClient.SteamId,
             Zone = Zone,
             ZoneOwner = -1,
@@ -321,18 +321,18 @@ public sealed class ActorManager : IDisposable
 
         SetActorDefaultValues(actor);
         AddActorAndPropagate(actor);
-        _logger.LogInformation("spawn raincloud ({ActorId}) at {Pos}", actor.ActorId, actor.Position);
+        logger.LogInformation("spawn raincloud ({ActorId}) at {Pos}", actor.ActorId, actor.Position);
     }
 
     public void SpawnVoidPortal()
     {
-        if (_map.HiddenSpots.Count == 0)
+        if (map.HiddenSpots.Count == 0)
         {
-            _logger.LogError("no hidden_spots found");
+            logger.LogError("no hidden_spots found");
             return;
         }
 
-        var point = _map.HiddenSpots[_random.Next() % _map.HiddenSpots.Count];
+        var point = map.HiddenSpots[_random.Next() % map.HiddenSpots.Count];
         var x = _random.NextSingle() - 0.5f;
         var z = _random.NextSingle() - 0.5f;
         var pos = point.Transform.Origin + new Vector3(x, 0, z);
@@ -344,7 +344,7 @@ public sealed class ActorManager : IDisposable
     {
         if (_owned.Values.Any(actor => actor.ActorType == "void_portal"))
         {
-            _logger.LogError("void portal already exists");
+            logger.LogError("void portal already exists");
             return;
         }
 
@@ -352,7 +352,7 @@ public sealed class ActorManager : IDisposable
         portal.Decay = true;
         portal.DecayTimer = 36000;
 
-        _logger.LogInformation("spawn void_portal ({ActorId}) at {Pos}", portal.ActorId, portal.Position);
+        logger.LogInformation("spawn void_portal ({ActorId}) at {Pos}", portal.ActorId, portal.Position);
     }
 
     // _spawn_metal_spot
@@ -371,7 +371,7 @@ public sealed class ActorManager : IDisposable
         var actorCount = GetActorCountByType("metal_spawn");
         if (actorCount >= 8)
         {
-            _logger.LogError("metal_spawn limit reached (8)");
+            logger.LogError("metal_spawn limit reached (8)");
             return;
         }
 
@@ -379,7 +379,7 @@ public sealed class ActorManager : IDisposable
         metal.Decay = true;
         metal.DecayTimer = 10000;
 
-        _logger.LogInformation("spawn metal_spawn ({ActorId}) at {Pos}", metal.ActorId, metal.Position);
+        logger.LogInformation("spawn metal_spawn ({ActorId}) at {Pos}", metal.ActorId, metal.Position);
     }
 
     public void SelectPlayerActor(SteamId steamId, Action<PlayerActor> action)
@@ -396,9 +396,9 @@ public sealed class ActorManager : IDisposable
     {
         if (_random.NextSingle() < 0.15)
         {
-            return _map.ShorelinePoints[_random.Next() % _map.ShorelinePoints.Count];
+            return map.ShorelinePoints[_random.Next() % map.ShorelinePoints.Count];
         }
 
-        return _map.TrashPoints[_random.Next() % _map.TrashPoints.Count];
+        return map.TrashPoints[_random.Next() % map.TrashPoints.Count];
     }
 }

@@ -4,8 +4,8 @@ using WFDS.Server.Managers;
 
 namespace WFDS.Server.Services;
 
-public class ServerInitializeService(
-    ILogger<ServerInitializeService> logger,
+public class MainWorker(
+    ILogger<MainWorker> logger,
     IOptions<ServerSetting> settings,
     LobbyManager lobby,
     MapManager map
@@ -16,7 +16,7 @@ public class ServerInitializeService(
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         logger.LogInformation("SteamClientService start");
-        SteamClient.Init(AppId, false);
+        SteamClient.Init(AppId);
         SteamNetworking.AllowP2PPacketRelay(true);
 
         map.LoadSpawnPoints();
@@ -29,14 +29,18 @@ public class ServerInitializeService(
             settings.Value.Adult,
             settings.Value.MaxPlayers
         );
-
+        
         while (!stoppingToken.IsCancellationRequested)
         {
-            SteamClient.RunCallbacks();
-            await Task.Delay(1000 / 10, stoppingToken); // 10 fps
+            await Task.Delay(100, stoppingToken);
         }
 
-
+        lobby.SelectSessions(session =>
+        {
+            session.ServerClose();
+        });
+        
+        await lobby.LeaveLobbyAsync();
         SteamClient.Shutdown();
         logger.LogInformation("SteamClientService stopped");
     }

@@ -3,11 +3,15 @@ using Steamworks;
 using WFDS.Server.Common.Actor;
 using WFDS.Server.Managers;
 
-namespace WFDS.Server.Common;
+namespace WFDS.Server.Common.Network;
 
 public interface ISession
 {
     LobbyManager LobbyManager { get; set; }
+    ILogger Logger { get; set; }
+
+    bool Disposed { get; set; }
+
     Friend Friend { get; set; }
     SteamId SteamId { get; set; }
 

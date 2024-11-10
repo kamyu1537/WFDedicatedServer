@@ -1,6 +1,8 @@
 ﻿using WFDS.Server.Common;
+using WFDS.Server.Common.Network;
+using WFDS.Server.Common.Packet;
 
-namespace WFDS.Server.Network.Handlers;
+namespace WFDS.Server.Handlers;
 
 [PacketType("new_player_join")]
 public class NewPlayerJoinHandler : PacketHandler

@@ -8,7 +8,7 @@ public class PacketSendService(LobbyManager lobby) : BackgroundService
     {
         while (!stoppingToken.IsCancellationRequested)
         {
-            lobby.SelectSessions(session => session.ProcessPackets());
+            lobby.SelectSessions(session => session.ProcessPacket());
             await Task.Delay(1000 / 240, stoppingToken); // 240 fps
         }
     }

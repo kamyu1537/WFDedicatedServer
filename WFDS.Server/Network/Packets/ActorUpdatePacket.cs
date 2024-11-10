@@ -3,6 +3,8 @@ using WFDS.Godot.Types;
 using WFDS.Server.Common;
 using WFDS.Server.Common.Actor;
 using WFDS.Server.Common.Extensions;
+using WFDS.Server.Common.Network;
+using WFDS.Server.Common.Packet;
 using WFDS.Server.Managers;
 
 namespace WFDS.Server.Packets;

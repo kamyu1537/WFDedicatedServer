@@ -1,7 +1,8 @@
 ﻿using Steamworks;
+using WFDS.Server.Common.Network;
 using WFDS.Server.Managers;
 
-namespace WFDS.Server.Common;
+namespace WFDS.Server.Common.Packet;
 
 public interface IPacketHandler
 {

@@ -1,7 +1,6 @@
 ﻿using Steamworks;
 using WFDS.Server.Common.Actor;
 using WFDS.Server.Managers;
-using WFDS.Server.Packets;
 
 namespace WFDS.Server.Services;
 
@@ -29,25 +28,10 @@ public class ActorUpdateService(ILogger<ActorUpdateService> logger, ActorManager
         manager.SelectActors(actor =>
         {
             if (Decay(actor)) return;
+            if (actor.IsDeadActor) return;
+            
             actor.OnUpdate(delta);
-            CheckActorUpdate(actor);
         });
-    }
-
-    private void CheckActorUpdate(IActor actor)
-    {
-        if (actor.IsDeadActor)
-            return;
-        
-        if (actor.CreatorId != SteamClient.SteamId.Value)
-            return;
-        
-        actor.ActorUpdateCooldown -= 1;
-        if (actor.ActorUpdateCooldown > 0) return;
-        
-        actor.ActorUpdateCooldown = actor.ActorUpdateDefaultCooldown;
-
-        actor.SendUpdatePacket(lobby);
     }
 
     private bool Decay(IActor actor)
@@ -56,6 +40,7 @@ public class ActorUpdateService(ILogger<ActorUpdateService> logger, ActorManager
         {
             if (!lobby.IsSessionExists(actor.CreatorId))
             {
+                actor.IsDeadActor = true;
                 logger.LogInformation("remove actor {ActorId} {ActorType} (owner not found)", actor.ActorId, actor.ActorType);
                 manager.RemoveActor(actor.ActorId);
             }
@@ -68,6 +53,7 @@ public class ActorUpdateService(ILogger<ActorUpdateService> logger, ActorManager
 
         if (actor.DecayTimer < 1)
         {
+            actor.IsDeadActor = true;
             logger.LogInformation("decay actor {ActorId} {ActorType}", actor.ActorId, actor.ActorType);
             manager.RemoveActor(actor.ActorId);
             return true;
