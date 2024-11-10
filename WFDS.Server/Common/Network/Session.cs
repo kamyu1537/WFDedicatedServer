@@ -116,6 +116,9 @@ public sealed class Session : ISession, IDisposable
 
         while (Packets.TryDequeue(out var packet))
         {
+#if DEBUG
+            Console.WriteLine(JsonSerializer.Serialize(GodotBinaryConverter.Deserialize(GZipHelper.Decompress(packet.Item2))));
+#endif
             SteamNetworking.SendP2PPacket(SteamId, packet.Item2, nChannel: packet.Item1.Value);
         }
     }
