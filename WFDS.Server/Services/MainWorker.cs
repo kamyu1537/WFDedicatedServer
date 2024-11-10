@@ -32,7 +32,7 @@ public class MainWorker(
         
         while (!stoppingToken.IsCancellationRequested)
         {
-            await Task.Delay(100, stoppingToken);
+            await Task.Delay(1000, stoppingToken);
         }
 
         lobby.SelectSessions(session =>
