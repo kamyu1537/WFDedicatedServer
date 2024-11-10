@@ -156,6 +156,9 @@ public sealed class ActorManager(
         return true;
     }
 
+    // max owned actor = 32
+    // if remote actor count is over 32. will kick player
+    
     public bool CreateRemoteActor(SteamId owner, long actorId, string actorType)
     {
         if (!id.Add(actorId))
