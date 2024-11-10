@@ -73,15 +73,15 @@ public class ActorActionHandler : PacketHandler
         var param = packet.Params[0];
         var actorId = param.GetNumber();
 
-        ActorManager.SelectActor(packet.ActorId, actor =>
+        ActorManager.SelectActor(actorId, actor =>
         {
             if (actor.CreatorId == sender.SteamId)
             {
                 ActorManager.RemoveActor(actorId);
             }
         });
-
-        ActorManager.SelectActor(actorId, actor =>
+        
+        ActorManager.SelectActor(packet.ActorId, actor =>
         {
             if (actor.CreatorId == sender.SteamId)
             {
