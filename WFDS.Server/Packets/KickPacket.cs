@@ -1,9 +1,8 @@
-﻿using WFDS.Server.Common;
-using WFDS.Server.Common.Packet;
+﻿using WFDS.Server.Common.Packet;
 
 namespace WFDS.Server.Packets;
 
-public record BanPacket : IPacket
+public record KickPacket : IPacket
 {
     public void Parse(Dictionary<object, object> data)
     {
@@ -13,7 +12,7 @@ public record BanPacket : IPacket
     {
         return new Dictionary<object, object>
         {
-            { "type", "ban" }
+            { "type", "kick" }
         };
     }
 }

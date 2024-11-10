@@ -1,5 +1,4 @@
-﻿using Steamworks;
-using WFDS.Godot.Types;
+﻿using WFDS.Godot.Types;
 using WFDS.Server.Common;
 using WFDS.Server.Common.Actor;
 using WFDS.Server.Common.Extensions;

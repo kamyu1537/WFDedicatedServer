@@ -31,7 +31,7 @@ try
 
     builder.Services.AddSingleton<ActorIdManager>();
     builder.Services.AddSingleton<LobbyManager>();
-    builder.Services.AddSingleton<PacketHandler>();
+    builder.Services.AddSingleton<PacketHandleManager>();
     builder.Services.AddSingleton<ActorManager>();
     builder.Services.AddSingleton<MapManager>();
 

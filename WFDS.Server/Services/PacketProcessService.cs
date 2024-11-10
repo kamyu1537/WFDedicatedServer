@@ -2,10 +2,11 @@
 using WFDS.Godot.Binary;
 using WFDS.Server.Common;
 using WFDS.Server.Common.Helpers;
+using WFDS.Server.Managers;
 
 namespace WFDS.Server.Services;
 
-public class PacketProcessService(ILogger<PacketProcessService> logger, PacketHandler packetHandler) : BackgroundService
+public class PacketProcessService(ILogger<PacketProcessService> logger, PacketHandleManager packetHandleManager) : BackgroundService
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
@@ -62,7 +63,7 @@ public class PacketProcessService(ILogger<PacketProcessService> logger, PacketHa
             {
                 var decompressed = GZipHelper.Decompress(data);
                 var deserialized = GodotBinaryConverter.Deserialize(decompressed);
-                packetHandler.OnPacketReceived(packet.Value.SteamId, channel, deserialized);
+                packetHandleManager.OnPacketReceived(packet.Value.SteamId, channel, deserialized);
                 break;
             }
             catch (Exception ex)

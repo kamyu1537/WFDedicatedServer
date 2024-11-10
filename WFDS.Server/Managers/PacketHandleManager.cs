@@ -3,18 +3,17 @@ using System.Text.Json;
 using Steamworks;
 using WFDS.Server.Common;
 using WFDS.Server.Common.Packet;
-using WFDS.Server.Managers;
 
-namespace WFDS.Server.Services;
+namespace WFDS.Server.Managers;
 
-public class PacketHandler
+public class PacketHandleManager
 {
-    private readonly ILogger<PacketHandler> _logger;
+    private readonly ILogger<PacketHandleManager> _logger;
     private readonly Dictionary<string, IPacketHandler> _handlers;
     private readonly LobbyManager _lobbyManager;
 
-    public PacketHandler(
-        ILogger<PacketHandler> logger,
+    public PacketHandleManager(
+        ILogger<PacketHandleManager> logger,
         ILoggerFactory loggerFactory,
         LobbyManager lobbyManager,
         ActorManager actorManager
