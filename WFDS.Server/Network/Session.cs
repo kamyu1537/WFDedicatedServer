@@ -23,7 +23,7 @@ public sealed class Session : ISession, IDisposable
     public Friend Friend { get; set; }
     public SteamId SteamId { get; set; }
 
-    public PlayerActor Actor { get; set; } = null!;
+    public PlayerActor? Actor { get; set; }
     public bool ActorCreated { get; set; }
 
     public bool HandshakeReceived { get; set; }

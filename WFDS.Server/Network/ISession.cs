@@ -16,7 +16,7 @@ public interface ISession
     Friend Friend { get; set; }
     SteamId SteamId { get; set; }
 
-    PlayerActor Actor { get; set; }
+    PlayerActor? Actor { get; set; }
     bool ActorCreated { get; set; }
 
     bool HandshakeReceived { get; set; }

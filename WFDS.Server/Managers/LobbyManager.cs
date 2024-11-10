@@ -279,12 +279,25 @@ public sealed class LobbyManager : IDisposable
             return true;
         }
 
-        if (!session.ActorCreated)
+        if (session.Disposed)
         {
             return false;
         }
 
-        return session.Actor.Zone == zone && (zoneOwner == -1 || session.Actor.ZoneOwner == zoneOwner);
+        if (!session.ActorCreated)
+        {
+            return false;
+        }
+        
+        if (session.Actor == null)
+        {
+            return false;
+        }
+
+        var actorZone = session.Actor.Zone;
+        var actorZoneOwner = session.Actor.ZoneOwner;
+
+        return actorZone == zone && (zoneOwner == -1 || actorZoneOwner == zoneOwner);
     }
 
     public void SendPacket(SteamId steamId, NetChannel channel, IPacket packet, string zone = "", long zoneOwner = -1)
