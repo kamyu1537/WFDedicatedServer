@@ -4,6 +4,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WFDS.Server", "WFDS.Server\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WFDS.Godot", "WFDS.Godot\WFDS.Godot.csproj", "{C59B3923-5D5F-4B17-84D3-0F7AC892101C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WFDS.Common", "WFDS.Common\WFDS.Common.csproj", "{89CE246F-9504-44DB-B8F3-B534F120A9A4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,5 +20,9 @@ Global
 		{C59B3923-5D5F-4B17-84D3-0F7AC892101C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C59B3923-5D5F-4B17-84D3-0F7AC892101C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C59B3923-5D5F-4B17-84D3-0F7AC892101C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{89CE246F-9504-44DB-B8F3-B534F120A9A4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{89CE246F-9504-44DB-B8F3-B534F120A9A4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{89CE246F-9504-44DB-B8F3-B534F120A9A4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{89CE246F-9504-44DB-B8F3-B534F120A9A4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

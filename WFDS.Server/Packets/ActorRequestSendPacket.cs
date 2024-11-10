@@ -1,5 +1,5 @@
 ﻿using WFDS.Server.Common.Actor;
-using WFDS.Server.Common.Packet;
+using WFDS.Server.Network;
 
 namespace WFDS.Server.Packets;
 

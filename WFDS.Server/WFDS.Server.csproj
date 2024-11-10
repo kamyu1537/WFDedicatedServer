@@ -15,9 +15,11 @@
         <PackageReference Include="Serilog.Extensions.Hosting" Version="8.0.0"/>
         <PackageReference Include="Serilog.Sinks.Console" Version="6.0.0"/>
         <PackageReference Include="Serilog.Sinks.File" Version="6.0.0"/>
+        <PackageReference Include="System.Text.Json" Version="8.0.5" />
     </ItemGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\WFDS.Common\WFDS.Common.csproj" />
         <ProjectReference Include="..\WFDS.Godot\WFDS.Godot.csproj"/>
     </ItemGroup>
 

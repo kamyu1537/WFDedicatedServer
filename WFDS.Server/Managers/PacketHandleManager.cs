@@ -2,7 +2,7 @@
 using System.Text.Json;
 using Steamworks;
 using WFDS.Server.Common;
-using WFDS.Server.Common.Packet;
+using WFDS.Server.Network;
 
 namespace WFDS.Server.Managers;
 

@@ -3,8 +3,8 @@ using Steamworks;
 using WFDS.Godot.Types;
 using WFDS.Server.Common;
 using WFDS.Server.Common.Actor;
-using WFDS.Server.Common.Network;
 using WFDS.Server.Common.Types;
+using WFDS.Server.Network;
 using WFDS.Server.Packets;
 
 namespace WFDS.Server.Managers;
@@ -83,9 +83,9 @@ public sealed class ActorManager(
         actor.OnCreated();
         _actors.TryAdd(actor.ActorId, actor);
 
-        if (actor.ActorType == "player")
+        if (actor is PlayerActor player)
         {
-            if (!_players.TryAdd(actor.CreatorId, (PlayerActor)actor))
+            if (!_players.TryAdd(player.CreatorId, player))
             {
                 logger.LogError("player already exists");
             }

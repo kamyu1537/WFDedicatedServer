@@ -1,7 +1,6 @@
 ﻿using WFDS.Server.Common;
 using WFDS.Server.Common.Actor;
-using WFDS.Server.Common.Network;
-using WFDS.Server.Common.Packet;
+using WFDS.Server.Network;
 using WFDS.Server.Packets;
 
 namespace WFDS.Server.Handlers;

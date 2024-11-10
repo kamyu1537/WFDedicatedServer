@@ -1,20 +1,17 @@
 ﻿using System.Collections.Concurrent;
+using System.Text.Json;
 using Steamworks;
+using WFDS.Godot.Binary;
 using WFDS.Godot.Types;
+using WFDS.Server.Common;
 using WFDS.Server.Common.Actor;
 using WFDS.Server.Common.Extensions;
-using WFDS.Server.Common.Packet;
+using WFDS.Server.Common.Helpers;
 using WFDS.Server.Managers;
 using WFDS.Server.Packets;
 using Color = System.Drawing.Color;
 
-#if DEBUG
-using System.Text.Json;
-using WFDS.Godot.Binary;
-using WFDS.Server.Common.Helpers;
-#endif
-
-namespace WFDS.Server.Common.Network;
+namespace WFDS.Server.Network;
 
 public sealed class Session : ISession, IDisposable
 {

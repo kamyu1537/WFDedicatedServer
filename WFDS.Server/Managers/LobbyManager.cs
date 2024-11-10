@@ -4,8 +4,7 @@ using Steamworks.Data;
 using WFDS.Godot.Binary;
 using WFDS.Server.Common;
 using WFDS.Server.Common.Helpers;
-using WFDS.Server.Common.Network;
-using WFDS.Server.Common.Packet;
+using WFDS.Server.Network;
 using WFDS.Server.Packets;
 
 namespace WFDS.Server.Managers;

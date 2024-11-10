@@ -1,9 +1,10 @@
 ﻿using System.Collections.Concurrent;
 using Steamworks;
+using WFDS.Server.Common;
 using WFDS.Server.Common.Actor;
 using WFDS.Server.Managers;
 
-namespace WFDS.Server.Common.Network;
+namespace WFDS.Server.Network;
 
 public interface ISession
 {

@@ -1,6 +1,6 @@
 ﻿using WFDS.Godot.Types;
 using WFDS.Server.Common.Extensions;
-using WFDS.Server.Common.Packet;
+using WFDS.Server.Network;
 
 namespace WFDS.Server.Packets;
 
