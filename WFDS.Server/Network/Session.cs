@@ -48,7 +48,7 @@ public sealed class Session : ISession, IDisposable
             Color = color.ToHex(true),
             Local = local,
             Position = Vector3.Zero,
-            Zone = "main_zone",
+            Zone = "",
             ZoneOwner = -1
         });
     }
