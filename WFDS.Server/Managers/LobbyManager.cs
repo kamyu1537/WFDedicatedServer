@@ -472,7 +472,6 @@ public sealed class LobbyManager : IDisposable
 
     public void KickNoHandshakePlayers()
     {
-        // 잠시 로직 비활성화
         var now = DateTimeOffset.UtcNow;
         foreach (var session in _sessions.Values)
         {
