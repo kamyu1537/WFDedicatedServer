@@ -79,7 +79,7 @@ public class ActorActionHandler : PacketHandler
                 ActorManager.RemoveActor(actorId);
             }
         });
-        
+
         ActorManager.SelectActor(packet.ActorId, actor =>
         {
             if (actor.CreatorId == sender.SteamId)
@@ -116,3 +116,39 @@ public class ActorActionHandler : PacketHandler
         });
     }
 }
+
+/*
+ * actor.queue_free()
+ * actor._wipe_actor(number actor_id)
+ * actor._set_zone(string current_zone, long current_zone_owner)
+ * actor._change_id(Dictionary<object, object> data) - data: {"id": "empty", "ref": 0, "size": 1.0, "quality": QUALITY_NORMAL}
+ *
+ * actor._sync_create_bubble(string text) - chat bubble
+ * actor._sync_level_bubble() - level up bubble
+ *
+ * actor._sync_state(int state) - boombox
+ * actor._flush() - toilet
+ * actor._sync_punch()
+ *
+ * actor._sync_strum(string, fret, volume)
+ * actor._sync_hammer(string, fret)
+ *
+ * actor._talk(string letter, float voice_pitch)
+ * actor._face_emote(string emote)
+ * actor._play_particle(string particle_id, Vector3 position, bool global)
+ * actor._play_sfx(string sfx_id, Vector3 position, float pitch)
+ *
+ * actor._update_cosmetics(new) - fallback{"species": "species_cat", "pattern": "pattern_none", "primary_color": "pcolor_white", "secondary_color": "scolor_tan", "hat": "hat_none", "undershirt": "shirt_none", "overshirt": "overshirt_none", "title": "title_rank_1", "bobber": "bobber_default", "eye": "eye_halfclosed", "nose": "nose_cat", "mouth": "mouth_default", "accessory": [], "tail": "tail_cat", "legs": "legs_none"}
+ * actor._update_held_item(RawItem held_item) - fallback {"id": "empty_hand", "ref": 0, "size": 1.0, "quality": ITEM_QUALITIES.NORMAL, "tags": []}
+ */
+
+/*
+    const QUALITY_DATA = {
+        ITEM_QUALITIES.NORMAL: {"color": "#d5aa73", "name": "", "diff": 1.0, "bdiff": 0.0, "worth": 1.0, "mod": "#ffffff", "op": 1.0, "particle": - 1, "title": "Normal "},
+        ITEM_QUALITIES.SHINING: {"color": "#d5aa73", "name": "Shining ", "diff": 1.5, "bdiff": 3.0, "worth": 1.8, "mod": "#e5f5f0", "op": 1.0, "particle": 0, "title": "Shining "},
+        ITEM_QUALITIES.GLISTENING: {"color": "#a49d9c", "name": "Glistening ", "diff": 2.5, "bdiff": 8.0, "worth": 4.0, "mod": "#eafcf5", "op": 1.0, "particle": 1, "title": "Glistening "},
+        ITEM_QUALITIES.OPULENT: {"color": "#008583", "name": "Opulent ", "diff": 4.0, "bdiff": 14.0, "worth": 6.0, "mod": "#d5fcf5", "op": 1.0, "particle": 2, "title": "Opulent "},
+        ITEM_QUALITIES.RADIANT: {"color": "#e69d00", "name": "Radiant ", "diff": 5.0, "bdiff": 24.0, "worth": 10.0, "mod": "#fcf0d5", "op": 1.0, "particle": 3, "title": "Radiant "},
+        ITEM_QUALITIES.ALPHA: {"color": "#cd0462", "name": "Alpha ", "diff": 5.5, "bdiff": 32.0, "worth": 15.0, "mod": "#fcd5df", "op": 1.0, "particle": 4, "title": "Alpha "},
+    }
+*/
