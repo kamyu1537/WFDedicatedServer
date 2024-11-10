@@ -18,6 +18,10 @@ public class ActorActionService(ActorManager manager, LobbyManager lobby) : Back
 
     private void Tick()
     {
+        var count = lobby.GetSessionCount();
+        if (count < 1)
+            return;
+        
         manager.SelectOwnedActors(NetworkShare);
     }
 

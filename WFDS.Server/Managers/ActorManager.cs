@@ -25,11 +25,6 @@ public sealed class ActorManager(
 
     public void Dispose()
     {
-        foreach (var actor in _actors.Values)
-        {
-            RemoveActor(actor.ActorId);
-        }
-        
         _owned.Clear();
         _actors.Clear();
         _players.Clear();

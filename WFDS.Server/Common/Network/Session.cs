@@ -8,13 +8,19 @@ using WFDS.Server.Managers;
 using WFDS.Server.Packets;
 using Color = System.Drawing.Color;
 
+#if DEBUG
+using System.Text.Json;
+using WFDS.Godot.Binary;
+using WFDS.Server.Common.Helpers;
+#endif
+
 namespace WFDS.Server.Common.Network;
 
 public sealed class Session : ISession, IDisposable
 {
     public LobbyManager LobbyManager { get; set; } = null!;
     public ILogger Logger { get; set; } = null!;
-    
+
     public bool Disposed { get; set; }
 
     public Friend Friend { get; set; }
@@ -64,7 +70,7 @@ public sealed class Session : ISession, IDisposable
             Items = []
         });
     }
-    
+
     public void Kick()
     {
         ClearPacketQueue();
@@ -89,22 +95,25 @@ public sealed class Session : ISession, IDisposable
     public void ProcessPacket()
     {
         if (Disposed) return;
-        
+
         if (Packets.TryDequeue(out var packet))
         {
+#if DEBUG
+            Console.WriteLine(JsonSerializer.Serialize(GodotBinaryConverter.Deserialize(GZipHelper.Decompress(packet.Item2))));
+#endif
             SteamNetworking.SendP2PPacket(SteamId, packet.Item2, nChannel: packet.Item1.Value);
         }
     }
-    
+
     private void ClearPacketQueue()
     {
         Packets.Clear();
     }
-    
+
     private void ProcessPackets()
     {
         if (Disposed) return;
-        
+
         while (Packets.TryDequeue(out var packet))
         {
             SteamNetworking.SendP2PPacket(SteamId, packet.Item2, nChannel: packet.Item1.Value);
@@ -115,7 +124,7 @@ public sealed class Session : ISession, IDisposable
     {
         if (Disposed) return;
         Disposed = true;
-        
+
         Packets.Clear();
 
         LobbyManager = null!;

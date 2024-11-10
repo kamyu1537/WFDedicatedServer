@@ -34,14 +34,18 @@ public class MainWorker(
         {
             await Task.Delay(1000, stoppingToken);
         }
-
-        lobby.SelectSessions(session =>
-        {
+    }
+    
+    public override async Task StopAsync(CancellationToken cancellationToken)
+    {
+        lobby.SelectSessions(session => {
             session.ServerClose();
         });
         
         await lobby.LeaveLobbyAsync();
         SteamClient.Shutdown();
-        logger.LogInformation("SteamClientService stopped");
+        
+        logger.LogInformation("MainWorker stopped");
+        await base.StopAsync(cancellationToken);
     }
 }
