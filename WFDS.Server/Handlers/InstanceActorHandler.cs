@@ -22,7 +22,7 @@ public class InstanceActorHandler : PacketHandler
                 return;
             }
 
-            var created = ActorManager.CreatePlayerActor(sender.SteamId, packet.ActorId, sender.Friend.Name, out var actor);
+            var created = ActorManager.CreatePlayerActor(sender.SteamId, packet.ActorId, out var actor);
             if (!created)
             {
                 Logger.LogError("failed to create player actor {ActorId} {ActorType}", packet.ActorId, packet.ActorType);

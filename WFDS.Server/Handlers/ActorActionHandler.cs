@@ -14,9 +14,10 @@ public class ActorActionHandler : PacketHandler
     [
         "queue_free",
         "_wipe_actor",
+        "_activate",
         "_set_zone"
     ];
-    
+
     public override void HandlePacket(Session sender, NetChannel channel, Dictionary<object, object> data)
     {
         var packet = new ActorActionPacket();
@@ -27,7 +28,7 @@ public class ActorActionHandler : PacketHandler
             // Logger.LogInformation("received actor_action from {Name}[{SteamId}] for actor {ActorId} : {Action} / {Data}", sender.Friend.Name, sender.SteamId, packet.ActorId, packet.Action, JsonSerializer.Serialize(packet.Params));
             return;
         }
-        
+
         Logger.LogInformation("received actor_action from {Name}[{SteamId}] for actor {ActorId} : {Action} / {Data}", sender.Friend.Name, sender.SteamId, packet.ActorId, packet.Action, JsonSerializer.Serialize(packet.Params));
 
         switch (packet.Action)
@@ -72,6 +73,14 @@ public class ActorActionHandler : PacketHandler
         var param = packet.Params[0];
         var actorId = param.GetNumber();
 
+        ActorManager.SelectActor(packet.ActorId, actor =>
+        {
+            if (actor.CreatorId == sender.SteamId)
+            {
+                ActorManager.RemoveActor(actorId);
+            }
+        });
+
         ActorManager.SelectActor(actorId, actor =>
         {
             if (actor.CreatorId == sender.SteamId)
@@ -99,10 +108,10 @@ public class ActorActionHandler : PacketHandler
         {
             if (actor.CreatorId != sender.SteamId)
                 return;
-            
+
             var zone = packet.Params[0].GetString();
             var zoneOwner = packet.Params[1].GetNumber();
-            
+
             actor.Zone = zone;
             actor.ZoneOwner = zoneOwner;
         });

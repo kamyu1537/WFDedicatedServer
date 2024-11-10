@@ -1,4 +1,5 @@
-﻿using WFDS.Server.Common.Types;
+﻿using WFDS.Server.Common.Actor;
+using WFDS.Server.Common.Types;
 using WFDS.Server.Managers;
 
 namespace WFDS.Server.Services;
@@ -33,28 +34,39 @@ public class HostSpawnScheduleService(ILogger<HostSpawnScheduleService> logger, 
     {
         var count = lobby.GetSessionCount();
         if (count < 1) return;
-        
+
         var ownedActorCount = actor.GetOwnedActorCount();
         var ownedActorTypes = actor.GetOwnedActorTypes();
 
         logger.LogInformation("owned_actors: {Count}, owned_actors_types: {Types}", ownedActorCount, string.Join(',', ownedActorTypes));
 
         var type = RandomPickSpawnType();
+        IActor? spawn = null;
         switch (type)
         {
             case HostSpawnTypes.Fish:
-                actor.SpawnFish();
+                spawn = actor.SpawnFishSpawnActor();
                 break;
             case HostSpawnTypes.FishAlien:
-                actor.SpawnFish("fish_spawn_alien");
+                spawn = actor.SpawnFishSpawnAlienActor();
                 break;
             case HostSpawnTypes.Rain:
-                actor.SpawnRainCloud();
+                spawn = actor.SpawnRainCloudActor();
                 break;
             case HostSpawnTypes.VoidPortal:
-                actor.SpawnVoidPortal();
+                spawn = actor.SpawnVoidPortalActor();
+                break;
+            case HostSpawnTypes.None:
+            default:
                 break;
         }
+
+        if (spawn == null)
+        {
+            return;
+        }
+
+        logger.LogInformation("spawn {ActorType} ({ActorId}) at {Pos}", spawn.ActorType, spawn.ActorId, spawn.Position);
     }
 
     private HostSpawnTypes RandomPickSpawnType()

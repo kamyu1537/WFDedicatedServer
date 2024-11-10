@@ -78,6 +78,8 @@ public sealed class ActorManager(
 
     private void AddActorAndPropagate(IActor actor)
     {
+        logger.LogInformation("try add actor {ActorId} {ActorType} - {Position}", actor.ActorId, actor.ActorType, actor.Position);
+
         actor.OnCreated();
         _actors.TryAdd(actor.ActorId, actor);
 
@@ -109,15 +111,13 @@ public sealed class ActorManager(
         actor.CreateTime = DateTimeOffset.UtcNow;
     }
 
-    private BaseActor CreateHostActor(string actorType, Vector3 position)
+    private T CreateHostActor<T>(Vector3 position) where T : IActor, new()
     {
-        var actor = new BaseActor
+        var actor = new T
         {
-            ActorType = actorType,
             ActorId = id.Next(),
             CreatorId = SteamClient.SteamId,
-            Position = position,
-            Rotation = Vector3.Zero
+            Position = position
         };
 
         SetActorDefaultValues(actor);
@@ -125,7 +125,7 @@ public sealed class ActorManager(
         return actor;
     }
 
-    public bool CreatePlayerActor(SteamId playerId, long actorId, string name, out PlayerActor actor)
+    public bool CreatePlayerActor(SteamId playerId, long actorId, out PlayerActor actor)
     {
         actor = null!;
 
@@ -135,23 +135,21 @@ public sealed class ActorManager(
             return false;
         }
 
-        if (_players.ContainsKey(playerId))
-        {
-            logger.LogError("player already exists {SteamId}", playerId);
-            return false;
-        }
-
         actor = new PlayerActor
         {
-            ActorType = "player",
             ActorId = actorId,
             CreatorId = playerId,
             Zone = Zone,
             ZoneOwner = -1,
             Position = Vector3.Zero,
-            Rotation = Vector3.Zero,
-            Name = name
+            Rotation = Vector3.Zero
         };
+
+        if (!_players.TryAdd(playerId, actor))
+        {
+            logger.LogError("player already exists {SteamId}", playerId);
+            return false;
+        }
 
         SetActorDefaultValues(actor);
         AddActorAndPropagate(actor);
@@ -166,20 +164,28 @@ public sealed class ActorManager(
             return false;
         }
 
-        var actor = new BaseActor
+        var success = false;
+        SelectPlayerActor(owner, player =>
         {
-            ActorType = actorType,
-            ActorId = actorId,
-            CreatorId = owner,
-            Zone = Zone,
-            ZoneOwner = -1,
-            Position = Vector3.Zero,
-            Rotation = Vector3.Zero
-        };
+            var actor = new RemoteActor
+            {
+                ActorType = actorType,
+                ActorId = actorId,
+                CreatorId = owner,
+                Zone = player.Zone,
+                ZoneOwner = player.ZoneOwner,
+                Position = Vector3.Zero,
+                Rotation = Vector3.Zero,
+                IsDeadActor = true,
+                Decay = false
+            };
 
-        SetActorDefaultValues(actor);
-        AddActorAndPropagate(actor);
-        return true;
+            SetActorDefaultValues(actor);
+            AddActorAndPropagate(actor);
+            success = true;
+        });
+
+        return success;
     }
 
     public void RemoveActor(long actorId)
@@ -208,7 +214,7 @@ public sealed class ActorManager(
         {
             return;
         }
-        
+
         var queue = ActorActionPacket.CreateQueueFreePacket(actor.ActorId);
         lobby.BroadcastPacket(NetChannel.ActorAction, queue);
     }
@@ -229,7 +235,7 @@ public sealed class ActorManager(
         RemoveActor(actor.ActorId);
     }
 
-    public void SpawnBird()
+    public void SpawnAmbientBirdActor()
     {
         var count = _random.Next() % 3 + 1;
         var point = map.TrashPoints[_random.Next() % map.TrashPoints.Count];
@@ -240,91 +246,82 @@ public sealed class ActorManager(
             var z = _random.NextSingle() * 5f - 2.5f;
             var pos = point.Transform.Origin + new Vector3(x, 0, z);
 
-            SpawnBird(pos);
+            SpawnAmbientBirdActor(pos);
         }
     }
 
-    public void SpawnBird(Vector3 pos)
+    public void SpawnAmbientBirdActor(Vector3 pos)
     {
         var actorCount = GetActorCountByType("ambient_bird");
         if (actorCount >= 10)
         {
-            logger.LogError("ambient_bird limit reached (10)");
-            return;
+            RemoveActorFirstByType("ambient_bird");
         }
-        
-        var bird = CreateHostActor("ambient_bird", pos);
-        bird.Decay = true;
-        bird.DecayTimer = 600; // default?
-        bird.IsDeadActor = true;
 
-        logger.LogInformation("spawn bird at {ActorId} - {Pos}", bird.ActorId, bird.Position);
+        var bird = CreateHostActor<AmbientBirdActor>(pos);
+        logger.LogInformation("spawn {ActorType} ({ActorId}) at {Pos}", bird.ActorType, bird.ActorId, bird.Position);
     }
 
-    public void SpawnFish(string type = "fish_spawn")
+    public IActor? SpawnFishSpawnActor()
     {
         var point = map.FishSpawnPoints[_random.Next() % map.FishSpawnPoints.Count];
-        SpawnFish(point.Transform.Origin, type);
+        return SpawnFishSpawnActor(point.Transform.Origin);
     }
 
-    public void SpawnFish(Vector3 pos, string type = "fish_spawn")
+    public IActor? SpawnFishSpawnActor(Vector3 pos)
     {
-        var actorCount = GetActorCountByType(type);
+        var actorCount = GetActorCountByType("fish_spawn");
         if (actorCount >= 7)
         {
-            RemoveActorFirstByType(type);
+            RemoveActorFirstByType("fish_spawn");
         }
 
-        var fish = CreateHostActor(type, pos);
-        fish.Decay = true;
-        fish.DecayTimer = type == "fish_spawn_alien" ? 4800 : 14400;
-        fish.ActorUpdateDefaultCooldown = type == "fish_spawn_alien" ? 8 : 32;
-
-        logger.LogInformation("spawn {ActorType} ({ActorId}) at {Pos}", fish.ActorType, fish.ActorId, fish.Position);
+        return CreateHostActor<FishSpawnActor>(pos);
     }
 
-    public void SpawnRainCloud()
+    public IActor? SpawnFishSpawnAlienActor()
+    {
+        var point = map.FishSpawnPoints[_random.Next() % map.FishSpawnPoints.Count];
+        return SpawnFishSpawnAlienActor(point.Transform.Origin);
+    }
+
+    public IActor? SpawnFishSpawnAlienActor(Vector3 pos)
+    {
+        var actorCount = GetActorCountByType("fish_spawn_alien");
+        if (actorCount >= 7)
+        {
+            RemoveActorFirstByType("fish_spawn_alien");
+        }
+
+        return CreateHostActor<FishSpawnAlienActor>(pos);
+    }
+
+    public IActor? SpawnRainCloudActor()
     {
         var x = _random.NextSingle() * 250f - 100f;
         var z = _random.NextSingle() * 250f - 150f;
         var pos = new Vector3(x, 42f, z);
 
-        SpawnRainCloud(pos);
+        return SpawnRainCloudActor(pos);
     }
 
-    public void SpawnRainCloud(Vector3 pos)
+    public IActor? SpawnRainCloudActor(Vector3 pos)
     {
-        if (_owned.Values.Any(actor => actor.ActorType == "raincloud"))
+        var actorCount = GetActorCountByType("raincloud");
+        if (actorCount > 0)
         {
-            logger.LogError("raincloud already exists");
-            return;
+            return null;
         }
 
-        var actor = new RainCloudActor
-        {
-            ActorType = "raincloud",
-            ActorId = id.Next(),
-            CreatorId = SteamClient.SteamId,
-            Zone = Zone,
-            ZoneOwner = -1,
-            Position = pos,
-            Rotation = Vector3.Zero,
-            Decay = true,
-            DecayTimer = 32500,
-            ActorUpdateDefaultCooldown = 8
-        };
-
-        SetActorDefaultValues(actor);
-        AddActorAndPropagate(actor);
-        logger.LogInformation("spawn raincloud ({ActorId}) at {Pos}", actor.ActorId, actor.Position);
+        return CreateHostActor<RainCloudActor>(pos);
     }
 
-    public void SpawnVoidPortal()
+    public IActor? SpawnVoidPortalActor()
     {
         if (map.HiddenSpots.Count == 0)
         {
             logger.LogError("no hidden_spots found");
-            return;
+            return null;
         }
 
         var point = map.HiddenSpots[_random.Next() % map.HiddenSpots.Count];
@@ -332,49 +329,42 @@ public sealed class ActorManager(
         var z = _random.NextSingle() - 0.5f;
         var pos = point.Transform.Origin + new Vector3(x, 0, z);
 
-        SpawnVoidPortal(pos);
+        return SpawnVoidPortalActor(pos);
     }
 
-    public void SpawnVoidPortal(Vector3 pos)
+    public IActor? SpawnVoidPortalActor(Vector3 pos)
     {
-        if (_owned.Values.Any(actor => actor.ActorType == "void_portal"))
+        var actorCount = GetActorCountByType("void_portal");
+        if (actorCount > 0)
         {
-            logger.LogError("void portal already exists");
-            return;
+            logger.LogError("void_portal already exists");
+            return null;
         }
 
-        var portal = CreateHostActor("void_portal", pos);
-        portal.Decay = true;
-        portal.DecayTimer = 36000;
-
-        logger.LogInformation("spawn void_portal ({ActorId}) at {Pos}", portal.ActorId, portal.Position);
+        return CreateHostActor<VoidPortalActor>(pos);
     }
 
     // _spawn_metal_spot
-    public void SpawnMetal()
+    public IActor? SpawnMetalActor()
     {
         var point = RandomPickMetalPoint();
         var x = _random.NextSingle() - 0.5f;
         var z = _random.NextSingle() - 0.5f;
         var pos = point.Transform.Origin + new Vector3(x, 0, z);
 
-        SpawnMetal(pos);
+        return SpawnMetalActor(pos);
     }
 
-    public void SpawnMetal(Vector3 pos)
+    public IActor? SpawnMetalActor(Vector3 pos)
     {
         var actorCount = GetActorCountByType("metal_spawn");
         if (actorCount >= 8)
         {
             logger.LogError("metal_spawn limit reached (8)");
-            return;
+            return null;
         }
 
-        var metal = CreateHostActor("metal_spawn", pos);
-        metal.Decay = true;
-        metal.DecayTimer = 10000;
-
-        logger.LogInformation("spawn metal_spawn ({ActorId}) at {Pos}", metal.ActorId, metal.Position);
+        return CreateHostActor<MetalSpawnActor>(pos);
     }
 
     public void SelectPlayerActor(SteamId steamId, Action<PlayerActor> action)

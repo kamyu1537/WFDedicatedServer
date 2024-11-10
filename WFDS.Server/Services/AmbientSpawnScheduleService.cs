@@ -25,10 +25,10 @@ public class AmbientSpawnScheduleService(ActorManager actor, LobbyManager lobby)
     {
         var count = lobby.GetSessionCount();
         if (count < 1) return;
-        
+
         var index = _random.Next() % 3;
 
         if (index == 2)
-            actor.SpawnBird();
+            actor.SpawnAmbientBirdActor();
     }
 }
