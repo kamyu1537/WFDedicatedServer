@@ -1,10 +1,10 @@
 ﻿using System.Collections.Concurrent;
+using System.Collections.Immutable;
 using Steamworks;
 using WFDS.Godot.Types;
 using WFDS.Server.Common;
 using WFDS.Server.Common.Actor;
 using WFDS.Server.Common.Types;
-using WFDS.Server.Network;
 using WFDS.Server.Packets;
 
 namespace WFDS.Server.Managers;
@@ -16,7 +16,9 @@ public sealed class ActorManager(
     ActorIdManager id)
     : IDisposable
 {
-    private const string Zone = "main_zone";
+    private static readonly string MainZone = "main_zone";
+    private static readonly int MaxOwnedActorCount = 32;
+
     private readonly Random _random = new();
 
     private readonly ConcurrentDictionary<long, IActor> _owned = [];
@@ -28,16 +30,6 @@ public sealed class ActorManager(
         _owned.Clear();
         _actors.Clear();
         _players.Clear();
-    }
-
-
-    public void SendAllOwnedActors(Session target)
-    {
-        foreach (var actor in _owned.Values)
-        {
-            actor.SendInstanceActor(target);
-            actor.SendUpdatePacket(target);
-        }
     }
 
     public void SelectActor(long actorId, Action<IActor> update)
@@ -76,18 +68,27 @@ public sealed class ActorManager(
         return _owned.Values.Select(actor => actor.ActorType).ToList();
     }
 
-    private void AddActorAndPropagate(IActor actor)
+    public ImmutableArray<IActor> GetActorsByCreatorId(SteamId creatorId)
+    {
+        return [.._actors.Values.Where(actor => actor.CreatorId == creatorId)];
+    }
+
+    private bool AddActorAndPropagate(IActor actor)
     {
         logger.LogInformation("try add actor {ActorId} {ActorType} - {Position}", actor.ActorId, actor.ActorType, actor.Position);
 
         actor.OnCreated();
-        _actors.TryAdd(actor.ActorId, actor);
+        if (!_actors.TryAdd(actor.ActorId, actor))
+        {
+            return false;
+        }
 
         if (actor is PlayerActor player)
         {
             if (!_players.TryAdd(player.CreatorId, player))
             {
                 logger.LogError("player already exists");
+                return false;
             }
         }
         else if (actor.CreatorId == SteamClient.SteamId.Value)
@@ -96,24 +97,33 @@ public sealed class ActorManager(
             {
                 actor.SendInstanceActor(lobby);
                 actor.SendUpdatePacket(lobby);
+                return true;
             }
-            else
-            {
-                logger.LogError("actor already exists");
-            }
+
+            logger.LogError("actor already exists");
+            return false;
         }
+
+        return true;
     }
 
     private static void SetActorDefaultValues(IActor actor)
     {
-        actor.Zone = Zone;
+        actor.Zone = MainZone;
         actor.ZoneOwner = -1;
         actor.CreateTime = DateTimeOffset.UtcNow;
     }
 
-    private T CreateHostActor<T>(Vector3 position) where T : IActor, new()
+    private bool TryCreateHostActor<T>(Vector3 position, out T actor) where T : IActor, new()
     {
-        var actor = new T
+        actor = default!;
+        if (_owned.Count >= MaxOwnedActorCount)
+        {
+            logger.LogError("owned actor limit reached ({MaxCount})", MaxOwnedActorCount);
+            return false;
+        }
+
+        actor = new T
         {
             ActorId = id.Next(),
             CreatorId = SteamClient.SteamId,
@@ -121,11 +131,10 @@ public sealed class ActorManager(
         };
 
         SetActorDefaultValues(actor);
-        AddActorAndPropagate(actor);
-        return actor;
+        return AddActorAndPropagate(actor);
     }
 
-    public bool CreatePlayerActor(SteamId playerId, long actorId, out PlayerActor actor)
+    public bool TryCreatePlayerActor(SteamId playerId, long actorId, out PlayerActor actor)
     {
         actor = null!;
 
@@ -139,7 +148,7 @@ public sealed class ActorManager(
         {
             ActorId = actorId,
             CreatorId = playerId,
-            Zone = Zone,
+            Zone = MainZone,
             ZoneOwner = -1,
             Position = Vector3.Zero,
             Rotation = Vector3.Zero
@@ -156,11 +165,10 @@ public sealed class ActorManager(
         return true;
     }
 
-    // max owned actor = 32
-    // if remote actor count is over 32. will kick player
-    
-    public bool CreateRemoteActor(SteamId owner, long actorId, string actorType)
+
+    public bool TryCreateRemoteActor(SteamId owner, long actorId, string actorType, out RemoteActor actor)
     {
+        actor = null!;
         if (!id.Add(actorId))
         {
             logger.LogError("actor id already exists {ActorId} {ActorType}", actorId, actorType);
@@ -170,6 +178,14 @@ public sealed class ActorManager(
         var success = false;
         SelectPlayerActor(owner, player =>
         {
+            var ownedActors = GetActorsByCreatorId(owner);
+            if (ownedActors.Length >= MaxOwnedActorCount)
+            {
+                logger.LogError("owned actor limit reached ({MaxCount})", MaxOwnedActorCount);
+                lobby.KickPlayer(owner);
+                return;
+            }
+
             var actor = new RemoteActor
             {
                 ActorType = actorType,
@@ -184,11 +200,20 @@ public sealed class ActorManager(
             };
 
             SetActorDefaultValues(actor);
-            AddActorAndPropagate(actor);
-            success = true;
+            success = AddActorAndPropagate(actor);
         });
 
         return success;
+    }
+
+    public void SelectPlayerActor(SteamId steamId, Action<PlayerActor> action)
+    {
+        if (!_players.TryGetValue(steamId, out var player))
+        {
+            return;
+        }
+
+        action(player);
     }
 
     public void RemoveActor(long actorId)
@@ -198,11 +223,12 @@ public sealed class ActorManager(
             return;
         }
 
-        if (actor.ActorType == "player")
+        if ( actor.ActorType == "player" && !_players.TryRemove(actor.CreatorId, out _))
         {
-            _players.TryRemove(actor.CreatorId, out _);
+            logger.LogError("player not found {SteamId}", actor.CreatorId);
         }
 
+        actor.OnRemoved();
         id.Return(actorId);
 
         var wipe = ActorActionPacket.CreateWipeActorPacket(actorId);
@@ -261,8 +287,10 @@ public sealed class ActorManager(
             RemoveActorFirstByType("ambient_bird");
         }
 
-        var bird = CreateHostActor<AmbientBirdActor>(pos);
-        logger.LogInformation("spawn {ActorType} ({ActorId}) at {Pos}", bird.ActorType, bird.ActorId, bird.Position);
+        if (TryCreateHostActor<AmbientBirdActor>(pos, out var bird))
+        {
+            logger.LogInformation("spawn {ActorType} ({ActorId}) at {Pos}", bird.ActorType, bird.ActorId, bird.Position);
+        }
     }
 
     public IActor? SpawnFishSpawnActor()
@@ -279,7 +307,7 @@ public sealed class ActorManager(
             RemoveActorFirstByType("fish_spawn");
         }
 
-        return CreateHostActor<FishSpawnActor>(pos);
+        return TryCreateHostActor<FishSpawnActor>(pos, out var fish) ? fish : null;
     }
 
     public IActor? SpawnFishSpawnAlienActor()
@@ -296,7 +324,7 @@ public sealed class ActorManager(
             RemoveActorFirstByType("fish_spawn_alien");
         }
 
-        return CreateHostActor<FishSpawnAlienActor>(pos);
+        return TryCreateHostActor<FishSpawnAlienActor>(pos, out var fish) ? fish : null;
     }
 
     public IActor? SpawnRainCloudActor()
@@ -316,7 +344,7 @@ public sealed class ActorManager(
             return null;
         }
 
-        return CreateHostActor<RainCloudActor>(pos);
+        return TryCreateHostActor<RainCloudActor>(pos, out var cloud) ? cloud : null;
     }
 
     public IActor? SpawnVoidPortalActor()
@@ -344,7 +372,7 @@ public sealed class ActorManager(
             return null;
         }
 
-        return CreateHostActor<VoidPortalActor>(pos);
+        return TryCreateHostActor<VoidPortalActor>(pos, out var portal) ? portal : null;
     }
 
     // _spawn_metal_spot
@@ -367,17 +395,7 @@ public sealed class ActorManager(
             return null;
         }
 
-        return CreateHostActor<MetalSpawnActor>(pos);
-    }
-
-    public void SelectPlayerActor(SteamId steamId, Action<PlayerActor> action)
-    {
-        if (!_players.TryGetValue(steamId, out var player))
-        {
-            return;
-        }
-
-        action(player);
+        return TryCreateHostActor<MetalSpawnActor>(pos, out var metal) ? metal : null;
     }
 
     private PositionNode RandomPickMetalPoint()

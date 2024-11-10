@@ -41,7 +41,7 @@ public class InstanceActorHandler : PacketHandler
             return;
         }
             
-        var created = ActorManager.CreateRemoteActor(sender.SteamId, packet.ActorId, packet.ActorType);
+        var created = ActorManager.TryCreateRemoteActor(sender.SteamId, packet.ActorId, packet.ActorType, out _);
         if (!created)
         {
             Logger.LogError("failed to create remote actor {ActorId} {ActorType}", packet.ActorId, packet.ActorType);
@@ -56,7 +56,7 @@ public class InstanceActorHandler : PacketHandler
             return;
         }
 
-        var created = ActorManager.CreatePlayerActor(sender.SteamId, packet.ActorId, out var actor);
+        var created = ActorManager.TryCreatePlayerActor(sender.SteamId, packet.ActorId, out var actor);
         if (!created)
         {
             Logger.LogError("failed to create player actor {ActorId} {ActorType}", packet.ActorId, packet.ActorType);
