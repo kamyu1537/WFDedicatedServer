@@ -2,7 +2,7 @@
 
 public record Vector2(float X, float Y)
 {
-    public static readonly Vector2 Zero = new(0, 0);
+    public static Vector2 Zero => new(0, 0);
     
     public static Vector2 operator +(Vector2 a, Vector2 b)
     {
