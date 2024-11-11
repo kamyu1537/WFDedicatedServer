@@ -315,7 +315,9 @@ public sealed class LobbyManager : IDisposable, ISessionManager
 
     private void UpdateConsoleTitle()
     {
-        Console.Title = $"[{_sessions.Count}/{_cap}] {_name} [{Code}]";
+        var newTitle = $"[{_sessions.Count}/{_cap}] {_name} [{Code}]";
+        _logger.LogInformation("update console title: {Title}", newTitle);
+        Console.Title = newTitle;
     }
 
     // ------------------- Interface Implementation -------------------
