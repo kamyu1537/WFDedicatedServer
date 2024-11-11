@@ -36,7 +36,7 @@ public class InstanceActorHandler : PacketHandler
     {
         if (IsHostActor(packet))
         {
-            Logger.LogError("player request host actor {PlayerName}[{SteamId}] - {ActorId} {ActorType}", sender.Friend.Name, sender.SteamId, packet.ActorId, packet.ActorType);
+            Logger.LogError("player request host actor {Member} - {ActorId} {ActorType}", sender.Friend, packet.ActorId, packet.ActorType);
             sender.Kick();
             return;
         }
@@ -52,7 +52,7 @@ public class InstanceActorHandler : PacketHandler
     {
         if (sender.ActorCreated)
         {
-            Logger.LogError("player actor already exists for {SteamId}", sender.SteamId);
+            Logger.LogError("player actor already exists for {Member}", sender.Friend);
             return;
         }
 

@@ -174,12 +174,12 @@ public sealed class SessionManager : ISessionManager
 
     private void RemoveSession(Friend member)
     {
-        _logger.LogWarning("try remove session: {DisplayName} [{SteamId}]", member.Name, member.Id);
+        _logger.LogWarning("try remove session: {Member}", member);
         SteamNetworking.CloseP2PSessionWithUser(member.Id);
 
         if (!_sessions.TryRemove(member.Id.Value, out var session))
         {
-            _logger.LogWarning("failed to remove session: {DisplayName} [{SteamId}]", member.Name, member.Id);
+            _logger.LogWarning("failed to remove session: {Member}", member);
             return;
         }
 
@@ -204,7 +204,7 @@ public sealed class SessionManager : ISessionManager
 
     private void OnLobbyMemberJoined(Lobby lobby, Friend member)
     {
-        _logger.LogInformation("lobby member joined: {DisplayName} [{SteamId}]", member.Name, member.Id);
+        _logger.LogInformation("lobby member joined: {Member}", member);
 
         var logger = _loggerFactory.CreateLogger("session_" + member.Id);
         var session = new Session(this, logger)
@@ -216,7 +216,7 @@ public sealed class SessionManager : ISessionManager
 
         if (!_sessions.TryAdd(member.Id.Value, session))
         {
-            _logger.LogWarning("failed to add session: {DisplayName} [{SteamId}]", member.Name, member.Id);
+            _logger.LogWarning("failed to add session: {Member}", member);
             session.Kick();
             return;
         }
@@ -228,7 +228,7 @@ public sealed class SessionManager : ISessionManager
     {
         SteamNetworking.CloseP2PSessionWithUser(member.Id);
 
-        _logger.LogInformation("lobby member left: {DisplayName} [{SteamId}]", member.Name, member.Id);
+        _logger.LogInformation("lobby member left: {Member}", member);
         RemoveSession(member);
     }
 
@@ -236,13 +236,13 @@ public sealed class SessionManager : ISessionManager
     {
         SteamNetworking.CloseP2PSessionWithUser(member.Id);
 
-        _logger.LogWarning("lobby member disconnected: {DisplayName} [{SteamId}]", member.Name, member.Id);
+        _logger.LogWarning("lobby member disconnected: {Member}", member);
         RemoveSession(member);
     }
 
     private void OnLobbyMemberDataChanged(Lobby lobby, Friend member)
     {
-        _logger.LogInformation("lobby member data changed: {DisplayName} [{SteamId}]", member.Name, member.Id);
+        _logger.LogInformation("lobby member data changed: {Member}", member);
 
         SelectSession(member.Id, session => { session.Friend = member; });
     }
@@ -285,7 +285,7 @@ public sealed class SessionManager : ISessionManager
         {
             if (!session.HandshakeReceived && now - session.ConnectTime > TimeSpan.FromMinutes(5))
             {
-                _logger.LogError("kick no handshake player: {SteamId}", session.SteamId);
+                _logger.LogError("kick no handshake player: {Member}", session.Friend);
                 KickPlayer(session.SteamId);
             }
         }
@@ -401,7 +401,7 @@ public sealed class SessionManager : ISessionManager
 
         SelectSession(target, session =>
         {
-            _logger.LogInformation("try kick player: {SteamId}", target);
+            _logger.LogInformation("try kick player: {Member}", session.Friend);
             session.SendP2PPacket(NetChannel.GameState, new ServerClosePacket());
         });
 
@@ -423,7 +423,7 @@ public sealed class SessionManager : ISessionManager
 
         SelectSession(target, session =>
         {
-            _logger.LogInformation("try kick player: {SteamId}", target);
+            _logger.LogInformation("try kick player: {Member}", session.Friend);
             session.SendP2PPacket(NetChannel.GameState, new KickPacket());
         });
 
@@ -437,7 +437,7 @@ public sealed class SessionManager : ISessionManager
 
         SelectSession(target, session =>
         {
-            _logger.LogInformation("try ban player: {SteamId}", target);
+            _logger.LogInformation("try ban player: {Member}", session.Friend);
             session.SendP2PPacket(NetChannel.GameState, new BanPacket());
         });
 

@@ -19,7 +19,7 @@ public abstract class PacketHandler : IPacketHandler
         ActorManager = actorManager;
         Logger = logger;
 
-        logger.LogInformation("Initialized packet handler for {PacketType}", packetType);
+        logger.LogInformation("initialized packet handler for {PacketType}", packetType);
         return this;
     }
     

@@ -23,8 +23,10 @@ public class PacketHandleManager : IPacketHandleManager
         _logger = logger;
         _session = session;
 
-        _handlers = typeof(IPacketHandler).Assembly.GetTypes()
-            .Where(t => t.IsClass && !t.IsAbstract && typeof(IPacketHandler).IsAssignableFrom(t))
+        var packetHandlerType = typeof(IPacketHandler);
+        var types = Assembly.GetExecutingAssembly().GetTypes(); 
+        _handlers = types
+            .Where(t => t.IsClass && !t.IsAbstract && packetHandlerType.IsAssignableFrom(t))
             .Select(t => (t.GetCustomAttribute<PacketTypeAttribute>(), Activator.CreateInstance(t) as IPacketHandler))
             .Where(x => x is { Item1: not null, Item2: not null })
             .Select(x => (x.Item1!.PacketType, x.Item2!))

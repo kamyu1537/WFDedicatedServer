@@ -31,7 +31,7 @@ public class ActorActionHandler : PacketHandler
             return;
         }
 
-        Logger.LogInformation("received actor_action from {Name}[{SteamId}] for actor {ActorId} : {Action} / {Data}", sender.Friend.Name, sender.SteamId, packet.ActorId, packet.Action, JsonSerializer.Serialize(packet.Params));
+        Logger.LogInformation("received actor_action from {Member} for actor {ActorId} : {Action} / {Data}", sender.Friend, packet.ActorId, packet.Action, JsonSerializer.Serialize(packet.Params));
 
         QueueFree(sender, packet);
         WipeActor(sender, packet);
@@ -48,7 +48,7 @@ public class ActorActionHandler : PacketHandler
         
         if (packet.Params.Count != 0)
         {
-            Logger.LogError("invalid queue_free packet from {Name}[{SteamId}] : {Data}", sender.Friend.Name, sender.SteamId, JsonSerializer.Serialize(packet.Params));
+            Logger.LogError("invalid queue_free packet from {Member} : {Data}", sender.Friend, JsonSerializer.Serialize(packet.Params));
             return;
         }
 
@@ -67,7 +67,7 @@ public class ActorActionHandler : PacketHandler
         
         if (packet.Params.Count != 1)
         {
-            Logger.LogError("invalid _wipe_actor packet from {Name}[{SteamId}] : {Data}", sender.Friend.Name, sender.SteamId, JsonSerializer.Serialize(packet.Params));
+            Logger.LogError("invalid _wipe_actor packet from {Member} : {Data}", sender.Friend, JsonSerializer.Serialize(packet.Params));
             return;
         }
 
@@ -97,13 +97,13 @@ public class ActorActionHandler : PacketHandler
         
         if (packet.Params.Count != 2)
         {
-            Logger.LogError("invalid _set_zone packet from {Name}[{SteamId}] : {Data}", sender.Friend.Name, sender.SteamId, JsonSerializer.Serialize(packet.Params));
+            Logger.LogError("invalid _set_zone packet from {Member} : {Data}", sender.Friend, JsonSerializer.Serialize(packet.Params));
             return;
         }
 
         if (!sender.ActorCreated)
         {
-            Logger.LogError("actor not created for {Name}[{SteamId}]", sender.Friend.Name, sender.SteamId);
+            Logger.LogError("actor not created for {Member}", sender.Friend);
             return;
         }
 
@@ -125,7 +125,7 @@ public class ActorActionHandler : PacketHandler
         
         if (packet.Params.Count != 1)
         {
-            Logger.LogError("invalid _update_cosmetics packet from {Name}[{SteamId}] : {Data}", sender.Friend.Name, sender.SteamId, JsonSerializer.Serialize(packet.Params));
+            Logger.LogError("invalid _update_cosmetics packet from {Member} : {Data}", sender.Friend, JsonSerializer.Serialize(packet.Params));
             return;
         }
 
@@ -147,7 +147,7 @@ public class ActorActionHandler : PacketHandler
         
         if (packet.Params.Count != 1)
         {
-            Logger.LogError("invalid _update_held_item packet from {Name}[{SteamId}] : {Data}", sender.Friend.Name, sender.SteamId, JsonSerializer.Serialize(packet.Params));
+            Logger.LogError("invalid _update_held_item packet from {Member} : {Data}", sender.Friend, JsonSerializer.Serialize(packet.Params));
             return;
         }
 
@@ -168,7 +168,7 @@ public class ActorActionHandler : PacketHandler
         if (packet.Action != "_sync_create_bubble") return;
         if (packet.Params.Count != 1)
         {
-            Logger.LogError("invalid _sync_create_bubble packet from {Name}[{SteamId}] : {Data}", sender.Friend.Name, sender.SteamId, JsonSerializer.Serialize(packet.Params));
+            Logger.LogError("invalid _sync_create_bubble packet from {Member} : {Data}", sender.Friend, JsonSerializer.Serialize(packet.Params));
             return;
         }
         
@@ -187,7 +187,7 @@ public class ActorActionHandler : PacketHandler
         if (packet.Action != "_sync_level_bubble") return;
         if (packet.Params.Count != 0)
         {
-            Logger.LogError("invalid _sync_level_bubble packet from {Name}[{SteamId}] : {Data}", sender.Friend.Name, sender.SteamId, JsonSerializer.Serialize(packet.Params));
+            Logger.LogError("invalid _sync_level_bubble packet from {Member} : {Data}", sender.Friend, JsonSerializer.Serialize(packet.Params));
             return;
         }
         
