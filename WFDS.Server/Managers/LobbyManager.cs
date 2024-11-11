@@ -13,6 +13,7 @@ namespace WFDS.Server.Managers;
 public sealed class LobbyManager : IDisposable, ISessionManager
 {
     private const int MaxPlayers = 16;
+    private const int RoomCodeLength = 6;
     private const string LobbyMode = "GodotsteamLobby";
     private const string LobbyRef = "webfishing_gamelobby";
     private const string GameVersion = "1.09";
@@ -73,7 +74,7 @@ public sealed class LobbyManager : IDisposable, ISessionManager
         }
 
         Code = code;
-        if (Code.Length < 5 || Code.Length > 6 || string.IsNullOrWhiteSpace(Code))
+        if (Code.Length != RoomCodeLength || string.IsNullOrWhiteSpace(Code))
         {
             Code = GenerationRoomCode();
         }
@@ -278,7 +279,7 @@ public sealed class LobbyManager : IDisposable, ISessionManager
     private static string GenerationRoomCode()
     {
         const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-        var code = new char[6];
+        var code = new char[RoomCodeLength];
         var random = new Random();
         for (var i = 0; i < code.Length; i++)
         {
