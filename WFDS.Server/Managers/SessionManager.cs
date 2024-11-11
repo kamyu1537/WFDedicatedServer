@@ -380,6 +380,7 @@ public sealed class SessionManager : ISessionManager
 
             if (!IsInZone(session, zone, zoneOwner))
             {
+                _logger.LogDebug("skip broadcast to {Member} - {Zone}/{ZoneOwner}", session.Friend, session.Actor?.Zone ?? "unknown", session.Actor?.ZoneOwner ?? 0);
                 continue;
             }
 

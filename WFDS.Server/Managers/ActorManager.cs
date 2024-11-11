@@ -171,9 +171,10 @@ public sealed class ActorManager(
         }
 
         var success = false;
-        sessionManager.SelectSession(playerId, player =>
+        IPlayerActor? result = null;
+        sessionManager.SelectSession(playerId, session =>
         {
-            var actor = new PlayerActor(player)
+            result = new PlayerActor(session)
             {
                 ActorId = actorId,
                 CreatorId = playerId,
@@ -182,11 +183,17 @@ public sealed class ActorManager(
                 Position = Vector3.Zero,
                 Rotation = Vector3.Zero
             };
-            SetActorDefaultValues(actor);
-            success = TryAddActorAndPropagate(actor);
+
+            SetActorDefaultValues(result);
+            success = TryAddActorAndPropagate(result);
         });
 
-        return success;
+        if (result != null)
+        {
+            actor = result;
+        }
+        
+        return result != null && success;
     }
 
     public bool TryCreateRemoteActor(SteamId steamId, long actorId, string actorType, out IActor actor)

@@ -52,6 +52,7 @@ public sealed class PlayerActor(ISession session) : IPlayerActor
 
     public void Dispose()
     {
+        Logger = null;
     }
     
     public void OnCosmeticsUpdated(Cosmetics cosmetics)
@@ -74,6 +75,6 @@ public sealed class PlayerActor(ISession session) : IPlayerActor
     
     public void OnChatMessage(string message)
     {
-        Logger = null;
+        Logger?.LogInformation("{Member}'s message: {Message}", session.Friend, message);
     }
 }
