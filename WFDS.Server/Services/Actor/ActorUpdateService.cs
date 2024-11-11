@@ -22,9 +22,6 @@ public class ActorUpdateService(ILogger<ActorUpdateService> logger, IActorManage
 
     private void Update(double delta)
     {
-        var count = session.GetSessionCount();
-        if (count < 1) return;
-        
         manager.SelectActors(actor =>
         {
             if (Decay(actor)) return;
