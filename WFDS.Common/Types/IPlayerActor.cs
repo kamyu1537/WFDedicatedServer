@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
-using WFDS.Server.Network;
+﻿using WFDS.Godot.Types;
 
 namespace WFDS.Common.Types;
 
@@ -12,4 +11,7 @@ public interface IPlayerActor : IActor
 
     void OnCosmeticsUpdated(Cosmetics cosmetics);
     void OnHeldItemUpdated(GameItem item);
+    void OnLevelUp();
+    void OnMessage(string message, string color, bool local, Vector3 position, string zone, long zoneOwner);
+    void OnChatMessage(string message);
 }

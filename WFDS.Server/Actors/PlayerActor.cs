@@ -39,16 +39,6 @@ public sealed class PlayerActor : IPlayerActor
     {
     }
 
-    public void OnCosmeticsUpdated(Cosmetics cosmetics)
-    {
-        Cosmetics = cosmetics;
-    }
-    
-    public void OnHeldItemUpdated(GameItem item)
-    {
-        HeldItem = item;
-    }
-
     public void OnZoneUpdated(string zone, long zoneOwner)
     {
         Zone = zone;
@@ -65,5 +55,27 @@ public sealed class PlayerActor : IPlayerActor
     {
         Logger = null;
         SessionManager = null;
+    }
+    
+    public void OnCosmeticsUpdated(Cosmetics cosmetics)
+    {
+        Cosmetics = cosmetics;
+    }
+    
+    public void OnHeldItemUpdated(GameItem item)
+    {
+        HeldItem = item;
+    }
+    
+    public void OnLevelUp()
+    {
+    }
+
+    public void OnMessage(string message, string color, bool local, Vector3 position, string zone, long zoneOwner)
+    {
+    }
+    
+    public void OnChatMessage(string message)
+    {
     }
 }

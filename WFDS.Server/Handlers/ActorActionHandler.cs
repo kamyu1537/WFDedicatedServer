@@ -16,7 +16,9 @@ public class ActorActionHandler : PacketHandler
         "_wipe_actor",
         "_set_zone",
         "_update_cosmetics",
-        "_update_held_item"
+        "_update_held_item",
+        "_sync_create_bubble",
+        "_sync_level_bubble"
     ];
 
     public override void HandlePacket(ISession sender, NetChannel channel, Dictionary<object, object> data)
@@ -32,28 +34,19 @@ public class ActorActionHandler : PacketHandler
 
         Logger.LogInformation("received actor_action from {Name}[{SteamId}] for actor {ActorId} : {Action} / {Data}", sender.Friend.Name, sender.SteamId, packet.ActorId, packet.Action, JsonSerializer.Serialize(packet.Params));
 
-        switch (packet.Action)
-        {
-            case "queue_free":
-                QueueFree(sender, packet);
-                break;
-            case "_wipe_actor":
-                WipeActor(sender, packet);
-                break;
-            case "_set_zone":
-                SetZone(sender, packet);
-                break;
-            case "_update_cosmetics":
-                UpdateCosmetics(sender, packet);
-                break;
-            case "_update_held_item":
-                UpdateHeldItem(sender, packet);
-                break;
-        }
+        QueueFree(sender, packet);
+        WipeActor(sender, packet);
+        SetZone(sender, packet);
+        UpdateCosmetics(sender, packet);
+        UpdateHeldItem(sender, packet);
+        SyncCreateBubble(sender, packet);
+        SyncLevelBubble(sender, packet);
     }
 
     private void QueueFree(ISession sender, ActorActionPacket packet)
     {
+        if (packet.Action != "queue_free") return;
+        
         if (packet.Params.Count != 0)
         {
             Logger.LogError("invalid queue_free packet from {Name}[{SteamId}] : {Data}", sender.Friend.Name, sender.SteamId, JsonSerializer.Serialize(packet.Params));
@@ -71,6 +64,8 @@ public class ActorActionHandler : PacketHandler
 
     private void WipeActor(ISession sender, ActorActionPacket packet)
     {
+        if (packet.Action != "_wipe_actor") return;
+        
         if (packet.Params.Count != 1)
         {
             Logger.LogError("invalid _wipe_actor packet from {Name}[{SteamId}] : {Data}", sender.Friend.Name, sender.SteamId, JsonSerializer.Serialize(packet.Params));
@@ -99,6 +94,8 @@ public class ActorActionHandler : PacketHandler
 
     private void SetZone(ISession sender, ActorActionPacket packet)
     {
+        if (packet.Action != "_set_zone") return;
+        
         if (packet.Params.Count != 2)
         {
             Logger.LogError("invalid _set_zone packet from {Name}[{SteamId}] : {Data}", sender.Friend.Name, sender.SteamId, JsonSerializer.Serialize(packet.Params));
@@ -125,6 +122,8 @@ public class ActorActionHandler : PacketHandler
 
     private void UpdateCosmetics(ISession sender, ActorActionPacket packet)
     {
+        if (packet.Action != "_update_cosmetics") return;
+        
         if (packet.Params.Count != 1)
         {
             Logger.LogError("invalid _update_cosmetics packet from {Name}[{SteamId}] : {Data}", sender.Friend.Name, sender.SteamId, JsonSerializer.Serialize(packet.Params));
@@ -145,6 +144,8 @@ public class ActorActionHandler : PacketHandler
 
     private void UpdateHeldItem(ISession sender, ActorActionPacket packet)
     {
+        if (packet.Action != "_update_held_item") return;
+        
         if (packet.Params.Count != 1)
         {
             Logger.LogError("invalid _update_held_item packet from {Name}[{SteamId}] : {Data}", sender.Friend.Name, sender.SteamId, JsonSerializer.Serialize(packet.Params));
@@ -160,6 +161,43 @@ public class ActorActionHandler : PacketHandler
             var item = new GameItem();
             item.Parse(dic);
             actor.OnHeldItemUpdated(item);
+        });
+    }
+
+    private void SyncCreateBubble(ISession sender, ActorActionPacket packet)
+    {
+        if (packet.Action != "_sync_create_bubble") return;
+        if (packet.Params.Count != 1)
+        {
+            Logger.LogError("invalid _sync_create_bubble packet from {Name}[{SteamId}] : {Data}", sender.Friend.Name, sender.SteamId, JsonSerializer.Serialize(packet.Params));
+            return;
+        }
+        
+        ActorManager?.SelectPlayerActor(sender.SteamId, actor =>
+        {
+            if (actor.ActorId != packet.ActorId)
+                return;
+
+            var text = packet.Params[0].GetString();
+            actor.OnChatMessage(text);
+        });
+    }
+    
+    private void SyncLevelBubble(ISession sender, ActorActionPacket packet)
+    {
+        if (packet.Action != "_sync_level_bubble") return;
+        if (packet.Params.Count != 0)
+        {
+            Logger.LogError("invalid _sync_level_bubble packet from {Name}[{SteamId}] : {Data}", sender.Friend.Name, sender.SteamId, JsonSerializer.Serialize(packet.Params));
+            return;
+        }
+        
+        ActorManager?.SelectPlayerActor(sender.SteamId, actor =>
+        {
+            if (actor.ActorId != packet.ActorId)
+                return;
+
+            actor.OnLevelUp();
         });
     }
 }
