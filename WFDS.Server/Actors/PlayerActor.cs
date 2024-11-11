@@ -8,7 +8,6 @@ namespace WFDS.Server.Actors;
 public sealed class PlayerActor : IPlayerActor
 {
     public ILogger? Logger { get; set; }
-    public ISession? Session { get; set; }
     public ISessionManager? SessionManager { get; set; }
     
     public string ActorType => "player";
@@ -65,7 +64,6 @@ public sealed class PlayerActor : IPlayerActor
     public void Dispose()
     {
         Logger = null;
-        Session = null;
         SessionManager = null;
     }
 }

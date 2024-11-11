@@ -8,7 +8,6 @@ public interface IPlayerActor : IActor
     GameItem HeldItem { get; set; }
     Cosmetics Cosmetics { get; set; }
 
-    ISession? Session { get; set; }
     ISessionManager? SessionManager { get; set; }
 
     void OnCosmeticsUpdated(Cosmetics cosmetics);

@@ -110,7 +110,7 @@ public sealed class ActorManager(
         return [.._actors.Values.Where(actor => actor.CreatorId == creatorId)];
     }
 
-    private bool AddActorAndPropagate(IActor actor)
+    private bool TryAddActorAndPropagate(IActor actor)
     {
         logger.LogInformation("try add actor {ActorId} {ActorType} - {Position}", actor.ActorId, actor.ActorType, actor.Position);
         if (!_actors.TryAdd(actor.ActorId, actor))
@@ -119,7 +119,7 @@ public sealed class ActorManager(
         }
 
         actor.OnCreated();
-        if (actor is PlayerActor player)
+        if (actor is IPlayerActor player)
         {
             if (!_players.TryAdd(player.CreatorId, player))
             {
@@ -143,11 +143,17 @@ public sealed class ActorManager(
         return true;
     }
 
-    private static void SetActorDefaultValues(IActor actor)
+    private void SetActorDefaultValues(IActor actor)
     {
         actor.Zone = MainZone;
         actor.ZoneOwner = -1;
         actor.CreateTime = DateTimeOffset.UtcNow;
+        actor.Logger = logger;
+    }
+
+    private void SetPlayerActorDefaultValues(IPlayerActor player)
+    {
+        player.SessionManager = lobby;
     }
 
     public bool TryCreateHostActor<T>(Vector3 position, out T actor) where T : IActor, new()
@@ -167,7 +173,7 @@ public sealed class ActorManager(
         };
 
         SetActorDefaultValues(actor);
-        return AddActorAndPropagate(actor);
+        return TryAddActorAndPropagate(actor);
     }
 
     public bool TryCreatePlayerActor(SteamId playerId, long actorId, out IPlayerActor actor)
@@ -190,15 +196,9 @@ public sealed class ActorManager(
             Rotation = Vector3.Zero
         };
 
-        if (!_players.TryAdd(playerId, actor))
-        {
-            logger.LogError("player already exists {SteamId}", playerId);
-            return false;
-        }
-
         SetActorDefaultValues(actor);
-        AddActorAndPropagate(actor);
-        return true;
+        SetPlayerActorDefaultValues(actor);
+        return TryAddActorAndPropagate(actor);
     }
 
     public bool TryCreateRemoteActor(SteamId steamId, long actorId, string actorType, out IActor actor)
@@ -235,7 +235,7 @@ public sealed class ActorManager(
             };
 
             SetActorDefaultValues(actor);
-            success = AddActorAndPropagate(actor);
+            success = TryAddActorAndPropagate(actor);
         });
 
         return success;
