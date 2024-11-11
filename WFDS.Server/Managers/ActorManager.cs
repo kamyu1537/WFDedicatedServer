@@ -137,7 +137,9 @@ public sealed class ActorManager(
         actor.Zone = MainZone;
         actor.ZoneOwner = -1;
         actor.CreateTime = DateTimeOffset.UtcNow;
+        
         actor.Logger = logger;
+        actor.ActorManager = this;
     }
 
     public bool TryCreateHostActor<T>(Vector3 position, out T actor) where T : IActor, new()

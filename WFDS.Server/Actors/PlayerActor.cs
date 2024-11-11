@@ -1,5 +1,6 @@
 ﻿using Steamworks;
 using WFDS.Common.Types;
+using WFDS.Common.Types.Manager;
 using WFDS.Godot.Types;
 
 namespace WFDS.Server.Actors;
@@ -7,6 +8,7 @@ namespace WFDS.Server.Actors;
 public sealed class PlayerActor(ISession session) : IPlayerActor
 {
     public ILogger? Logger { get; set; }
+    public IActorManager? ActorManager { get; set; }
     
     public string ActorType => "player";
     public long ActorId { get; init; }
@@ -53,6 +55,7 @@ public sealed class PlayerActor(ISession session) : IPlayerActor
     public void Dispose()
     {
         Logger = null;
+        ActorManager = null;
     }
     
     public void OnCosmeticsUpdated(Cosmetics cosmetics)

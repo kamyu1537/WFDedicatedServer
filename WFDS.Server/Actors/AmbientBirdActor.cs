@@ -1,5 +1,6 @@
 ﻿using Steamworks;
 using WFDS.Common.Types;
+using WFDS.Common.Types.Manager;
 using WFDS.Godot.Types;
 
 namespace WFDS.Server.Actors;
@@ -7,6 +8,7 @@ namespace WFDS.Server.Actors;
 public sealed class AmbientBirdActor : IActor
 {
     public ILogger? Logger { get; set; }
+    public IActorManager? ActorManager { get; set; }
     
     public string ActorType => "ambient_bird";
     public long ActorId { get; init; }
@@ -55,5 +57,6 @@ public sealed class AmbientBirdActor : IActor
     public void Dispose()
     {
         Logger = null;
+        ActorManager = null;
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using Steamworks;
+using WFDS.Common.Types.Manager;
 using WFDS.Godot.Types;
 
 namespace WFDS.Common.Types;
@@ -7,6 +8,7 @@ namespace WFDS.Common.Types;
 public interface IActor : IDisposable
 {
     ILogger? Logger { get; set; }
+    IActorManager? ActorManager { get; set; }
     
     string ActorType { get; }
     long ActorId { get; init; }
