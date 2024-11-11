@@ -62,25 +62,22 @@ public class Cosmetics : IPacket
         };
     }
 
-    public static Cosmetics CreateDefault()
+    public static Cosmetics Default => new()
     {
-        return new Cosmetics
-        {
-            Species = "species_cat",
-            Pattern = "pattern_none",
-            PrimaryColor = "pcolor_white",
-            SecondaryColor = "scolor_tan",
-            Hat = "hat_none",
-            Undershirt = "shirt_none",
-            Overshirt = "overshirt_none",
-            Title = "title_rank_1",
-            Bobber = "bobber_default",
-            Eye = "eye_halfclosed",
-            Nose = "nose_cat",
-            Mouth = "mouth_default",
-            Accessory = [],
-            Tail = "tail_cat",
-            Legs = "legs_none"
-        };
-    }
+        Species = "species_cat",
+        Pattern = "pattern_none",
+        PrimaryColor = "pcolor_white",
+        SecondaryColor = "scolor_tan",
+        Hat = "hat_none",
+        Undershirt = "shirt_none",
+        Overshirt = "overshirt_none",
+        Title = "title_rank_1",
+        Bobber = "bobber_default",
+        Eye = "eye_halfclosed",
+        Nose = "nose_cat",
+        Mouth = "mouth_default",
+        Accessory = [],
+        Tail = "tail_cat",
+        Legs = "legs_none"
+    };
 }

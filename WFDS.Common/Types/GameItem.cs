@@ -33,15 +33,12 @@ public class GameItem : IPacket
         };
     }
 
-    public static GameItem CreateDefault()
+    public static GameItem Default => new()
     {
-        return new GameItem
-        {
-            Id = "empty_hand",
-            Size = 1.0f,
-            Ref = 0,
-            Quality = QualityType.Normal,
-            Tags = []
-        };
-    }
+        Id = "empty_hand",
+        Size = 1.0f,
+        Ref = 0,
+        Quality = QualityType.Normal,
+        Tags = []
+    };
 }
