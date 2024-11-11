@@ -285,6 +285,7 @@ public sealed class SessionManager : ISessionManager
         {
             if (!session.HandshakeReceived && now - session.ConnectTime > TimeSpan.FromMinutes(5))
             {
+                _logger.LogError("kick no handshake player: {SteamId}", session.SteamId);
                 KickPlayer(session.SteamId);
             }
         }
