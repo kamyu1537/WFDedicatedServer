@@ -53,5 +53,6 @@ public sealed class FishSpawnActor : IActor
 
     public void Dispose()
     {
+        Logger = null;
     }
 }

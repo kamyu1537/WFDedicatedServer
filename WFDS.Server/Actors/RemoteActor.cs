@@ -57,5 +57,6 @@ public sealed class RemoteActor : IActor
     
     public void Dispose()
     {
+        Logger = null;
     }
 }

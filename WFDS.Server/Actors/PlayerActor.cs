@@ -74,5 +74,6 @@ public sealed class PlayerActor(ISession session) : IPlayerActor
     
     public void OnChatMessage(string message)
     {
+        Logger = null;
     }
 }

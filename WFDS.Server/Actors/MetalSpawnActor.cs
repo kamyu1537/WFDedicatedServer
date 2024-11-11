@@ -56,5 +56,6 @@ public sealed class MetalSpawnActor : IActor
 
     public void Dispose()
     {
+        Logger = null;
     }
 }

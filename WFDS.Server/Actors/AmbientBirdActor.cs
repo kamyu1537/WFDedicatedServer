@@ -54,5 +54,6 @@ public sealed class AmbientBirdActor : IActor
 
     public void Dispose()
     {
+        Logger = null;
     }
 }

@@ -54,5 +54,6 @@ public sealed class VoidPortalActor : IActor
 
     public void Dispose()
     {
+        Logger = null;
     }
 }

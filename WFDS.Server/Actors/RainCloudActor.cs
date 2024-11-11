@@ -59,5 +59,6 @@ public sealed class RainCloudActor : IActor
 
     public void Dispose()
     {
+        Logger = null;
     }
 }
