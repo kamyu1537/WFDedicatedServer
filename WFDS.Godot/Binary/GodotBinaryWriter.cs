@@ -125,6 +125,12 @@ public sealed class GodotBinaryWriter(Stream stream, GodotBinaryWriterOptions op
 
     private void WriteInt64(long value)
     {
+        if (value is >= int.MinValue and <= int.MaxValue)
+        {
+            WriteInt32((int)value);
+            return;
+        }
+        
         Writer.Write(GodotType.Int64);
         Writer.Write(value);
     }
