@@ -307,7 +307,7 @@ public sealed class ActorManager(
             TryRemoveActorFirstByType("ambient_bird", ActorRemoveTypes.ActorCountOver, out _);
         }
 
-        return TryCreateHostActor<FishSpawnActor>(position, out var fish) ? fish : null;
+        return TryCreateHostActor<AmbientBirdActor>(position, out var fish) ? fish : null;
     }
 
     public IActor? SpawnFishSpawnActor(Vector3 position)
