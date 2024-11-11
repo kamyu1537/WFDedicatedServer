@@ -5,7 +5,7 @@
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
         <UserSecretsId>dotnet-WFDS.Server-a69175ff-2087-4962-b0bd-af150730118c</UserSecretsId>
-        <RuntimeIdentifiers>win-x64;linux-x64;osx-x64</RuntimeIdentifiers>
+        <RuntimeIdentifiers>win-x64;linux-x64</RuntimeIdentifiers>
         <Version>1.0.9</Version>
     </PropertyGroup>
 
@@ -34,20 +34,26 @@
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
             <Link>steam_api64.dll</Link>
         </None>
-
-        <None Include="Plugins\win64\steam_api64.lib">
+        <None Include="Plugins\win64\steamclient64.dll">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-            <Link>steam_api64.lib</Link>
+            <Link>steamclient64.dll</Link>
+        </None>
+        <None Include="Plugins\win64\tier0_s64.dll">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <Link>tier0_s64.dll</Link>
+        </None>
+        <None Include="Plugins\win64\vstdlib_s64.dll">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <Link>vstdlib_s64.dll</Link>
         </None>
 
         <None Include="Plugins\linux64\libsteam_api.so">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
             <Link>libsteam_api.so</Link>
         </None>
-
-        <None Include="Plugins\osx\libsteam_api.bundle">
+        <None Include="Plugins\linux64\libsteam_api.so">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-            <Link>libsteam_api.bundle</Link>
+            <Link>steamclient.so</Link>
         </None>
     </ItemGroup>
 </Project>
