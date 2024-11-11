@@ -232,7 +232,6 @@ public sealed class SessionManager : ISessionManager
 
         _logger.LogInformation("lobby member left: {DisplayName} [{SteamId}]", member.Name, member.Id);
         RemoveSession(member);
-        UpdateConsoleTitle();
     }
 
     private void OnLobbyMemberDisconnected(Lobby lobby, Friend member)
@@ -241,7 +240,6 @@ public sealed class SessionManager : ISessionManager
 
         _logger.LogWarning("lobby member disconnected: {DisplayName} [{SteamId}]", member.Name, member.Id);
         RemoveSession(member);
-        UpdateConsoleTitle();
     }
 
     private void OnLobbyMemberDataChanged(Lobby lobby, Friend member)
