@@ -1,12 +1,15 @@
-﻿using Steamworks;
+﻿using Serilog;
+using Steamworks;
 using WFDS.Common.Types;
 using WFDS.Godot.Types;
+using ILogger = Microsoft.Extensions.Logging.ILogger;
 
-namespace WFDS.Server.Common.Actor;
+namespace WFDS.Server.Actors;
 
-public class FishSpawnActor : IActor
+public sealed class MetalSpawnActor : IActor
 {
-    public string ActorType => "fish_spawn";
+    public ILogger? Logger { get; set; }
+    public string ActorType => "metal_spawn";
     public long ActorId { get; init; }
     public SteamId CreatorId { get; init; }
     public string Zone { get; set; } = "main_zone";
@@ -14,21 +17,22 @@ public class FishSpawnActor : IActor
     public Vector3 Position { get; set; } = Vector3.Zero;
     public Vector3 Rotation { get; set; } = Vector3.Zero;
     public bool Decay => true;
-    public long DecayTimer { get; set; } = 4800;
+    public long DecayTimer { get; set; } = 10000;
     public DateTimeOffset CreateTime { get; set; } = DateTimeOffset.UtcNow;
 
     public bool IsDeadActor { get; set; }
     public long ActorUpdateDefaultCooldown => 32;
     public long ActorUpdateCooldown { get; set; }
     
+
     public void OnCreated()
     {
     }
-
+    
     public void OnRemoved(ActorRemoveTypes type)
     {
     }
-    
+
     public void OnUpdate(double delta)
     {
     }
@@ -47,5 +51,10 @@ public class FishSpawnActor : IActor
 
     public void OnActorUpdated(Vector3 position, Vector3 rotation)
     {
+    }
+
+    public void Dispose()
+    {
+        Logger = null;
     }
 }

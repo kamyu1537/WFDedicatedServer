@@ -1,11 +1,11 @@
-﻿using WFDS.Server.Common.Extensions;
+﻿using WFDS.Common.Extensions;
 
 namespace WFDS.Common.Types;
 
 // {"id": "empty_hand", "ref": 0, "size": 1.0, "quality": ITEM_QUALITIES.NORMAL, "tags": []}
 public class GameItem : IPacket
 {
-    public string Id { get; set; }
+    public string Id { get; set; } = string.Empty;
     public float Size { get; set; }
     public long Ref { get; set; }
     public QualityType Quality { get; set; } = QualityType.Normal;

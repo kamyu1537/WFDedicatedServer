@@ -1,4 +1,4 @@
-﻿namespace WFDS.Server.Common.Extensions;
+﻿namespace WFDS.Common.Extensions;
 
 public static class ObjectExtensions
 {

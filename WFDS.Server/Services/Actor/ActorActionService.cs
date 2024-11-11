@@ -1,5 +1,5 @@
 ﻿using Steamworks;
-using WFDS.Server.Common.Actor;
+using WFDS.Common.Types;
 using WFDS.Server.Managers;
 using WFDS.Server.Packets;
 

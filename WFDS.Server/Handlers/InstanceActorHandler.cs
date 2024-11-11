@@ -1,4 +1,5 @@
-﻿using WFDS.Server.Common;
+﻿using WFDS.Common.Types;
+using WFDS.Server.Common;
 using WFDS.Server.Network;
 using WFDS.Server.Packets;
 
@@ -7,7 +8,7 @@ namespace WFDS.Server.Handlers;
 [PacketType("instance_actor")]
 public class InstanceActorHandler : PacketHandler
 {
-    public override void HandlePacket(Session sender, NetChannel channel, Dictionary<object, object> data)
+    public override void HandlePacket(ISession sender, NetChannel channel, Dictionary<object, object> data)
     {
         var packet = new InstanceActorPacket();
         packet.Parse(data);
@@ -32,7 +33,7 @@ public class InstanceActorHandler : PacketHandler
         return OnlyHostActors.Contains(packet.ActorType);
     }
 
-    private void CreateRemoteActor(Session sender, InstanceActorPacket packet)
+    private void CreateRemoteActor(ISession sender, InstanceActorPacket packet)
     {
         if (IsHostActor(packet))
         {
@@ -41,14 +42,14 @@ public class InstanceActorHandler : PacketHandler
             return;
         }
             
-        var created = ActorManager.TryCreateRemoteActor(sender.SteamId, packet.ActorId, packet.ActorType, out _);
+        var created = ActorManager?.TryCreateRemoteActor(sender.SteamId, packet.ActorId, packet.ActorType, out _) ?? false;
         if (!created)
         {
             Logger.LogError("failed to create remote actor {ActorId} {ActorType}", packet.ActorId, packet.ActorType);
         }
     }
 
-    private void CreatePlayerActor(Session sender, InstanceActorPacket packet)
+    private void CreatePlayerActor(ISession sender, InstanceActorPacket packet)
     {
         if (sender.ActorCreated)
         {
@@ -56,7 +57,8 @@ public class InstanceActorHandler : PacketHandler
             return;
         }
 
-        var created = ActorManager.TryCreatePlayerActor(sender.SteamId, packet.ActorId, out var actor);
+        IPlayerActor actor = null!;
+        var created = ActorManager?.TryCreatePlayerActor(sender.SteamId, packet.ActorId, out actor) ?? false;
         if (!created)
         {
             Logger.LogError("failed to create player actor {ActorId} {ActorType}", packet.ActorId, packet.ActorType);

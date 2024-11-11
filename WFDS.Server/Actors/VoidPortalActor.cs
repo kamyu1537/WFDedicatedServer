@@ -2,11 +2,13 @@
 using WFDS.Common.Types;
 using WFDS.Godot.Types;
 
-namespace WFDS.Server.Common.Actor;
+namespace WFDS.Server.Actors;
 
-public class MetalSpawnActor : IActor
+public sealed class VoidPortalActor : IActor
 {
-    public string ActorType => "metal_spawn";
+    public ILogger? Logger { get; set; }
+    
+    public string ActorType => "void_portal";
     public long ActorId { get; init; }
     public SteamId CreatorId { get; init; }
     public string Zone { get; set; } = "main_zone";
@@ -14,7 +16,7 @@ public class MetalSpawnActor : IActor
     public Vector3 Position { get; set; } = Vector3.Zero;
     public Vector3 Rotation { get; set; } = Vector3.Zero;
     public bool Decay => true;
-    public long DecayTimer { get; set; } = 10000;
+    public long DecayTimer { get; set; } = 36000;
     public DateTimeOffset CreateTime { get; set; } = DateTimeOffset.UtcNow;
 
     public bool IsDeadActor { get; set; }
@@ -22,7 +24,7 @@ public class MetalSpawnActor : IActor
     public long ActorUpdateCooldown { get; set; }
     
 
-    public virtual void OnCreated()
+    public void OnCreated()
     {
     }
     
@@ -48,5 +50,10 @@ public class MetalSpawnActor : IActor
 
     public void OnActorUpdated(Vector3 position, Vector3 rotation)
     {
+    }
+
+    public void Dispose()
+    {
+        Logger = null;
     }
 }

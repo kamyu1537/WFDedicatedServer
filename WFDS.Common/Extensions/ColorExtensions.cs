@@ -1,6 +1,6 @@
 ﻿using System.Drawing;
 
-namespace WFDS.Server.Common.Extensions;
+namespace WFDS.Common.Extensions;
 
 public static class ColorExtensions
 {

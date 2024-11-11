@@ -2,58 +2,56 @@
 using WFDS.Common.Types;
 using WFDS.Godot.Types;
 
-namespace WFDS.Server.Common.Actor;
+namespace WFDS.Server.Actors;
 
-public class PlayerActor : IActor
+public sealed class FishSpawnAlienActor : IActor
 {
-    public string ActorType => "player";
+    public ILogger? Logger { get; set; }
+    public string ActorType => "fish_spawn_alien";
     public long ActorId { get; init; }
     public SteamId CreatorId { get; init; }
     public string Zone { get; set; } = "main_zone";
-    public long ZoneOwner { get; set; }
+    public long ZoneOwner { get; set; } = -1;
     public Vector3 Position { get; set; } = Vector3.Zero;
     public Vector3 Rotation { get; set; } = Vector3.Zero;
-    public bool Decay => false;
-    public long DecayTimer { get; set; }
+    public bool Decay => true;
+    public long DecayTimer { get; set; } = 14400;
     public DateTimeOffset CreateTime { get; set; } = DateTimeOffset.UtcNow;
-    public bool IsDeadActor { get; set; } = true;
-    public long ActorUpdateDefaultCooldown => 0;
+
+    public bool IsDeadActor { get; set; }
+    public long ActorUpdateDefaultCooldown => 8;
     public long ActorUpdateCooldown { get; set; }
     
-    public GameItem HeldItem { get; set; } = GameItem.CreateDefault();
-    public Cosmetics Cosmetics { get; set; } = Cosmetics.CreateDefault();
-
     public void OnCreated()
     {
     }
-    
+
     public void OnRemoved(ActorRemoveTypes type)
     {
     }
-
+    
     public void OnUpdate(double delta)
     {
     }
-
+    
     public void OnCosmeticsUpdated(Cosmetics cosmetics)
     {
-        Cosmetics = cosmetics;
     }
-    
+
     public void OnHeldItemUpdated(GameItem item)
     {
-        HeldItem = item;
     }
 
     public void OnZoneUpdated(string zone, long zoneOwner)
     {
-        Zone = zone;
-        ZoneOwner = zoneOwner;
     }
-    
+
     public void OnActorUpdated(Vector3 position, Vector3 rotation)
     {
-        Position = position;
-        Rotation = rotation;
+    }
+
+    public void Dispose()
+    {
+        Logger = null;
     }
 }

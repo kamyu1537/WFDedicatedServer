@@ -1,30 +1,28 @@
 ﻿using System.Collections.Concurrent;
 using System.Text.Json;
 using Steamworks;
+using WFDS.Common.Extensions;
+using WFDS.Common.Helper;
 using WFDS.Common.Types;
 using WFDS.Godot.Binary;
 using WFDS.Godot.Types;
 using WFDS.Server.Common;
-using WFDS.Server.Common.Actor;
-using WFDS.Server.Common.Extensions;
-using WFDS.Server.Common.Helpers;
-using WFDS.Server.Managers;
 using WFDS.Server.Packets;
 using Color = System.Drawing.Color;
 
 namespace WFDS.Server.Network;
 
-public sealed class Session : ISession, IDisposable
+public sealed class Session : ISession
 {
-    public LobbyManager LobbyManager { get; set; } = null!;
-    public ILogger Logger { get; set; } = null!;
+    public ISessionManager? SessionManager { get; set; }
+    public ILogger? Logger { get; set; }
 
     public bool Disposed { get; set; }
 
     public Friend Friend { get; set; }
     public SteamId SteamId { get; set; }
 
-    public PlayerActor? Actor { get; set; }
+    public IPlayerActor? Actor { get; set; }
     public bool ActorCreated { get; set; }
 
     public bool HandshakeReceived { get; set; }
@@ -36,14 +34,14 @@ public sealed class Session : ISession, IDisposable
 
     public ConcurrentQueue<(NetChannel, byte[])> Packets { get; } = [];
 
-    public void SendPacket(NetChannel channel, IPacket packet, string zone = "", long zoneOwner = -1)
+    public void SendP2PPacket(NetChannel channel, IPacket packet, string zone = "", long zoneOwner = -1)
     {
-        LobbyManager.SendPacket(SteamId, channel, packet, zone, zoneOwner);
+        SessionManager?.SendP2PPacket(SteamId, channel, packet, zone, zoneOwner);
     }
 
     public void SendMessage(string message, Color color, bool local = false)
     {
-        SendPacket(NetChannel.GameState, new MessagePacket
+        SessionManager?.SendP2PPacket(SteamId, NetChannel.GameState, new MessagePacket
         {
             Message = message,
             Color = color.ToHex(true),
@@ -54,9 +52,9 @@ public sealed class Session : ISession, IDisposable
         });
     }
 
-    public void SendLetter(SteamId target, string body)
+    public void SendLetter(SteamId target, string body, List<GameItem> items)
     {
-        SendPacket(NetChannel.GameState, new LetterReceivedPacket
+        SessionManager?.SendP2PPacket(SteamId, NetChannel.GameState, new LetterReceivedPacket
         {
             LatterId = new Random().Next(),
             From = SteamClient.SteamId.ToString(),
@@ -72,21 +70,21 @@ public sealed class Session : ISession, IDisposable
     public void Kick()
     {
         ClearPacketQueue();
-        LobbyManager.KickPlayer(SteamId);
+        SessionManager?.KickPlayer(SteamId);
         ProcessPackets();
     }
 
-    public void Ban()
+    public void TempBan()
     {
         ClearPacketQueue();
-        LobbyManager.TempBanPlayer(SteamId);
+        SessionManager?.TempBanPlayer(SteamId);
         ProcessPackets();
     }
 
     public void ServerClose()
     {
         ClearPacketQueue();
-        LobbyManager.ServerClose(SteamId);
+        SessionManager?.ServerClose(SteamId);
         ProcessPackets();
     }
 
@@ -128,8 +126,8 @@ public sealed class Session : ISession, IDisposable
 
         Packets.Clear();
 
-        LobbyManager = null!;
-        Logger = null!;
-        Actor = null!;
+        SessionManager = null;
+        Logger = null;
+        Actor = null;
     }
 }

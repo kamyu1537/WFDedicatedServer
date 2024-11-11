@@ -7,7 +7,7 @@ namespace WFDS.Server.Handlers;
 [PacketType("message")]
 public class MessageHandler : PacketHandler
 {
-    public override void HandlePacket(Session sender, NetChannel channel, Dictionary<object, object> data)
+    public override void HandlePacket(ISession sender, NetChannel channel, Dictionary<object, object> data)
     {
         var packet = new MessagePacket();
         packet.Parse(data);

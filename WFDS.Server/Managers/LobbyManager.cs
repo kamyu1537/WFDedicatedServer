@@ -1,16 +1,16 @@
 ﻿using System.Collections.Concurrent;
 using Steamworks;
 using Steamworks.Data;
+using WFDS.Common.Helper;
 using WFDS.Common.Types;
 using WFDS.Godot.Binary;
 using WFDS.Server.Common;
-using WFDS.Server.Common.Helpers;
 using WFDS.Server.Network;
 using WFDS.Server.Packets;
 
 namespace WFDS.Server.Managers;
 
-public sealed class LobbyManager : IDisposable
+public sealed class LobbyManager : IDisposable, ISessionManager
 {
     private const int MaxPlayers = 16;
     private const string LobbyMode = "GodotsteamLobby";
@@ -157,120 +157,9 @@ public sealed class LobbyManager : IDisposable
         _lobby?.Leave();
     }
 
-    public void ServerClose(SteamId target)
-    {
-        if (!_lobby.HasValue)
-        {
-            return;
-        }
-
-        if (target.Value == SteamClient.SteamId)
-        {
-            return;
-        }
-
-        SelectSession(target, session =>
-        {
-            _logger.LogInformation("try kick player: {SteamId}", target);
-            session.SendPacket(NetChannel.GameState, new ServerClosePacket());
-        });
-
-        SteamNetworking.CloseP2PSessionWithUser(target);
-    }
-
-    public void KickPlayer(SteamId target)
-    {
-        if (!_lobby.HasValue)
-        {
-            return;
-        }
-
-        // 자기 자신은 킥을 하지 못한다.
-        if (target.Value == SteamClient.SteamId)
-        {
-            return;
-        }
-
-        SelectSession(target, session =>
-        {
-            _logger.LogInformation("try kick player: {SteamId}", target);
-            session.SendPacket(NetChannel.GameState, new KickPacket());
-        });
-
-        SteamNetworking.CloseP2PSessionWithUser(target);
-    }
-
-    public void TempBanPlayer(SteamId target, bool update = true)
-    {
-        if (!_banned.Add(target))
-            return;
-
-        SelectSession(target, session =>
-        {
-            _logger.LogInformation("try ban player: {SteamId}", target);
-            session.SendPacket(NetChannel.GameState, new BanPacket());
-        });
-
-        SteamNetworking.CloseP2PSessionWithUser(target);
-
-        if (update)
-            UpdateBannedPlayers();
-    }
-
-    public void BanPlayers(string[] banPlayers)
-    {
-        foreach (var banPlayer in banPlayers)
-        {
-            if (ulong.TryParse(banPlayer, out var steamId))
-            {
-                TempBanPlayer(steamId, false);
-            }
-        }
-
-        UpdateBannedPlayers();
-    }
-
-    public void RemoveBanPlayer(SteamId target)
-    {
-        if (!_banned.Remove(target))
-        {
-            return;
-        }
-
-        UpdateBannedPlayers();
-    }
-
     private void UpdateBannedPlayers()
     {
         _lobby?.SetData("banned_players", string.Join(",", _banned));
-    }
-
-    public int GetSessionCount()
-    {
-        return _sessions.Count;
-    }
-
-    public bool IsSessionExists(SteamId steamId)
-    {
-        return _sessions.ContainsKey(steamId.Value);
-    }
-
-    public void SelectSessions(Action<Session> action)
-    {
-        foreach (var session in _sessions.Values)
-        {
-            action(session);
-        }
-    }
-
-    public void SelectSession(SteamId target, Action<Session> action)
-    {
-        if (!_sessions.TryGetValue(target.Value, out var session))
-        {
-            return;
-        }
-
-        action(session);
     }
 
     private static bool IsInZone(Session session, string zone, long zoneOwner)
@@ -289,7 +178,7 @@ public sealed class LobbyManager : IDisposable
         {
             return false;
         }
-        
+
         if (session.Actor == null)
         {
             return false;
@@ -299,66 +188,6 @@ public sealed class LobbyManager : IDisposable
         var actorZoneOwner = session.Actor.ZoneOwner;
 
         return actorZone == zone && (zoneOwner == -1 || actorZoneOwner == zoneOwner);
-    }
-
-    public void SendPacket(SteamId steamId, NetChannel channel, IPacket packet, string zone = "", long zoneOwner = -1)
-    {
-        var data = packet.ToDictionary();
-        SendPacket(steamId, channel, data, zone, zoneOwner);
-    }
-
-    public void SendPacket(SteamId steamId, NetChannel channel, object data, string zone = "", long zoneOwner = -1)
-    {
-        if (!_lobby.HasValue)
-        {
-            return;
-        }
-
-        if (!_sessions.TryGetValue(steamId.Value, out var session))
-        {
-            return;
-        }
-
-        if (!IsInZone(session, zone, zoneOwner))
-        {
-            return;
-        }
-
-        var bytes = GodotBinaryConverter.Serialize(data);
-        var compressed = GZipHelper.Compress(bytes);
-        session.Packets.Enqueue((channel, compressed));
-    }
-
-    public void BroadcastPacket(NetChannel channel, IPacket packet, string zone = "", long zoneOwner = -1)
-    {
-        var data = packet.ToDictionary();
-        BroadcastPacket(channel, data, zone, zoneOwner);
-    }
-
-    public void BroadcastPacket(NetChannel channel, object data, string zone = "", long zoneOwner = -1)
-    {
-        if (!_lobby.HasValue)
-        {
-            return;
-        }
-
-        var bytes = GodotBinaryConverter.Serialize(data);
-        var compressed = GZipHelper.Compress(bytes);
-
-        foreach (var session in _sessions.Values)
-        {
-            if (session.SteamId.Value == SteamClient.SteamId.Value)
-            {
-                continue;
-            }
-
-            if (!IsInZone(session, zone, zoneOwner))
-            {
-                continue;
-            }
-
-            session.Packets.Enqueue((channel, compressed));
-        }
     }
 
     private void RemoveSession(Friend member)
@@ -398,7 +227,7 @@ public sealed class LobbyManager : IDisposable
         var logger = _loggerFactory.CreateLogger("session_" + member.Id);
         var session = new Session
         {
-            LobbyManager = this,
+            SessionManager = this,
             Logger = logger,
             Friend = member,
             SteamId = member.Id,
@@ -486,5 +315,177 @@ public sealed class LobbyManager : IDisposable
     private void UpdateConsoleTitle()
     {
         Console.Title = $"[{_sessions.Count}/{_cap}] {_name} [{Code}]";
+    }
+
+    // ------------------- Interface Implementation -------------------
+    public int GetSessionCount()
+    {
+        return _sessions.Count;
+    }
+
+    public bool IsSessionValid(SteamId steamId)
+    {
+        return _sessions.ContainsKey(steamId.Value);
+    }
+
+    public void SelectSessions(Action<ISession> action)
+    {
+        foreach (var session in _sessions.Values)
+        {
+            action(session);
+        }
+    }
+
+    public void SelectSession(SteamId target, Action<ISession> action)
+    {
+        if (!_sessions.TryGetValue(target.Value, out var session))
+        {
+            return;
+        }
+
+        action(session);
+    }
+
+    public void SendP2PPacket(SteamId steamId, NetChannel channel, IPacket packet, string zone = "", long zoneOwner = -1)
+    {
+        var data = packet.ToDictionary();
+        SendP2PPacket(steamId, channel, data, zone, zoneOwner);
+    }
+
+    public void SendP2PPacket(SteamId steamId, NetChannel channel, object data, string zone = "", long zoneOwner = -1)
+    {
+        if (!_lobby.HasValue)
+        {
+            return;
+        }
+
+        if (!_sessions.TryGetValue(steamId.Value, out var session))
+        {
+            return;
+        }
+
+        if (!IsInZone(session, zone, zoneOwner))
+        {
+            return;
+        }
+
+        var bytes = GodotBinaryConverter.Serialize(data);
+        var compressed = GZipHelper.Compress(bytes);
+        session.Packets.Enqueue((channel, compressed));
+    }
+
+    public void BroadcastP2PPacket(NetChannel channel, IPacket packet, string zone = "", long zoneOwner = -1)
+    {
+        var data = packet.ToDictionary();
+        BroadcastP2PPacket(channel, data, zone, zoneOwner);
+    }
+
+    public void BroadcastP2PPacket(NetChannel channel, object data, string zone = "", long zoneOwner = -1)
+    {
+        if (!_lobby.HasValue)
+        {
+            return;
+        }
+
+        var bytes = GodotBinaryConverter.Serialize(data);
+        var compressed = GZipHelper.Compress(bytes);
+
+        foreach (var session in _sessions.Values)
+        {
+            if (session.SteamId.Value == SteamClient.SteamId.Value)
+            {
+                continue;
+            }
+
+            if (!IsInZone(session, zone, zoneOwner))
+            {
+                continue;
+            }
+
+            session.Packets.Enqueue((channel, compressed));
+        }
+    }
+
+    public void ServerClose(SteamId target)
+    {
+        if (!_lobby.HasValue)
+        {
+            return;
+        }
+
+        if (target.Value == SteamClient.SteamId)
+        {
+            return;
+        }
+
+        SelectSession(target, session =>
+        {
+            _logger.LogInformation("try kick player: {SteamId}", target);
+            session.SendP2PPacket(NetChannel.GameState, new ServerClosePacket());
+        });
+
+        SteamNetworking.CloseP2PSessionWithUser(target);
+    }
+
+    public void KickPlayer(SteamId target)
+    {
+        if (!_lobby.HasValue)
+        {
+            return;
+        }
+
+        // 자기 자신은 킥을 하지 못한다.
+        if (target.Value == SteamClient.SteamId)
+        {
+            return;
+        }
+
+        SelectSession(target, session =>
+        {
+            _logger.LogInformation("try kick player: {SteamId}", target);
+            session.SendP2PPacket(NetChannel.GameState, new KickPacket());
+        });
+
+        SteamNetworking.CloseP2PSessionWithUser(target);
+    }
+
+    public void TempBanPlayer(SteamId target, bool update = true)
+    {
+        if (!_banned.Add(target))
+            return;
+
+        SelectSession(target, session =>
+        {
+            _logger.LogInformation("try ban player: {SteamId}", target);
+            session.SendP2PPacket(NetChannel.GameState, new BanPacket());
+        });
+
+        SteamNetworking.CloseP2PSessionWithUser(target);
+
+        if (update)
+            UpdateBannedPlayers();
+    }
+
+    public void BanPlayers(string[] banPlayers)
+    {
+        foreach (var banPlayer in banPlayers)
+        {
+            if (ulong.TryParse(banPlayer, out var steamId))
+            {
+                TempBanPlayer(steamId, false);
+            }
+        }
+
+        UpdateBannedPlayers();
+    }
+
+    public void RemoveBanPlayer(SteamId target)
+    {
+        if (!_banned.Remove(target))
+        {
+            return;
+        }
+
+        UpdateBannedPlayers();
     }
 }

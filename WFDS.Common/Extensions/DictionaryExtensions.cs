@@ -1,6 +1,6 @@
 ﻿using WFDS.Godot.Types;
 
-namespace WFDS.Server.Common.Extensions;
+namespace WFDS.Common.Extensions;
 
 public static class DictionaryExtensions
 {

@@ -8,7 +8,7 @@ namespace WFDS.Server.Handlers;
 [PacketType("letter_recieved")]
 public class LetterReceivedHandler : PacketHandler
 {
-    public override void HandlePacket(Session sender, NetChannel channel, Dictionary<object, object> data)
+    public override void HandlePacket(ISession sender, NetChannel channel, Dictionary<object, object> data)
     {
         var packet = new LetterReceivedPacket();
         packet.Parse(data);
@@ -21,6 +21,6 @@ public class LetterReceivedHandler : PacketHandler
         packet.LatterId = new Random().Next();
         (packet.From, packet.To) = (packet.To, packet.From);
 
-        sender.SendPacket(NetChannel.GameState, packet);
+        sender.SendP2PPacket(NetChannel.GameState, packet);
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System.Reflection;
 using System.Text.Json;
 using Steamworks;
+using WFDS.Common.Types;
 using WFDS.Server.Common;
 using WFDS.Server.Network;
 

@@ -1,7 +1,7 @@
 ﻿using System.Text.Json;
+using WFDS.Common.Extensions;
 using WFDS.Common.Types;
 using WFDS.Server.Common;
-using WFDS.Server.Common.Extensions;
 using WFDS.Server.Network;
 using WFDS.Server.Packets;
 
@@ -19,7 +19,7 @@ public class ActorActionHandler : PacketHandler
         "_update_held_item"
     ];
 
-    public override void HandlePacket(Session sender, NetChannel channel, Dictionary<object, object> data)
+    public override void HandlePacket(ISession sender, NetChannel channel, Dictionary<object, object> data)
     {
         var packet = new ActorActionPacket();
         packet.Parse(data);
@@ -52,7 +52,7 @@ public class ActorActionHandler : PacketHandler
         }
     }
 
-    private void QueueFree(Session sender, ActorActionPacket packet)
+    private void QueueFree(ISession sender, ActorActionPacket packet)
     {
         if (packet.Params.Count != 0)
         {
@@ -60,16 +60,16 @@ public class ActorActionHandler : PacketHandler
             return;
         }
 
-        ActorManager.SelectActor(packet.ActorId, actor =>
+        ActorManager?.SelectActor(packet.ActorId, actor =>
         {
             if (actor.CreatorId == sender.SteamId)
             {
-                ActorManager.RemoveActor(packet.ActorId, ActorRemoveTypes.QueueFree);
+                ActorManager.TryRemoveActor(packet.ActorId, ActorRemoveTypes.QueueFree, out _);
             }
         });
     }
 
-    private void WipeActor(Session sender, ActorActionPacket packet)
+    private void WipeActor(ISession sender, ActorActionPacket packet)
     {
         if (packet.Params.Count != 1)
         {
@@ -80,24 +80,24 @@ public class ActorActionHandler : PacketHandler
         var param = packet.Params[0];
         var actorId = param.GetNumber();
 
-        ActorManager.SelectActor(actorId, actor =>
+        ActorManager?.SelectActor(actorId, actor =>
         {
             if (actor.CreatorId == sender.SteamId)
             {
-                ActorManager.RemoveActor(actorId, ActorRemoveTypes.WipeActor);
+                ActorManager.TryRemoveActor(actorId, ActorRemoveTypes.WipeActor, out _);
             }
         });
 
-        ActorManager.SelectActor(packet.ActorId, actor =>
+        ActorManager?.SelectActor(packet.ActorId, actor =>
         {
             if (actor.CreatorId == sender.SteamId)
             {
-                ActorManager.RemoveActor(actorId, ActorRemoveTypes.WipeActor);
+                ActorManager.TryRemoveActor(actorId, ActorRemoveTypes.WipeActor, out _);
             }
         });
     }
 
-    private void SetZone(Session sender, ActorActionPacket packet)
+    private void SetZone(ISession sender, ActorActionPacket packet)
     {
         if (packet.Params.Count != 2)
         {
@@ -111,7 +111,7 @@ public class ActorActionHandler : PacketHandler
             return;
         }
 
-        ActorManager.SelectActor(packet.ActorId, actor =>
+        ActorManager?.SelectActor(packet.ActorId, actor =>
         {
             if (actor.CreatorId != sender.SteamId)
                 return;
@@ -123,7 +123,7 @@ public class ActorActionHandler : PacketHandler
         });
     }
 
-    private void UpdateCosmetics(Session sender, ActorActionPacket packet)
+    private void UpdateCosmetics(ISession sender, ActorActionPacket packet)
     {
         if (packet.Params.Count != 1)
         {
@@ -131,9 +131,9 @@ public class ActorActionHandler : PacketHandler
             return;
         }
 
-        ActorManager.SelectActor(packet.ActorId, actor =>
+        ActorManager?.SelectPlayerActor(sender.SteamId, actor =>
         {
-            if (actor.CreatorId != sender.SteamId)
+            if (actor.ActorId != packet.ActorId)
                 return;
 
             var dic = packet.Params[0].GetObjectDictionary();
@@ -143,7 +143,7 @@ public class ActorActionHandler : PacketHandler
         });
     }
 
-    private void UpdateHeldItem(Session sender, ActorActionPacket packet)
+    private void UpdateHeldItem(ISession sender, ActorActionPacket packet)
     {
         if (packet.Params.Count != 1)
         {
@@ -151,7 +151,7 @@ public class ActorActionHandler : PacketHandler
             return;
         }
 
-        ActorManager.SelectActor(packet.ActorId, actor =>
+        ActorManager?.SelectPlayerActor(sender.SteamId, actor =>
         {
             if (actor.CreatorId != sender.SteamId)
                 return;
@@ -182,8 +182,8 @@ public class ActorActionHandler : PacketHandler
  *
  * actor._talk(string letter, float voice_pitch)
  * actor._face_emote(string emote)
- * actor._play_particle(string particle_id, Vector3 position, bool global) - maybe can call server
- * actor._play_sfx(string sfx_id, Vector3 position, float pitch) - maybe can call server
+ * actor._play_particle(string particle_id, Vector3 position, bool global)
+ * actor._play_sfx(string sfx_id, Vector3 position, float pitch)
  *
  * actor._update_cosmetics(new) - fallback{"species": "species_cat", "pattern": "pattern_none", "primary_color": "pcolor_white", "secondary_color": "scolor_tan", "hat": "hat_none", "undershirt": "shirt_none", "overshirt": "overshirt_none", "title": "title_rank_1", "bobber": "bobber_default", "eye": "eye_halfclosed", "nose": "nose_cat", "mouth": "mouth_default", "accessory": [], "tail": "tail_cat", "legs": "legs_none"}
  * actor._update_held_item(RawItem held_item) - fallback {"id": "empty_hand", "ref": 0, "size": 1.0, "quality": ITEM_QUALITIES.NORMAL, "tags": []}

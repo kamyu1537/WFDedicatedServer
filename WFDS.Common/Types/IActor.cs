@@ -1,11 +1,13 @@
-﻿using Steamworks;
-using WFDS.Common.Types;
+﻿using Microsoft.Extensions.Logging;
+using Steamworks;
 using WFDS.Godot.Types;
 
-namespace WFDS.Server.Common.Actor;
+namespace WFDS.Common.Types;
 
-public interface IActor
+public interface IActor : IDisposable
 {
+    ILogger? Logger { get; set; }
+    
     string ActorType { get; }
     long ActorId { get; init; }
     SteamId CreatorId { get; init; }
@@ -25,8 +27,6 @@ public interface IActor
     void OnCreated();
     void OnRemoved(ActorRemoveTypes type);
     void OnUpdate(double delta);
-    void OnCosmeticsUpdated(Cosmetics cosmetics);
-    void OnHeldItemUpdated(GameItem item);
     void OnZoneUpdated(string zone, long zoneOwner);
     void OnActorUpdated(Vector3 position, Vector3 rotation);
 }

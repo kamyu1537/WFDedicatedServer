@@ -1,6 +1,6 @@
-﻿using WFDS.Common.Types;
+﻿using WFDS.Common.Extensions;
+using WFDS.Common.Types;
 using WFDS.Godot.Types;
-using WFDS.Server.Common.Extensions;
 using WFDS.Server.Network;
 
 namespace WFDS.Server.Packets;
@@ -36,5 +36,10 @@ public class MessagePacket : IPacket
             ["zone"] = Zone,
             ["zone_owner"] = ZoneOwner
         };
+    }
+
+    public IPacket ToPacket()
+    {
+        return this;
     }
 }

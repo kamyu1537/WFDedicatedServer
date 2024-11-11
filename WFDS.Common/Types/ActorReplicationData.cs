@@ -1,11 +1,10 @@
-﻿using WFDS.Server.Common.Actor;
-using WFDS.Server.Common.Extensions;
+﻿using WFDS.Common.Extensions;
 
 namespace WFDS.Common.Types;
 
 public class ActorReplicationData : IPacket
 {
-    public string ActorType { get; set; }
+    public string ActorType { get; set; } = string.Empty;
     public long ActorId { get; set; }
     public long OwnerId { get; set; }
     

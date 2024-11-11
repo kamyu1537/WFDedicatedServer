@@ -2,31 +2,29 @@
 using WFDS.Common.Types;
 using WFDS.Godot.Types;
 
-namespace WFDS.Server.Common.Actor;
+namespace WFDS.Server.Actors;
 
-public class RainCloudActor : IActor
+public sealed class RemoteActor : IActor
 {
-    public string ActorType => "raincloud";
+    public ILogger? Logger { get; set; }
+    
+    public string ActorType { get; init; } = string.Empty;
     public long ActorId { get; init; }
     public SteamId CreatorId { get; init; }
-    public string Zone { get; set; } = "main_zone";
+    public string Zone { get; set; } = string.Empty;
     public long ZoneOwner { get; set; }
     public Vector3 Position { get; set; } = Vector3.Zero;
     public Vector3 Rotation { get; set; } = Vector3.Zero;
-    public bool Decay => true;
-    public long DecayTimer { get; set; } = 32500;
+    public bool Decay { get; init; }
+    public long DecayTimer { get; set; } = 600;
     public DateTimeOffset CreateTime { get; set; } = DateTimeOffset.UtcNow;
-    public bool IsDeadActor { get; set; } = false;
-    public long ActorUpdateDefaultCooldown => 8;
+
+    public bool IsDeadActor { get; set; } = true;
+    public long ActorUpdateDefaultCooldown => 0;
     public long ActorUpdateCooldown { get; set; }
     
-    private const float Speed = 0.17f;
-    private float _direction;
-
     public void OnCreated()
     {
-        var center = (Position - new Vector3(30, 40, -50)).Normalized();
-        _direction = new Vector2(center.X, center.Z).Angle();
     }
     
     public void OnRemoved(ActorRemoveTypes type)
@@ -35,8 +33,6 @@ public class RainCloudActor : IActor
 
     public void OnUpdate(double delta)
     {
-        var vel = new Vector2(1, 0).Rotate(_direction) * Speed;
-        Position += new Vector3(vel.X, 0f, vel.X) * (float)delta;
     }
     
     public void OnCosmeticsUpdated(Cosmetics cosmetics)
@@ -49,9 +45,18 @@ public class RainCloudActor : IActor
 
     public void OnZoneUpdated(string zone, long zoneOwner)
     {
+        Zone = zone;
+        ZoneOwner = zoneOwner;
     }
 
     public void OnActorUpdated(Vector3 position, Vector3 rotation)
     {
+        Position = position;
+        Rotation = rotation;
+    }
+    
+    public void Dispose()
+    {
+        Logger = null;
     }
 }

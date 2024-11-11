@@ -1,7 +1,7 @@
 ﻿using Steamworks;
+using WFDS.Common.Helper;
 using WFDS.Godot.Binary;
 using WFDS.Server.Common;
-using WFDS.Server.Common.Helpers;
 using WFDS.Server.Managers;
 
 namespace WFDS.Server.Services;
@@ -19,7 +19,6 @@ public class PacketProcessService(ILogger<PacketProcessService> logger, PacketHa
             TryProcessChannel(NetChannel.GameState);
 
             // TryProcessChannel(NetChannel.ActorAnimation);
-
 #if false
             TryProcessChannel(NetChannel.Chalk);
             TryProcessChannel(NetChannel.Guitar);

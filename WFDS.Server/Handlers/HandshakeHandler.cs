@@ -6,7 +6,7 @@ namespace WFDS.Server.Handlers;
 [PacketType("handshake")]
 public class HandshakeHandler : PacketHandler
 {
-    public override void HandlePacket(Session sender, NetChannel channel, Dictionary<object, object> data)
+    public override void HandlePacket(ISession sender, NetChannel channel, Dictionary<object, object> data)
     {
         Logger.LogInformation("received handshake from {Sender} on channel {Channel}", sender.SteamId, channel);
 

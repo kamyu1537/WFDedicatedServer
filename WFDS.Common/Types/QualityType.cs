@@ -1,4 +1,4 @@
-﻿using WFDS.Server.Common.Extensions;
+﻿using WFDS.Common.Extensions;
 
 namespace WFDS.Common.Types;
 

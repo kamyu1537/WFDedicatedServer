@@ -2,10 +2,11 @@
 using WFDS.Common.Types;
 using WFDS.Godot.Types;
 
-namespace WFDS.Server.Common.Actor;
+namespace WFDS.Server.Actors;
 
-public class AmbientBirdActor : IActor
+public sealed class AmbientBirdActor : IActor
 {
+    public ILogger? Logger { get; set; }
     public string ActorType => "ambient_bird";
     public long ActorId { get; init; }
     public SteamId CreatorId { get; init; }
@@ -48,5 +49,10 @@ public class AmbientBirdActor : IActor
 
     public void OnActorUpdated(Vector3 position, Vector3 rotation)
     {
+    }
+
+    public void Dispose()
+    {
+        Logger = null;
     }
 }

@@ -25,7 +25,7 @@ public class RequestPingScheduleService(LobbyManager lobbyManager) : IHostedServ
 
     private void DoWork(object? state)
     {
-        lobbyManager.BroadcastPacket(NetChannel.GameState, new RequestPingPacket
+        lobbyManager.BroadcastP2PPacket(NetChannel.GameState, new RequestPingPacket
         {
             Sender = SteamClient.SteamId
         });

@@ -1,4 +1,4 @@
-﻿using WFDS.Server.Common.Actor;
+﻿using WFDS.Common.Types;
 using WFDS.Server.Common.Types;
 using WFDS.Server.Managers;
 

@@ -1,8 +1,7 @@
-﻿using WFDS.Common.Types;
+﻿using WFDS.Common.Extensions;
+using WFDS.Common.Types;
 using WFDS.Godot.Types;
 using WFDS.Server.Common;
-using WFDS.Server.Common.Actor;
-using WFDS.Server.Common.Extensions;
 using WFDS.Server.Managers;
 using WFDS.Server.Network;
 
@@ -35,7 +34,7 @@ public class ActorUpdatePacket : IPacket
 
 public static class ActorUpdatePacketExtensions
 {
-    public static void SendUpdatePacket(this IActor actor, LobbyManager lobby)
+    public static void SendUpdatePacket(this IActor actor, ISessionManager lobby)
     {
         var packet = new ActorUpdatePacket
         {
@@ -44,10 +43,10 @@ public static class ActorUpdatePacketExtensions
             Rotation = actor.Rotation
         };
 
-        lobby.BroadcastPacket(NetChannel.ActorUpdate, packet, actor.Zone, actor.ZoneOwner);
+        lobby.BroadcastP2PPacket(NetChannel.ActorUpdate, packet, actor.Zone, actor.ZoneOwner);
     }
 
-    public static void SendUpdatePacket(this IActor actor, Session target)
+    public static void SendUpdatePacket(this IActor actor, ISession target)
     {
         var packet = new ActorUpdatePacket
         {
@@ -56,6 +55,6 @@ public static class ActorUpdatePacketExtensions
             Rotation = actor.Rotation
         };
 
-        target.SendPacket(NetChannel.ActorUpdate, packet, actor.Zone, actor.ZoneOwner);
+        target.SendP2PPacket(NetChannel.ActorUpdate, packet, actor.Zone, actor.ZoneOwner);
     }
 }
