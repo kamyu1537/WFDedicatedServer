@@ -1,4 +1,5 @@
 using Serilog;
+using WFDS.Common.Types.Manager;
 using WFDS.Server;
 using WFDS.Server.Managers;
 using WFDS.Server.Services;
@@ -29,11 +30,11 @@ try
 
     builder.Services.AddSerilog();
 
-    builder.Services.AddSingleton<ActorIdManager>();
-    builder.Services.AddSingleton<LobbyManager>();
-    builder.Services.AddSingleton<PacketHandleManager>();
-    builder.Services.AddSingleton<ActorManager>();
-    builder.Services.AddSingleton<MapManager>();
+    builder.Services.AddSingleton<IMapManager, MapManager>();
+    builder.Services.AddSingleton<IPacketHandleManager, PacketHandleManager>();
+    builder.Services.AddSingleton<IActorIdManager, ActorIdManager>();
+    builder.Services.AddSingleton<IActorManager, ActorManager>();
+    builder.Services.AddSingleton<ISessionManager, SessionManager>();
 
     // lobby
     builder.Services.AddHostedService<MainWorker>();

@@ -1,7 +1,7 @@
 ﻿using Steamworks;
 using WFDS.Common.Types;
+using WFDS.Common.Types.Manager;
 using WFDS.Godot.Types;
-using WFDS.Server.Network;
 
 namespace WFDS.Server.Actors;
 

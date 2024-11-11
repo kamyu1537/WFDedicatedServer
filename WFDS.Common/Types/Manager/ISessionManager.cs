@@ -1,11 +1,15 @@
 ﻿using Steamworks;
-using WFDS.Server.Common;
-using WFDS.Server.Network;
 
-namespace WFDS.Common.Types;
+namespace WFDS.Common.Types.Manager;
 
 public interface ISessionManager
 {
+    void CreateLobby(string serverName, string roomCode, GameLobbyType lobbyType, bool isPublic, bool isAdult, int maxPlayers);
+    Task LeaveLobbyAsync();
+    
+    void UpdateBrowserValue();
+    void KickNoHandshakePlayers();
+    
     int GetSessionCount();
     bool IsSessionValid(SteamId steamId);
     void SelectSession(SteamId steamId, Action<ISession> action);

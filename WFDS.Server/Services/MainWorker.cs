@@ -1,14 +1,14 @@
 using Microsoft.Extensions.Options;
 using Steamworks;
-using WFDS.Server.Managers;
+using WFDS.Common.Types.Manager;
 
 namespace WFDS.Server.Services;
 
 public class MainWorker(
     ILogger<MainWorker> logger,
     IOptions<ServerSetting> settings,
-    LobbyManager lobby,
-    MapManager map
+    ISessionManager session,
+    IMapManager map
 ) : BackgroundService
 {
     private const uint AppId = 3146520;
@@ -21,7 +21,7 @@ public class MainWorker(
 
         map.LoadSpawnPoints();
 
-        lobby.CreateLobby(
+        session.CreateLobby(
             settings.Value.ServerName,
             settings.Value.RoomCode,
             settings.Value.LobbyType,
@@ -38,11 +38,11 @@ public class MainWorker(
     
     public override async Task StopAsync(CancellationToken cancellationToken)
     {
-        lobby.SelectSessions(session => {
-            session.ServerClose();
+        session.SelectSessions(player => {
+            player.ServerClose();
         });
         
-        await lobby.LeaveLobbyAsync();
+        await session.LeaveLobbyAsync();
         SteamClient.Shutdown();
         
         logger.LogInformation("MainWorker stopped");

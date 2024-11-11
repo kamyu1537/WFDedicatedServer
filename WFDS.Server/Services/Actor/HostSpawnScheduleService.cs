@@ -1,10 +1,10 @@
 ﻿using WFDS.Common.Types;
-using WFDS.Server.Common.Types;
-using WFDS.Server.Managers;
+using WFDS.Common.Types.Manager;
+using WFDS.Godot.Types;
 
 namespace WFDS.Server.Services;
 
-public class HostSpawnScheduleService(ILogger<HostSpawnScheduleService> logger, ActorManager actor, LobbyManager lobby) : IHostedService
+public class HostSpawnScheduleService(ILogger<HostSpawnScheduleService> logger, IActorManager actor, ISessionManager session, IMapManager map) : IHostedService
 {
     private const int DefaultAlienCooldown = 6;
     private const int ResetAlienCooldown = 16;
@@ -32,7 +32,7 @@ public class HostSpawnScheduleService(ILogger<HostSpawnScheduleService> logger, 
 
     private void DoWork(object? state)
     {
-        var count = lobby.GetSessionCount();
+        var count = session.GetSessionCount();
         if (count < 1) return;
 
         var ownedActorCount = actor.GetOwnedActorCount();
@@ -45,16 +45,16 @@ public class HostSpawnScheduleService(ILogger<HostSpawnScheduleService> logger, 
         switch (type)
         {
             case HostSpawnTypes.Fish:
-                spawn = actor.SpawnFishSpawnActor();
+                spawn = SpawnFishSpawnActor();
                 break;
             case HostSpawnTypes.FishAlien:
-                spawn = actor.SpawnFishSpawnAlienActor();
+                spawn = SpawnFishSpawnAlienActor();
                 break;
             case HostSpawnTypes.Rain:
-                spawn = actor.SpawnRainCloudActor();
+                spawn = SpawnRainCloudActor();
                 break;
             case HostSpawnTypes.VoidPortal:
-                spawn = actor.SpawnVoidPortalActor();
+                spawn = SpawnVoidPortalActor();
                 break;
             case HostSpawnTypes.None:
             default:
@@ -97,5 +97,42 @@ public class HostSpawnScheduleService(ILogger<HostSpawnScheduleService> logger, 
 
         logger.LogDebug("select spawn type: {Type}", type);
         return type;
+    }
+    
+    private IActor? SpawnFishSpawnActor()
+    {
+        var point = map.FishSpawnPoints[_random.Next() % map.FishSpawnPoints.Count];
+        return actor.SpawnFishSpawnActor(point.Transform.Origin);
+    }
+
+    private IActor? SpawnFishSpawnAlienActor()
+    {
+        var point = map.FishSpawnPoints[_random.Next() % map.FishSpawnPoints.Count];
+        return actor.SpawnFishSpawnAlienActor(point.Transform.Origin);
+    }
+
+    private IActor? SpawnRainCloudActor()
+    {
+        var x = _random.NextSingle() * 250f - 100f;
+        var z = _random.NextSingle() * 250f - 150f;
+        var pos = new Vector3(x, 42f, z);
+
+        return actor.SpawnRainCloudActor(pos);
+    }
+
+    private IActor? SpawnVoidPortalActor()
+    {
+        if (map.HiddenSpots.Count == 0)
+        {
+            logger.LogError("no hidden_spots found");
+            return null;
+        }
+
+        var point = map.HiddenSpots[_random.Next() % map.HiddenSpots.Count];
+        var x = _random.NextSingle() - 0.5f;
+        var z = _random.NextSingle() - 0.5f;
+        var pos = point.Transform.Origin + new Vector3(x, 0, z);
+
+        return actor.SpawnVoidPortalActor(pos);
     }
 }

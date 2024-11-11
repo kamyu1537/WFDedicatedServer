@@ -2,26 +2,26 @@
 using System.Text.Json;
 using Steamworks;
 using WFDS.Common.Types;
-using WFDS.Server.Common;
+using WFDS.Common.Types.Manager;
 using WFDS.Server.Network;
 
 namespace WFDS.Server.Managers;
 
-public class PacketHandleManager
+public class PacketHandleManager : IPacketHandleManager
 {
     private readonly ILogger<PacketHandleManager> _logger;
     private readonly Dictionary<string, IPacketHandler> _handlers;
-    private readonly LobbyManager _lobbyManager;
+    private readonly ISessionManager _session;
 
     public PacketHandleManager(
         ILogger<PacketHandleManager> logger,
         ILoggerFactory loggerFactory,
-        LobbyManager lobbyManager,
-        ActorManager actorManager
+        ISessionManager session,
+        IActorManager actor
     )
     {
         _logger = logger;
-        _lobbyManager = lobbyManager;
+        _session = session;
 
         _handlers = typeof(IPacketHandler).Assembly.GetTypes()
             .Where(t => t.IsClass && !t.IsAbstract && typeof(IPacketHandler).IsAssignableFrom(t))
@@ -30,8 +30,8 @@ public class PacketHandleManager
             .Select(x => (x.Item1!.PacketType, x.Item2!))
             .Select(x => (x.Item1, x.Item2.Initialize(
                 x.Item1,
-                lobbyManager,
-                actorManager,
+                session,
+                actor,
                 loggerFactory.CreateLogger(x.Item2.GetType().Name
                 )))).ToDictionary(x => x.Item1, x => x.Item2);
     }
@@ -53,7 +53,7 @@ public class PacketHandleManager
             }
 
             PrintDebugLog(typeName, dic, sender, channel);
-            _lobbyManager.SelectSession(sender, session =>
+            _session.SelectSession(sender, session =>
             {
                 session.PingReceiveTime = DateTimeOffset.UtcNow;
 

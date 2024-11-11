@@ -1,19 +1,20 @@
 ﻿using System.Text;
 using System.Text.Json;
 using WFDS.Common.Extensions;
+using WFDS.Common.Types;
+using WFDS.Common.Types.Manager;
 using WFDS.Godot.Types;
-using WFDS.Server.Common.Types;
 
 namespace WFDS.Server.Managers;
 
-public class MapManager(ILogger<MapManager> logger)
+public class MapManager(ILogger<MapManager> logger) : IMapManager
 {
     private const string MapPath = "Resources/main_zone.tscn";
 
-    public readonly List<PositionNode> FishSpawnPoints = [];
-    public readonly List<PositionNode> TrashPoints = [];
-    public readonly List<PositionNode> ShorelinePoints = [];
-    public readonly List<PositionNode> HiddenSpots = [];
+    public List<PositionNode> FishSpawnPoints { get; } = [];
+    public List<PositionNode> TrashPoints { get; } = [];
+    public List<PositionNode> ShorelinePoints { get; } = [];
+    public List<PositionNode> HiddenSpots { get; } = [];
 
 
     public void LoadSpawnPoints()

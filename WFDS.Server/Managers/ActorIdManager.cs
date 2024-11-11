@@ -1,6 +1,8 @@
-﻿namespace WFDS.Server.Managers;
+﻿using WFDS.Common.Types.Manager;
 
-public sealed class ActorIdManager : IDisposable
+namespace WFDS.Server.Managers;
+
+public sealed class ActorIdManager : IActorIdManager
 {
     private readonly HashSet<long> _ids = [];
     private readonly Random _random = new();
@@ -35,10 +37,5 @@ public sealed class ActorIdManager : IDisposable
             _ids.Add(id);
             return id;
         }
-    }
-
-    public void Dispose()
-    {
-        _ids.Clear();
     }
 }

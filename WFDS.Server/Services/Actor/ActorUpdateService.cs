@@ -1,10 +1,10 @@
 ﻿using Steamworks;
 using WFDS.Common.Types;
-using WFDS.Server.Managers;
+using WFDS.Common.Types.Manager;
 
 namespace WFDS.Server.Services;
 
-public class ActorUpdateService(ILogger<ActorUpdateService> logger, ActorManager manager, LobbyManager lobby) : BackgroundService
+public class ActorUpdateService(ILogger<ActorUpdateService> logger, IActorManager manager, ISessionManager session) : BackgroundService
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
@@ -22,7 +22,7 @@ public class ActorUpdateService(ILogger<ActorUpdateService> logger, ActorManager
 
     private void Update(double delta)
     {
-        var count = lobby.GetSessionCount();
+        var count = session.GetSessionCount();
         if (count < 1) return;
         
         manager.SelectActors(actor =>
@@ -38,7 +38,7 @@ public class ActorUpdateService(ILogger<ActorUpdateService> logger, ActorManager
     {
         if (actor.CreatorId != SteamClient.SteamId)
         {
-            if (!lobby.IsSessionValid(actor.CreatorId))
+            if (!session.IsSessionValid(actor.CreatorId))
             {
                 actor.IsDeadActor = true;
                 logger.LogInformation("remove actor {ActorId} {ActorType} (owner not found)", actor.ActorId, actor.ActorType);

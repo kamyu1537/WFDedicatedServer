@@ -1,8 +1,9 @@
-﻿using WFDS.Server.Managers;
+﻿using WFDS.Common.Types.Manager;
+using WFDS.Godot.Types;
 
 namespace WFDS.Server.Services;
 
-public class AmbientSpawnScheduleService(ActorManager actor, LobbyManager lobby) : IHostedService
+public class AmbientSpawnScheduleService(IActorManager actor, ISessionManager session, IMapManager map) : IHostedService
 {
     private static readonly TimeSpan AmbientSpawnTimeoutPeriod = TimeSpan.FromSeconds(10);
     private readonly Random _random = new();
@@ -23,12 +24,27 @@ public class AmbientSpawnScheduleService(ActorManager actor, LobbyManager lobby)
     // _on_ambient_spawn_timer_timeout
     private void DoWork(object? state)
     {
-        var count = lobby.GetSessionCount();
+        var count = session.GetSessionCount();
         if (count < 1) return;
 
         var index = _random.Next() % 3;
 
         if (index == 2)
-            actor.SpawnAmbientBirdActor();
+            SpawnAmbientBirdActor();
+    }
+    
+    private void SpawnAmbientBirdActor()
+    {
+        var count = _random.Next() % 3 + 1;
+        var point = map.TrashPoints[_random.Next() % map.TrashPoints.Count];
+
+        for (var i = 0; i < count; i++)
+        {
+            var x = _random.NextSingle() * 5f - 2.5f;
+            var z = _random.NextSingle() * 5f - 2.5f;
+            var pos = point.Transform.Origin + new Vector3(x, 0, z);
+
+            actor.SpawnAmbientBirdActor(pos);
+        }
     }
 }

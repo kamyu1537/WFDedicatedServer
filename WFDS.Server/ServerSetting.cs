@@ -1,4 +1,4 @@
-﻿using WFDS.Server.Common;
+﻿using WFDS.Common.Types;
 
 namespace WFDS.Server;
 

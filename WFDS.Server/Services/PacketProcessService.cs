@@ -1,12 +1,12 @@
 ﻿using Steamworks;
-using WFDS.Common.Helper;
+using WFDS.Common.Helpers;
+using WFDS.Common.Types;
+using WFDS.Common.Types.Manager;
 using WFDS.Godot.Binary;
-using WFDS.Server.Common;
-using WFDS.Server.Managers;
 
 namespace WFDS.Server.Services;
 
-public class PacketProcessService(ILogger<PacketProcessService> logger, PacketHandleManager packetHandleManager) : BackgroundService
+public class PacketProcessService(ILogger<PacketProcessService> logger, IPacketHandleManager packetHandleManager) : BackgroundService
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {

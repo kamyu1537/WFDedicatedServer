@@ -1,4 +1,4 @@
-﻿namespace WFDS.Server.Common.Types;
+﻿namespace WFDS.Common.Types;
 
 public enum HostSpawnTypes
 {

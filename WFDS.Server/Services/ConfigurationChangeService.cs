@@ -1,11 +1,11 @@
-﻿using WFDS.Server.Managers;
+﻿using WFDS.Common.Types.Manager;
 
 namespace WFDS.Server.Services;
 
 public class ConfigurationChangeService(
     ILogger<ConfigurationChangeService> logger,
     IConfiguration configuration,
-    LobbyManager lobby
+    ISessionManager session
 ) : IHostedService
 {
     private IDisposable? _reloadToken;
@@ -47,6 +47,6 @@ public class ConfigurationChangeService(
         }
 
         logger.LogInformation("reload banned players list: {Array}", string.Join(',', setting.BannedPlayers));
-        lobby.BanPlayers(setting.BannedPlayers);
+        session.BanPlayers(setting.BannedPlayers);
     }
 }

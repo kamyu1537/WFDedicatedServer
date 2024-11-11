@@ -1,5 +1,4 @@
 ﻿using WFDS.Common.Types;
-using WFDS.Server.Common;
 using WFDS.Server.Network;
 using WFDS.Server.Packets;
 

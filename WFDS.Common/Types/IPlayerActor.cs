@@ -1,4 +1,5 @@
-﻿using WFDS.Godot.Types;
+﻿using WFDS.Common.Types.Manager;
+using WFDS.Godot.Types;
 
 namespace WFDS.Common.Types;
 

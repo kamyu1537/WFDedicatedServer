@@ -1,4 +1,4 @@
-﻿namespace WFDS.Server.Common;
+﻿namespace WFDS.Common.Types;
 
 public enum GameLobbyType
 {

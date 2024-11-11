@@ -1,11 +1,11 @@
 ﻿using Steamworks;
 using WFDS.Common.Types;
-using WFDS.Server.Managers;
+using WFDS.Common.Types.Manager;
 using WFDS.Server.Packets;
 
 namespace WFDS.Server.Services;
 
-public class ActorActionService(ActorManager manager, LobbyManager lobby) : BackgroundService
+public class ActorActionService(IActorManager manager, ISessionManager session) : BackgroundService
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
@@ -18,7 +18,7 @@ public class ActorActionService(ActorManager manager, LobbyManager lobby) : Back
 
     private void Tick()
     {
-        var count = lobby.GetSessionCount();
+        var count = session.GetSessionCount();
         if (count < 1)
             return;
         
@@ -38,6 +38,6 @@ public class ActorActionService(ActorManager manager, LobbyManager lobby) : Back
         if (actor.ActorUpdateCooldown > 0) return;
         
         actor.ActorUpdateCooldown = actor.ActorUpdateDefaultCooldown;
-        actor.SendUpdatePacket(lobby);
+        actor.SendUpdatePacket(session);
     }
 }

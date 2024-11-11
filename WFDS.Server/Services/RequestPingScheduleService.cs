@@ -1,11 +1,11 @@
 ﻿using Steamworks;
-using WFDS.Server.Common;
-using WFDS.Server.Managers;
+using WFDS.Common.Types;
+using WFDS.Common.Types.Manager;
 using WFDS.Server.Packets;
 
 namespace WFDS.Server.Services;
 
-public class RequestPingScheduleService(LobbyManager lobbyManager) : IHostedService
+public class RequestPingScheduleService(ISessionManager sessionManager) : IHostedService
 {
     private static readonly TimeSpan RequestPingTimeoutPeriod = TimeSpan.FromSeconds(8);
     private Timer? _timer;
@@ -25,7 +25,7 @@ public class RequestPingScheduleService(LobbyManager lobbyManager) : IHostedServ
 
     private void DoWork(object? state)
     {
-        lobbyManager.BroadcastP2PPacket(NetChannel.GameState, new RequestPingPacket
+        sessionManager.BroadcastP2PPacket(NetChannel.GameState, new RequestPingPacket
         {
             Sender = SteamClient.SteamId
         });

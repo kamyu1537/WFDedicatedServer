@@ -1,6 +1,6 @@
 ﻿using System.IO.Compression;
 
-namespace WFDS.Common.Helper;
+namespace WFDS.Common.Helpers;
 
 public static class GZipHelper
 {

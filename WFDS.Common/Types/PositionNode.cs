@@ -1,6 +1,6 @@
 ﻿using WFDS.Godot.Types;
 
-namespace WFDS.Server.Common.Types;
+namespace WFDS.Common.Types;
 
 public class PositionNode
 {

@@ -1,8 +1,8 @@
-﻿using WFDS.Server.Managers;
+﻿using WFDS.Common.Types.Manager;
 
 namespace WFDS.Server.Services;
 
-public class LobbyUpdateScheduleService(LobbyManager lobby) : IHostedService
+public class LobbyUpdateScheduleService(ISessionManager session) : IHostedService
 {
     private static readonly TimeSpan LobbyUpdateTimeoutPeriod = TimeSpan.FromSeconds(30);
     private Timer? _timer;
@@ -22,7 +22,7 @@ public class LobbyUpdateScheduleService(LobbyManager lobby) : IHostedService
 
     private void DoWork(object? state)
     {
-        lobby.UpdateBrowserValue();
-        lobby.KickNoHandshakePlayers();
+        session.UpdateBrowserValue();
+        session.KickNoHandshakePlayers();
     }
 }

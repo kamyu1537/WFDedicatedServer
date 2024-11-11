@@ -2,10 +2,9 @@
 using System.Drawing;
 using Microsoft.Extensions.Logging;
 using Steamworks;
-using WFDS.Common.Types;
-using WFDS.Server.Common;
+using WFDS.Common.Types.Manager;
 
-namespace WFDS.Server.Network;
+namespace WFDS.Common.Types;
 
 public interface ISession : IDisposable
 {

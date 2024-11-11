@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using Steamworks;
-using WFDS.Server.Common;
-using WFDS.Server.Network;
+using WFDS.Common.Types.Manager;
 
 namespace WFDS.Common.Types;
 

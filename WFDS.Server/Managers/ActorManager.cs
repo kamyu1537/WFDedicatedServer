@@ -2,20 +2,18 @@
 using System.Collections.Immutable;
 using Steamworks;
 using WFDS.Common.Types;
+using WFDS.Common.Types.Manager;
 using WFDS.Godot.Types;
 using WFDS.Server.Actors;
-using WFDS.Server.Common;
-using WFDS.Server.Common.Types;
 using WFDS.Server.Packets;
 
 namespace WFDS.Server.Managers;
 
 public sealed class ActorManager(
     ILogger<ActorManager> logger,
-    MapManager map,
-    LobbyManager lobby,
-    ActorIdManager id)
-    : IActorManager, IDisposable
+    ISessionManager session,
+    IActorIdManager id)
+    : IActorManager
 {
     private static readonly string MainZone = "main_zone";
     private static readonly int MaxOwnedActorCount = 32;
@@ -25,13 +23,6 @@ public sealed class ActorManager(
     private readonly ConcurrentDictionary<long, IActor> _owned = [];
     private readonly ConcurrentDictionary<long, IActor> _actors = [];
     private readonly ConcurrentDictionary<SteamId, IPlayerActor> _players = [];
-
-    public void Dispose()
-    {
-        _owned.Clear();
-        _actors.Clear();
-        _players.Clear();
-    }
 
     public void SelectActor(long actorId, Action<IActor> update)
     {
@@ -131,8 +122,8 @@ public sealed class ActorManager(
         {
             if (_owned.TryAdd(actor.ActorId, actor))
             {
-                actor.SendInstanceActor(lobby);
-                actor.SendUpdatePacket(lobby);
+                actor.SendInstanceActor(session);
+                actor.SendUpdatePacket(session);
                 return true;
             }
 
@@ -153,7 +144,7 @@ public sealed class ActorManager(
 
     private void SetPlayerActorDefaultValues(IPlayerActor player)
     {
-        player.SessionManager = lobby;
+        player.SessionManager = session;
     }
 
     public bool TryCreateHostActor<T>(Vector3 position, out T actor) where T : IActor, new()
@@ -217,7 +208,7 @@ public sealed class ActorManager(
             if (ownedActors.Length >= MaxOwnedActorCount)
             {
                 logger.LogError("owned actor limit reached ({MaxCount})", MaxOwnedActorCount);
-                lobby.KickPlayer(steamId);
+                session.KickPlayer(steamId);
                 return;
             }
 
@@ -269,7 +260,7 @@ public sealed class ActorManager(
         try
         {
             var wipe = ActorActionPacket.CreateWipeActorPacket(actorId);
-            lobby.BroadcastP2PPacket(NetChannel.ActorAction, wipe);
+            session.BroadcastP2PPacket(NetChannel.ActorAction, wipe);
 
             if (actor.CreatorId.Value != SteamClient.SteamId.Value)
             {
@@ -282,7 +273,7 @@ public sealed class ActorManager(
             }
 
             var queue = ActorActionPacket.CreateQueueFreePacket(actor.ActorId);
-            lobby.BroadcastP2PPacket(NetChannel.ActorAction, queue);
+            session.BroadcastP2PPacket(NetChannel.ActorAction, queue);
             return true;
         }
         finally
@@ -302,81 +293,6 @@ public sealed class ActorManager(
         return find != null && TryRemoveActor(find.ActorId, type, out actor);
     }
 
-    // -----------------------------------------
-
-    public void SpawnAmbientBirdActor()
-    {
-        var count = _random.Next() % 3 + 1;
-        var point = map.TrashPoints[_random.Next() % map.TrashPoints.Count];
-
-        for (var i = 0; i < count; i++)
-        {
-            var x = _random.NextSingle() * 5f - 2.5f;
-            var z = _random.NextSingle() * 5f - 2.5f;
-            var pos = point.Transform.Origin + new Vector3(x, 0, z);
-
-            SpawnAmbientBirdActor(pos);
-        }
-    }
-
-    public IActor? SpawnFishSpawnActor()
-    {
-        var point = map.FishSpawnPoints[_random.Next() % map.FishSpawnPoints.Count];
-        return SpawnFishSpawnActor(point.Transform.Origin);
-    }
-
-    public IActor? SpawnFishSpawnAlienActor()
-    {
-        var point = map.FishSpawnPoints[_random.Next() % map.FishSpawnPoints.Count];
-        return SpawnFishSpawnAlienActor(point.Transform.Origin);
-    }
-
-    public IActor? SpawnRainCloudActor()
-    {
-        var x = _random.NextSingle() * 250f - 100f;
-        var z = _random.NextSingle() * 250f - 150f;
-        var pos = new Vector3(x, 42f, z);
-
-        return SpawnRainCloudActor(pos);
-    }
-
-    public IActor? SpawnVoidPortalActor()
-    {
-        if (map.HiddenSpots.Count == 0)
-        {
-            logger.LogError("no hidden_spots found");
-            return null;
-        }
-
-        var point = map.HiddenSpots[_random.Next() % map.HiddenSpots.Count];
-        var x = _random.NextSingle() - 0.5f;
-        var z = _random.NextSingle() - 0.5f;
-        var pos = point.Transform.Origin + new Vector3(x, 0, z);
-
-        return SpawnVoidPortalActor(pos);
-    }
-
-    public IActor? SpawnMetalActor()
-    {
-        var point = RandomPickMetalPoint();
-        var x = _random.NextSingle() - 0.5f;
-        var z = _random.NextSingle() - 0.5f;
-        var pos = point.Transform.Origin + new Vector3(x, 0, z);
-
-        return SpawnMetalActor(pos);
-    }
-
-    private PositionNode RandomPickMetalPoint()
-    {
-        if (_random.NextSingle() < 0.15)
-        {
-            return map.ShorelinePoints[_random.Next() % map.ShorelinePoints.Count];
-        }
-
-        return map.TrashPoints[_random.Next() % map.TrashPoints.Count];
-    }
-
-    // -----------------------------------------
     public IActor? SpawnAmbientBirdActor(Vector3 position)
     {
         var actorCount = GetActorCountByType("ambient_bird");

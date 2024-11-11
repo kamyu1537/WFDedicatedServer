@@ -1,9 +1,7 @@
 ﻿using WFDS.Common.Extensions;
 using WFDS.Common.Types;
+using WFDS.Common.Types.Manager;
 using WFDS.Godot.Types;
-using WFDS.Server.Common;
-using WFDS.Server.Managers;
-using WFDS.Server.Network;
 
 namespace WFDS.Server.Packets;
 
@@ -71,8 +69,8 @@ public static class InstanceActorExtensions
         };
     }
 
-    public static void SendInstanceActor(this IActor actor, LobbyManager lobby)
+    public static void SendInstanceActor(this IActor actor, ISessionManager session)
     {
-        lobby.BroadcastP2PPacket(NetChannel.GameState, actor.ToPacket());
+        session.BroadcastP2PPacket(NetChannel.GameState, actor.ToPacket());
     }
 }

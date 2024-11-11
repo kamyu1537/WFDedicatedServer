@@ -2,7 +2,7 @@
 using Steamworks;
 using WFDS.Godot.Types;
 
-namespace WFDS.Common.Types;
+namespace WFDS.Common.Types.Manager;
 
 public interface IActorManager
 {
@@ -30,7 +30,7 @@ public interface IActorManager
     bool TryCreateRemoteActor(SteamId steamId, long actorId, string actorType, out IActor actor);
     bool TryRemoveActor(long actorId, ActorRemoveTypes type, out IActor actor);
     bool TryRemoveActorFirstByType(string actorType, ActorRemoveTypes type, out IActor actor);
-
+    
     IActor? SpawnAmbientBirdActor(Vector3 position);
     IActor? SpawnFishSpawnActor(Vector3 position);
     IActor? SpawnFishSpawnAlienActor(Vector3 position);

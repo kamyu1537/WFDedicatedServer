@@ -1,16 +1,16 @@
 ﻿using System.Collections.Concurrent;
 using Steamworks;
 using Steamworks.Data;
-using WFDS.Common.Helper;
+using WFDS.Common.Helpers;
 using WFDS.Common.Types;
+using WFDS.Common.Types.Manager;
 using WFDS.Godot.Binary;
-using WFDS.Server.Common;
 using WFDS.Server.Network;
 using WFDS.Server.Packets;
 
 namespace WFDS.Server.Managers;
 
-public sealed class LobbyManager : IDisposable, ISessionManager
+public sealed class SessionManager : ISessionManager
 {
     private const int MaxPlayers = 16;
     private const int RoomCodeLength = 6;
@@ -18,7 +18,7 @@ public sealed class LobbyManager : IDisposable, ISessionManager
     private const string LobbyRef = "webfishing_gamelobby";
     private const string GameVersion = "1.09";
 
-    private readonly ILogger<LobbyManager> _logger;
+    private readonly ILogger<SessionManager> _logger;
     private readonly ILoggerFactory _loggerFactory;
 
     private readonly HashSet<ulong> _banned = [];
@@ -30,11 +30,11 @@ public sealed class LobbyManager : IDisposable, ISessionManager
     private int _cap;
     private bool _public;
     private bool _adult;
+    private string _code = string.Empty;
 
     private Lobby? _lobby;
-    public string Code { get; private set; } = string.Empty;
 
-    public LobbyManager(ILogger<LobbyManager> logger, ILoggerFactory loggerFactory)
+    public SessionManager(ILogger<SessionManager> logger, ILoggerFactory loggerFactory)
     {
         _logger = logger;
         _loggerFactory = loggerFactory;
@@ -47,25 +47,6 @@ public sealed class LobbyManager : IDisposable, ISessionManager
         SteamNetworking.OnP2PSessionRequest += OnP2PSessionRequest;
     }
 
-    public void Dispose()
-    {
-        if (_lobby.HasValue)
-        {
-            _lobby = null;
-            SetPublic(false);
-        }
-
-        SteamMatchmaking.OnLobbyCreated -= OnLobbyCreated;
-        SteamMatchmaking.OnLobbyMemberJoined -= OnLobbyMemberJoined;
-        SteamMatchmaking.OnLobbyMemberLeave -= OnLobbyMemberLeave;
-        SteamMatchmaking.OnLobbyMemberDisconnected -= OnLobbyMemberDisconnected;
-        SteamMatchmaking.OnLobbyMemberDataChanged -= OnLobbyMemberDataChanged;
-        SteamNetworking.OnP2PSessionRequest -= OnP2PSessionRequest;
-
-        _banned.Clear();
-        _sessions.Clear();
-    }
-
     public void CreateLobby(string serverName, string code, GameLobbyType lobbyType, bool @public, bool adult, int cap = MaxPlayers)
     {
         if (_created)
@@ -73,10 +54,10 @@ public sealed class LobbyManager : IDisposable, ISessionManager
             return;
         }
 
-        Code = code;
-        if (Code.Length != RoomCodeLength || string.IsNullOrWhiteSpace(Code))
+        _code = code;
+        if (_code.Length != RoomCodeLength || string.IsNullOrWhiteSpace(_code))
         {
-            Code = GenerationRoomCode();
+            _code = GenerationRoomCode();
         }
 
         _name = serverName;
@@ -141,7 +122,7 @@ public sealed class LobbyManager : IDisposable, ISessionManager
 
         if (_lobbyType is GameLobbyType.Public or GameLobbyType.CodeOnly)
         {
-            _lobby.Value.SetData("code", Code);
+            _lobby.Value.SetData("code", _code);
         }
     }
 
@@ -214,7 +195,7 @@ public sealed class LobbyManager : IDisposable, ISessionManager
             return;
         }
 
-        _logger.LogInformation("lobby created: id({LobbyId}) roomCode({RoomCode}) lobbyType({LobbyType}) public({Public}) adult({Adult}) cap({Cap})", lobby.Id, Code, _lobbyType, _public, _adult, _cap);
+        _logger.LogInformation("lobby created: id({LobbyId}) roomCode({RoomCode}) lobbyType({LobbyType}) public({Public}) adult({Adult}) cap({Cap})", lobby.Id, _code, _lobbyType, _public, _adult, _cap);
 
         _lobby = lobby;
         SetupLobby(lobby);
@@ -315,7 +296,7 @@ public sealed class LobbyManager : IDisposable, ISessionManager
 
     private void UpdateConsoleTitle()
     {
-        var newTitle = $"[{_sessions.Count}/{_cap}] {_name} [{Code}]";
+        var newTitle = $"[{_sessions.Count}/{_cap}] {_name} [{_code}]";
         _logger.LogInformation("update console title: {Title}", newTitle);
         Console.Title = newTitle;
     }
