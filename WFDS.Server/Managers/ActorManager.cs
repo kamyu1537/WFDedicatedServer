@@ -11,14 +11,12 @@ namespace WFDS.Server.Managers;
 
 public sealed class ActorManager(
     ILogger<ActorManager> logger,
-    ISessionManager session,
-    IActorIdManager id)
+    ISessionManager sessionManager,
+    IActorIdManager idManager)
     : IActorManager
 {
     private static readonly string MainZone = "main_zone";
     private static readonly int MaxOwnedActorCount = 32;
-
-    private readonly Random _random = new();
 
     private readonly ConcurrentDictionary<long, IActor> _owned = [];
     private readonly ConcurrentDictionary<long, IActor> _actors = [];
@@ -122,8 +120,8 @@ public sealed class ActorManager(
         {
             if (_owned.TryAdd(actor.ActorId, actor))
             {
-                actor.SendInstanceActor(session);
-                actor.SendUpdatePacket(session);
+                actor.SendInstanceActor(sessionManager);
+                actor.SendUpdatePacket(sessionManager);
                 return true;
             }
 
@@ -142,11 +140,6 @@ public sealed class ActorManager(
         actor.Logger = logger;
     }
 
-    private void SetPlayerActorDefaultValues(IPlayerActor player)
-    {
-        player.SessionManager = session;
-    }
-
     public bool TryCreateHostActor<T>(Vector3 position, out T actor) where T : IActor, new()
     {
         actor = default!;
@@ -158,7 +151,7 @@ public sealed class ActorManager(
 
         actor = new T
         {
-            ActorId = id.Next(),
+            ActorId = idManager.Next(),
             CreatorId = SteamClient.SteamId,
             Position = position
         };
@@ -171,31 +164,35 @@ public sealed class ActorManager(
     {
         actor = null!;
 
-        if (!id.Add(actorId))
+        if (!idManager.Add(actorId))
         {
             logger.LogError("actor id already exists {ActorId} {ActorType}", actorId, "player");
             return false;
         }
 
-        actor = new PlayerActor
+        var success = false;
+        sessionManager.SelectSession(playerId, player =>
         {
-            ActorId = actorId,
-            CreatorId = playerId,
-            Zone = MainZone,
-            ZoneOwner = -1,
-            Position = Vector3.Zero,
-            Rotation = Vector3.Zero
-        };
+            var actor = new PlayerActor(player)
+            {
+                ActorId = actorId,
+                CreatorId = playerId,
+                Zone = MainZone,
+                ZoneOwner = -1,
+                Position = Vector3.Zero,
+                Rotation = Vector3.Zero
+            };
+            SetActorDefaultValues(actor);
+            success = TryAddActorAndPropagate(actor);
+        });
 
-        SetActorDefaultValues(actor);
-        SetPlayerActorDefaultValues(actor);
-        return TryAddActorAndPropagate(actor);
+        return success;
     }
 
     public bool TryCreateRemoteActor(SteamId steamId, long actorId, string actorType, out IActor actor)
     {
         actor = null!;
-        if (!id.Add(actorId))
+        if (!idManager.Add(actorId))
         {
             logger.LogError("actor id already exists {ActorId} {ActorType}", actorId, actorType);
             return false;
@@ -208,7 +205,7 @@ public sealed class ActorManager(
             if (ownedActors.Length >= MaxOwnedActorCount)
             {
                 logger.LogError("owned actor limit reached ({MaxCount})", MaxOwnedActorCount);
-                session.KickPlayer(steamId);
+                sessionManager.KickPlayer(steamId);
                 return;
             }
 
@@ -255,12 +252,12 @@ public sealed class ActorManager(
         }
 
         actor.OnRemoved(type);
-        id.Return(actorId);
+        idManager.Return(actorId);
 
         try
         {
             var wipe = ActorActionPacket.CreateWipeActorPacket(actorId);
-            session.BroadcastP2PPacket(NetChannel.ActorAction, wipe);
+            sessionManager.BroadcastP2PPacket(NetChannel.ActorAction, wipe);
 
             if (actor.CreatorId.Value != SteamClient.SteamId.Value)
             {
@@ -273,7 +270,7 @@ public sealed class ActorManager(
             }
 
             var queue = ActorActionPacket.CreateQueueFreePacket(actor.ActorId);
-            session.BroadcastP2PPacket(NetChannel.ActorAction, queue);
+            sessionManager.BroadcastP2PPacket(NetChannel.ActorAction, queue);
             return true;
         }
         finally

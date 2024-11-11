@@ -207,10 +207,8 @@ public sealed class SessionManager : ISessionManager
         _logger.LogInformation("lobby member joined: {DisplayName} [{SteamId}]", member.Name, member.Id);
 
         var logger = _loggerFactory.CreateLogger("session_" + member.Id);
-        var session = new Session
+        var session = new Session(this, logger)
         {
-            SessionManager = this,
-            Logger = logger,
             Friend = member,
             SteamId = member.Id,
             ConnectTime = DateTimeOffset.UtcNow

@@ -1,14 +1,12 @@
 ﻿using Steamworks;
 using WFDS.Common.Types;
-using WFDS.Common.Types.Manager;
 using WFDS.Godot.Types;
 
 namespace WFDS.Server.Actors;
 
-public sealed class PlayerActor : IPlayerActor
+public sealed class PlayerActor(ISession session) : IPlayerActor
 {
     public ILogger? Logger { get; set; }
-    public ISessionManager? SessionManager { get; set; }
     
     public string ActorType => "player";
     public long ActorId { get; init; }
@@ -23,9 +21,10 @@ public sealed class PlayerActor : IPlayerActor
     public bool IsDeadActor { get; set; } = true;
     public long ActorUpdateDefaultCooldown => 0;
     public long ActorUpdateCooldown { get; set; }
+    public ISession Session => session;
     
-    public GameItem HeldItem { get; set; } = GameItem.CreateDefault();
-    public Cosmetics Cosmetics { get; set; } = Cosmetics.CreateDefault();
+    public GameItem HeldItem { get; set; } = GameItem.Default;
+    public Cosmetics Cosmetics { get; set; } = Cosmetics.Default;
 
     public void OnCreated()
     {
@@ -53,8 +52,6 @@ public sealed class PlayerActor : IPlayerActor
 
     public void Dispose()
     {
-        Logger = null;
-        SessionManager = null;
     }
     
     public void OnCosmeticsUpdated(Cosmetics cosmetics)

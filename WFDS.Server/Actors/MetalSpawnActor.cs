@@ -9,6 +9,7 @@ namespace WFDS.Server.Actors;
 public sealed class MetalSpawnActor : IActor
 {
     public ILogger? Logger { get; set; }
+    
     public string ActorType => "metal_spawn";
     public long ActorId { get; init; }
     public SteamId CreatorId { get; init; }
@@ -55,6 +56,5 @@ public sealed class MetalSpawnActor : IActor
 
     public void Dispose()
     {
-        Logger = null;
     }
 }

@@ -7,6 +7,7 @@ namespace WFDS.Server.Actors;
 public sealed class AmbientBirdActor : IActor
 {
     public ILogger? Logger { get; set; }
+    
     public string ActorType => "ambient_bird";
     public long ActorId { get; init; }
     public SteamId CreatorId { get; init; }
@@ -53,6 +54,5 @@ public sealed class AmbientBirdActor : IActor
 
     public void Dispose()
     {
-        Logger = null;
     }
 }

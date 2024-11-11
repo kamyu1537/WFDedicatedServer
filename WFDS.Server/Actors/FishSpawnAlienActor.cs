@@ -7,6 +7,7 @@ namespace WFDS.Server.Actors;
 public sealed class FishSpawnAlienActor : IActor
 {
     public ILogger? Logger { get; set; }
+    
     public string ActorType => "fish_spawn_alien";
     public long ActorId { get; init; }
     public SteamId CreatorId { get; init; }
@@ -52,6 +53,5 @@ public sealed class FishSpawnAlienActor : IActor
 
     public void Dispose()
     {
-        Logger = null;
     }
 }

@@ -12,10 +12,10 @@ using Color = System.Drawing.Color;
 
 namespace WFDS.Server.Network;
 
-public sealed class Session : ISession
+public sealed class Session(ISessionManager sessionManager, ILogger logger) : ISession
 {
-    public ISessionManager? SessionManager { get; set; }
-    public ILogger? Logger { get; set; }
+    public ISessionManager SessionManager { get; } = sessionManager;
+    public ILogger Logger { get; } = logger;
 
     public bool Disposed { get; set; }
 
@@ -36,12 +36,12 @@ public sealed class Session : ISession
 
     public void SendP2PPacket(NetChannel channel, IPacket packet, string zone = "", long zoneOwner = -1)
     {
-        SessionManager?.SendP2PPacket(SteamId, channel, packet, zone, zoneOwner);
+        SessionManager.SendP2PPacket(SteamId, channel, packet, zone, zoneOwner);
     }
 
     public void SendMessage(string message, Color color, bool local = false)
     {
-        SessionManager?.SendP2PPacket(SteamId, NetChannel.GameState, new MessagePacket
+        SessionManager.SendP2PPacket(SteamId, NetChannel.GameState, new MessagePacket
         {
             Message = message,
             Color = color.ToHex(true),
@@ -54,7 +54,7 @@ public sealed class Session : ISession
 
     public void SendLetter(SteamId target, string body, List<GameItem> items)
     {
-        SessionManager?.SendP2PPacket(SteamId, NetChannel.GameState, new LetterReceivedPacket
+        SessionManager.SendP2PPacket(SteamId, NetChannel.GameState, new LetterReceivedPacket
         {
             LatterId = new Random().Next(),
             From = SteamClient.SteamId.ToString(),
@@ -70,21 +70,21 @@ public sealed class Session : ISession
     public void Kick()
     {
         ClearPacketQueue();
-        SessionManager?.KickPlayer(SteamId);
+        SessionManager.KickPlayer(SteamId);
         ProcessPackets();
     }
 
     public void TempBan()
     {
         ClearPacketQueue();
-        SessionManager?.TempBanPlayer(SteamId);
+        SessionManager.TempBanPlayer(SteamId);
         ProcessPackets();
     }
 
     public void ServerClose()
     {
         ClearPacketQueue();
-        SessionManager?.ServerClose(SteamId);
+        SessionManager.ServerClose(SteamId);
         ProcessPackets();
     }
 
@@ -125,9 +125,6 @@ public sealed class Session : ISession
         Disposed = true;
 
         Packets.Clear();
-
-        SessionManager = null;
-        Logger = null;
         Actor = null;
     }
 }

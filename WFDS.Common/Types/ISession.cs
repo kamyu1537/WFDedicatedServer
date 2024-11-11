@@ -8,8 +8,8 @@ namespace WFDS.Common.Types;
 
 public interface ISession : IDisposable
 {
-    ISessionManager? SessionManager { get; set; }
-    ILogger? Logger { get; set; }
+    ISessionManager SessionManager { get; }
+    ILogger Logger { get; }
 
     bool Disposed { get; set; }
 
