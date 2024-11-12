@@ -329,7 +329,7 @@ public sealed class SessionManager : ISessionManager
 
     public void SendP2PPacket(SteamId steamId, NetChannel channel, IPacket packet, string zone = "", long zoneOwner = -1)
     {
-        var data = PacketHelper.DictionaryPool.Get();
+        var data = PacketHelper.Pool.Get();
         Action? action = null;
         try
         {
@@ -339,7 +339,7 @@ public sealed class SessionManager : ISessionManager
         finally
         {
             action?.Invoke();
-            PacketHelper.DictionaryPool.Return(data);   
+            PacketHelper.Pool.Return(data);   
         }
     }
 
@@ -367,7 +367,7 @@ public sealed class SessionManager : ISessionManager
 
     public void BroadcastP2PPacket(NetChannel channel, IPacket packet, string zone = "", long zoneOwner = -1)
     {
-        var data = PacketHelper.DictionaryPool.Get();
+        var data = PacketHelper.Pool.Get();
         Action? action = null;
         try
         {
@@ -377,7 +377,7 @@ public sealed class SessionManager : ISessionManager
         finally
         {
             action?.Invoke();
-            PacketHelper.DictionaryPool.Return(data);   
+            PacketHelper.Pool.Return(data);   
         }
     }
 
