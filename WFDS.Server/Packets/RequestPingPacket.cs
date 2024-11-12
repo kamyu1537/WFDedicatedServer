@@ -13,11 +13,9 @@ public class RequestPingPacket : IPacket
         Sender = data.GetParseULong("sender");
     }
 
-    public Action? Write(Dictionary<object, object> data)
+    public void Write(Dictionary<object, object> data)
     {
         data.TryAdd("type", "request_ping");
         data.TryAdd("sender", Sender.Value.ToString());
-
-        return null;
     }
 }

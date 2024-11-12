@@ -12,11 +12,9 @@ public class HandshakePacket : IPacket
         UserId = data.GetString("user_id");
     }
 
-    public Action? Write(Dictionary<object, object> data)
+    public void Write(Dictionary<object, object> data)
     {
         data.TryAdd("type", "handshake");
         data.TryAdd("user_id", UserId);
-
-        return null;
     }
 }

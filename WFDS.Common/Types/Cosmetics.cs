@@ -40,7 +40,7 @@ public class Cosmetics : IPacket
         Legs = data.GetString("legs");
     }
 
-    public Action? Write(Dictionary<object, object> data)
+    public void Write(Dictionary<object, object> data)
     {
         data.TryAdd("species",Species);
         data.TryAdd("pattern",Pattern);
@@ -57,8 +57,6 @@ public class Cosmetics : IPacket
         data.TryAdd("accessory",Accessory);
         data.TryAdd("tail",Tail);
         data.TryAdd("legs", Legs);
-
-        return null;
     }
 
     public static Cosmetics Default => new()

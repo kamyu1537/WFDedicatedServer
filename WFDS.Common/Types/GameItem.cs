@@ -22,15 +22,13 @@ public class GameItem : IPacket
         Quality = PacketHelper.FromDictionary<QualityType>(data.GetObjectDictionary("quality"));
     }
 
-    public Action? Write(Dictionary<object, object> data)
+    public void Write(Dictionary<object, object> data)
     {
         data.TryAdd("id", Id);
         data.TryAdd("size", Size);
         data.TryAdd("ref", Ref);
         data.TryAdd("quality", Quality);
         data.TryAdd("tags", Tags);
-
-        return null;
     }
 
     public static GameItem Default => new()

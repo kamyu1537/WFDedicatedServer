@@ -8,10 +8,8 @@ public record KickPacket : IPacket
     {
     }
 
-    public Action? Write(Dictionary<object, object> data)
+    public void Write(Dictionary<object, object> data)
     {
         data.TryAdd("type", "kick");
-
-        return null;
     }
 }

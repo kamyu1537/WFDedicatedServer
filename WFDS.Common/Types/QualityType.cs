@@ -27,7 +27,7 @@ public class QualityType : IPacket
         Title = data.GetString("title");
     }
 
-    public Action? Write(Dictionary<object, object> data)
+    public void Write(Dictionary<object, object> data)
     {
         data.TryAdd("color", Color);
         data.TryAdd("name", Name);
@@ -38,8 +38,6 @@ public class QualityType : IPacket
         data.TryAdd("op", Op);
         data.TryAdd("particle", Particle);
         data.TryAdd("title", Title);
-        
-        return null;
     }
 
     private static QualityType Create(string color, string name, float diff, float bDiff, float worth, string mod, float op, long particle, string title)

@@ -12,11 +12,9 @@ public class RequestActorsPacket : IPacket
         UserId = data.GetString("user_id");
     }
 
-    public Action? Write(Dictionary<object, object> data)
+    public void Write(Dictionary<object, object> data)
     {
         data.TryAdd("type", "request_actors");
         data.TryAdd("user_id", UserId);
-
-        return null;
     }
 }

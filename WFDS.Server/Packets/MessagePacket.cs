@@ -23,7 +23,7 @@ public class MessagePacket : IPacket
         ZoneOwner = data.GetInt("zone_owner");
     }
 
-    public Action? Write(Dictionary<object, object> data)
+    public void Write(Dictionary<object, object> data)
     {
         data.TryAdd("type", "message");
         data.TryAdd("message", Message);
@@ -32,7 +32,5 @@ public class MessagePacket : IPacket
         data.TryAdd("position", Position);
         data.TryAdd("zone", Zone);
         data.TryAdd("zone_owner", ZoneOwner);
-
-        return null;
     }
 }

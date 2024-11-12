@@ -333,7 +333,7 @@ public sealed class SessionManager : ISessionManager
         Action? action = null;
         try
         {
-            action = packet.Write(data);
+            packet.Write(data);
             SendP2PPacket(steamId, channel, data, zone, zoneOwner);
         }
         finally
@@ -364,19 +364,17 @@ public sealed class SessionManager : ISessionManager
         var compressed = GZipHelper.Compress(bytes);
         session.Packets.Enqueue((channel, compressed));
     }
-
+    
     public void BroadcastP2PPacket(NetChannel channel, IPacket packet, string zone = "", long zoneOwner = -1)
     {
         var data = PacketHelper.Pool.Get();
-        Action? action = null;
         try
         {
-            action = packet.Write(data);
+            packet.Write(data);
             BroadcastP2PPacket(channel, data, zone, zoneOwner);
         }
         finally
         {
-            action?.Invoke();
             PacketHelper.Pool.Return(data);   
         }
     }

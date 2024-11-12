@@ -29,7 +29,7 @@ public class LetterData : IPacket
         Items = data.GetObjectList("items");
     }
 
-    public Action? Write(Dictionary<object, object> data)
+    public void Write(Dictionary<object, object> data)
     {
         data.TryAdd("letter_id", LetterId);
         data.TryAdd("to", To);
@@ -39,8 +39,6 @@ public class LetterData : IPacket
         data.TryAdd("closing", Closing);
         data.TryAdd("user", User);
         data.TryAdd("items", Items);
-
-        return null;
     }
 }
 
@@ -55,12 +53,10 @@ public class LetterReceivedPacket : IPacket
         Data = PacketHelper.FromDictionary<LetterData>(data.GetObjectDictionary("data"));
     }
 
-    public Action? Write(Dictionary<object, object> data)
+    public void Write(Dictionary<object, object> data)
     {
         data.TryAdd("type", "letter_recieved");
         data.TryAdd("to", To);
         data.TryAdd("data", Data.ToDictionary());
-
-        return null;
     }
 }
