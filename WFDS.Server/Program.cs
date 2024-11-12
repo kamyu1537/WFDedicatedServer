@@ -36,8 +36,10 @@ try
     builder.Services.AddSingleton<IActorManager, ActorManager>();
     builder.Services.AddSingleton<ISessionManager, SessionManager>();
 
+    // server
+    builder.Services.AddHostedService<WFServer>();
+    
     // lobby
-    builder.Services.AddHostedService<MainWorker>();
     builder.Services.AddHostedService<ConfigurationChangeService>();
     builder.Services.AddHostedService<LobbyUpdateScheduleService>();
     
@@ -53,7 +55,7 @@ try
     
     // actor
     builder.Services.AddHostedService<ActorUpdateService>();
-    builder.Services.AddHostedService<ActorActionService>();
+    builder.Services.AddHostedService<ActorNetworkShareService>();
 
     // server start
     var host = builder.Build();

@@ -5,7 +5,7 @@ using WFDS.Server.Packets;
 
 namespace WFDS.Server.Services;
 
-public class ActorActionService(IActorManager manager, ISessionManager session) : BackgroundService
+public class ActorNetworkShareService(IActorManager manager, ISessionManager session) : BackgroundService
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {

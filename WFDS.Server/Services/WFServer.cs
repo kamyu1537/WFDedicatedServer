@@ -4,8 +4,8 @@ using WFDS.Common.Types.Manager;
 
 namespace WFDS.Server.Services;
 
-public class MainWorker(
-    ILogger<MainWorker> logger,
+public class WFServer(
+    ILogger<WFServer> logger,
     IOptions<ServerSetting> settings,
     ISessionManager session,
     IMapManager map
