@@ -19,8 +19,9 @@ public class GameItem : IPacket
         Size = (float)data.GetFloat("size");
         Ref = data.GetInt("ref");
         Tags = data.GetObjectList("tags");
-        
-        Quality = PacketHelper.FromDictionary<QualityType>(data.GetObjectDictionary("quality"));
+
+        var qualityValue = data.GetInt("quality");
+        Quality = QualityType.Types.TryGetValue(qualityValue, out var quality) ? quality : QualityType.Normal;
     }
 
     public void Serialize(Dictionary<object, object> data)
@@ -28,7 +29,7 @@ public class GameItem : IPacket
         data.TryAdd("id", Id);
         data.TryAdd("size", Size);
         data.TryAdd("ref", Ref);
-        data.TryAdd("quality", Quality);
+        data.TryAdd("quality", Quality.Value);
         data.TryAdd("tags", Tags);
     }
 
