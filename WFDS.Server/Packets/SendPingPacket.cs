@@ -1,7 +1,6 @@
 ﻿using Steamworks;
 using WFDS.Common.Extensions;
 using WFDS.Common.Types;
-using WFDS.Server.Network;
 
 namespace WFDS.Server.Packets;
 
