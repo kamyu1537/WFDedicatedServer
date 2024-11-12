@@ -18,12 +18,12 @@ public class QualityType : IPacket
     {
         Color = data.GetString("color");
         Name = data.GetString("name");
-        Diff = data.GetFloat("diff");
-        BDiff = data.GetFloat("b_diff");
-        Worth = data.GetFloat("worth");
+        Diff = (float)data.GetFloat("diff");
+        BDiff = (float)data.GetFloat("b_diff");
+        Worth = (float)data.GetFloat("worth");
         Mod = data.GetString("mod");
-        Op = data.GetFloat("op");
-        Particle = data.GetNumber("particle");
+        Op = (float)data.GetFloat("op");
+        Particle = data.GetInt("particle");
         Title = data.GetString("title");
     }
 

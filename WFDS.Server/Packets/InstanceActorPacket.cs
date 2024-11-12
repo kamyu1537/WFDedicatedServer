@@ -22,8 +22,8 @@ public class InstanceActorPacket : IPacket
         var param = data.GetObjectDictionary("params");
 
         ActorType = param.GetString("actor_type");
-        ActorId = param.GetNumber("actor_id");
-        CreatorId = param.GetLong("creator_id");
+        ActorId = param.GetInt("actor_id");
+        CreatorId = param.GetInt("creator_id");
 
         Zone = param.GetString("zone");
         ZoneOwner = param.GetInt("zone_owner");

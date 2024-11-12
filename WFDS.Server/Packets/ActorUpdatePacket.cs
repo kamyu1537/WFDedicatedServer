@@ -13,7 +13,7 @@ public class ActorUpdatePacket : IPacket
 
     public void Parse(Dictionary<object, object> data)
     {
-        ActorId = data.GetNumber("actor_id");
+        ActorId = data.GetInt("actor_id");
         Position = data.GetVector3("pos");
         Rotation = data.GetVector3("rot");
     }

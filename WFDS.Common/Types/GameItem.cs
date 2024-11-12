@@ -14,8 +14,8 @@ public class GameItem : IPacket
     public void Parse(Dictionary<object, object> data)
     {
         Id = data.GetString("id");
-        Size = data.GetFloat("size");
-        Ref = data.GetNumber("ref");
+        Size = (float)data.GetFloat("size");
+        Ref = data.GetInt("ref");
         var qualityDic = data.GetObjectDictionary("quality");
         Quality = QualityType.FromDictionary(qualityDic);
         Tags = data.GetObjectList("tags");

@@ -17,7 +17,7 @@ public class LetterReceivedPacket : IPacket
 
     public void Parse(Dictionary<object, object> data)
     {
-        LatterId = data.GetNumber("letter_id");
+        LatterId = data.GetInt("letter_id");
         To = data.GetString("to");
 
         var dic = data.GetObjectDictionary("data");

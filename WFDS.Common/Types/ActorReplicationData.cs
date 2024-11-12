@@ -21,8 +21,8 @@ public class ActorReplicationData : IPacket
     public void Parse(Dictionary<object, object> data)
     {
         ActorType = data.GetString("type");
-        ActorId = data.GetNumber("id");
-        OwnerId = data.GetNumber("owner_id");
+        ActorId = data.GetInt("id");
+        OwnerId = data.GetInt("owner_id");
     }
 
     public Dictionary<object, object> ToDictionary()

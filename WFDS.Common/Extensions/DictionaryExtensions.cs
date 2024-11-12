@@ -12,7 +12,7 @@ public static class DictionaryExtensions
         return value is true;
     }
 
-    public static long GetNumber(this Dictionary<object, object> dic, string key)
+    public static long GetInt(this Dictionary<object, object> dic, string key)
     {
         if (!dic.TryGetValue(key, out var value))
             return 0;
@@ -24,39 +24,18 @@ public static class DictionaryExtensions
             _ => 0
         };
     }
-
-    public static int GetInt(this Dictionary<object, object> dic, string key)
-    {
-        if (!dic.TryGetValue(key, out var value))
-            return 0;
-
-        return value is int result ? result : 0;
-    }
     
-    public static float GetFloat(this Dictionary<object, object> dic, string key)
+    public static double GetFloat(this Dictionary<object, object> dic, string key)
     {
         if (!dic.TryGetValue(key, out var value))
             return 0;
-
-        return value is float result ? result : 0;
-    }
-
-    public static long GetLong(this Dictionary<object, object> dic, string key)
-    {
-        if (!dic.TryGetValue(key, out var value))
+        
+        return value switch
         {
-            return 0;
-        }
-
-        return value is long result ? result : 0;
-    }
-
-    public static ulong GetULong(this Dictionary<object, object> dic, string key)
-    {
-        if (!dic.TryGetValue(key, out var value))
-            return 0;
-
-        return value is ulong result ? result : 0;
+            float floatValue => floatValue,
+            double doubleValue => doubleValue,
+            _ => 0
+        };
     }
 
     public static List<object> GetObjectList(this Dictionary<object, object> dic, string key)

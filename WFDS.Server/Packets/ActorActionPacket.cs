@@ -16,7 +16,7 @@ public class ActorActionPacket : IPacket
 
     public void Parse(Dictionary<object, object> data)
     {
-        ActorId = data.GetNumber("actor_id");
+        ActorId = data.GetInt("actor_id");
         Action = data.GetString("action");
         Params = data.GetObjectList("params");
     }
