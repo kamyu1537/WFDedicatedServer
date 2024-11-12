@@ -42,14 +42,6 @@ public sealed class RainCloudActor : IActor
         var vel = new Vector2(1, 0).Rotate(_direction) * Speed;
         Position += new Vector3(vel.X, 0f, vel.X) * (float)delta;
     }
-    
-    public void OnCosmeticsUpdated(Cosmetics cosmetics)
-    {
-    }
-
-    public void OnHeldItemUpdated(GameItem item)
-    {
-    }
 
     public void OnZoneUpdated(string zone, long zoneOwner)
     {

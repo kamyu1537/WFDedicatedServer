@@ -39,14 +39,6 @@ public sealed class MetalSpawnActor : IActor
     public void OnUpdate(double delta)
     {
     }
-    
-    public void OnCosmeticsUpdated(Cosmetics cosmetics)
-    {
-    }
-
-    public void OnHeldItemUpdated(GameItem item)
-    {
-    }
 
     public void OnZoneUpdated(string zone, long zoneOwner)
     {
