@@ -95,7 +95,7 @@ public sealed class Session(ISessionManager sessionManager, ILogger logger) : IS
         if (Packets.TryDequeue(out var packet))
         {
 #if DEBUG
-            Console.WriteLine(JsonSerializer.Serialize(GodotBinaryConverter.Deserialize(GZipHelper.Decompress(packet.Item2))));
+            // Console.WriteLine(JsonSerializer.Serialize(GodotBinaryConverter.Deserialize(GZipHelper.Decompress(packet.Item2))));
 #endif
             SteamNetworking.SendP2PPacket(SteamId, packet.Item2, nChannel: packet.Item1.Value);
         }
@@ -113,7 +113,7 @@ public sealed class Session(ISessionManager sessionManager, ILogger logger) : IS
         while (Packets.TryDequeue(out var packet))
         {
 #if DEBUG
-            Console.WriteLine(JsonSerializer.Serialize(GodotBinaryConverter.Deserialize(GZipHelper.Decompress(packet.Item2))));
+            // Console.WriteLine(JsonSerializer.Serialize(GodotBinaryConverter.Deserialize(GZipHelper.Decompress(packet.Item2))));
 #endif
             SteamNetworking.SendP2PPacket(SteamId, packet.Item2, nChannel: packet.Item1.Value);
         }
