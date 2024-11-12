@@ -8,8 +8,10 @@ public class ServerClosePacket : IPacket
     {
     }
 
-    public void Write(Dictionary<object, object> data)
+    public Action? Write(Dictionary<object, object> data)
     {
         data.TryAdd("type", "server_close");
+
+        return null;
     }
 }

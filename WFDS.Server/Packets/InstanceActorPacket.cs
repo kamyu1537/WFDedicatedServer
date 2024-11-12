@@ -33,7 +33,7 @@ public class ActorParamData : IPacket
         Rotation = data.GetVector3("rot");
     }
     
-    public void Write(Dictionary<object, object> data)
+    public Action? Write(Dictionary<object, object> data)
     {
         data.TryAdd("actor_type", ActorType);
         data.TryAdd("actor_id", ActorId);
@@ -42,6 +42,8 @@ public class ActorParamData : IPacket
         data.TryAdd("zone_owner", ZoneOwner);
         data.TryAdd("at", Position);
         data.TryAdd("rot", Rotation);
+
+        return null;
     }
 }
 
@@ -54,10 +56,12 @@ public class InstanceActorPacket : IPacket
         Param = PacketHelper.FromDictionary<ActorParamData>(data.GetObjectDictionary("params"));
     }
 
-    public void Write(Dictionary<object, object> data)
+    public Action? Write(Dictionary<object, object> data)
     {
         data.TryAdd("type", "instance_actor");
         data.TryAdd("params", Param.ToDictionary());
+
+        return null;
     }
 }
 
