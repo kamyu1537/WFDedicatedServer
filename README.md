@@ -16,4 +16,4 @@ modify appsettings.json file
 - Private
 
 ### Room Code
-- 5 characters (A-Z, 0-9)
+- 6 characters (A-Z, 0-9)
