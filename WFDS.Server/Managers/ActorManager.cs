@@ -70,12 +70,23 @@ public sealed class ActorManager(
             action(actor);
         }
     }
-
+    
     public void SelectPlayerActors(Action<IPlayerActor> action)
     {
         foreach (var player in _players.Values)
         {
             action(player);
+        }
+    }
+
+    public void SelectPlayerActors(Func<IPlayerActor, bool> action)
+    {
+        foreach (var player in _players.Values)
+        {
+            if (!action(player))
+            {
+                break;
+            }
         }
     }
 

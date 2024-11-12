@@ -21,7 +21,7 @@ public sealed class AmbientBirdActor : IActor
     public long DecayTimer { get; set; } = 600;
     public DateTimeOffset CreateTime { get; set; } = DateTimeOffset.UtcNow;
 
-    public bool IsDeadActor { get; set; } = true;
+    public bool IsDeadActor { get; set; }
     public long ActorUpdateDefaultCooldown => 0;
     public long ActorUpdateCooldown { get; set; }
     
@@ -36,6 +36,27 @@ public sealed class AmbientBirdActor : IActor
 
     public void OnUpdate(double delta)
     {
+        var near = false;
+        ActorManager?.SelectPlayerActors(player =>
+        {
+            var distance = Position.Distance(player.Position);
+            if (distance < 10)
+            {
+                Logger?.LogInformation("bird {ActorId} is near player {PlayerId}", ActorId, player.ActorId);
+                near = true;
+                return false;
+            }
+
+            return true;
+        });
+
+        if (near)
+        {
+            if (ActorManager?.TryRemoveActor(ActorId, ActorRemoveTypes.QueueFree, out _) ?? false)
+            {
+                Logger?.LogInformation("bird {ActorId} is removed", ActorId);
+            }
+        }
     }
 
     public void OnZoneUpdated(string zone, long zoneOwner)

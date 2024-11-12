@@ -14,6 +14,7 @@ public interface IActorManager
     int GetPlayerActorCount();
     void SelectPlayerActor(SteamId steamId, Action<IPlayerActor> action);
     void SelectPlayerActors(Action<IPlayerActor> action);
+    void SelectPlayerActors(Func<IPlayerActor, bool> action);
 
     int GetOwnedActorCount();
     int GetOwnedActorCountByType(string actorType);
