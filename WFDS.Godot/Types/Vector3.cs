@@ -31,4 +31,9 @@ public record Vector3(float X, float Y, float Z)
         var length = MathF.Sqrt(X * X + Y * Y + Z * Z);
         return new Vector3(X / length, Y / length, Z / length);
     }
+    
+    public float Distance(Vector3 other)
+    {
+        return MathF.Sqrt(MathF.Pow(other.X - X, 2) + MathF.Pow(other.Y - Y, 2) + MathF.Pow(other.Z - Z, 2));
+    }
 }

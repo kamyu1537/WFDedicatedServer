@@ -24,6 +24,11 @@ public record Vector2(float X, float Y)
         var length = MathF.Sqrt(X * X + Y * Y);
         return new Vector2(X / length, Y / length);
     }
+    
+    public float Distance(Vector2 other)
+    {
+        return MathF.Sqrt(MathF.Pow(other.X - X, 2) + MathF.Pow(other.Y - Y, 2));
+    }
 
     public float Angle()
     {
