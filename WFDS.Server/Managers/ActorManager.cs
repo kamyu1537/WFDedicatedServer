@@ -314,7 +314,7 @@ public sealed class ActorManager(
     public IActor? SpawnAmbientBirdActor(Vector3 position)
     {
         var actorCount = GetActorCountByType("ambient_bird");
-        if (actorCount >= 10)
+        if (actorCount >= 12)
         {
             TryRemoveActorFirstByType("ambient_bird", ActorRemoveTypes.ActorCountOver, out _);
         }
@@ -325,7 +325,7 @@ public sealed class ActorManager(
     public IActor? SpawnFishSpawnActor(Vector3 position)
     {
         var actorCount = GetActorCountByType("fish_spawn");
-        if (actorCount >= 7)
+        if (actorCount >= 8)
         {
             TryRemoveActorFirstByType("fish_spawn", ActorRemoveTypes.ActorCountOver, out _);
         }
@@ -336,7 +336,7 @@ public sealed class ActorManager(
     public IActor? SpawnFishSpawnAlienActor(Vector3 position)
     {
         var actorCount = GetActorCountByType("fish_spawn_alien");
-        if (actorCount >= 7)
+        if (actorCount >= 2)
         {
             TryRemoveActorFirstByType("fish_spawn_alien", ActorRemoveTypes.ActorCountOver, out _);
         }
@@ -347,8 +347,9 @@ public sealed class ActorManager(
     public IActor? SpawnRainCloudActor(Vector3 position)
     {
         var actorCount = GetActorCountByType("raincloud");
-        if (actorCount > 0)
+        if (actorCount >= 1)
         {
+            logger.LogError("raincloud limit reached (2)");
             return null;
         }
 
@@ -358,9 +359,9 @@ public sealed class ActorManager(
     public IActor? SpawnVoidPortalActor(Vector3 position)
     {
         var actorCount = GetActorCountByType("void_portal");
-        if (actorCount > 0)
+        if (actorCount >= 1)
         {
-            logger.LogError("void_portal already exists");
+            logger.LogError("void_portal limit reached (1)");
             return null;
         }
 
