@@ -5,9 +5,9 @@ using WFDS.Server.Packets;
 namespace WFDS.Server.Handlers;
 
 [PacketType("request_actors")]
-public class RequestActorsHandler : PacketHandler
+public class RequestActorsHandler : PacketHandler<RequestActorsPacket>
 {
-    public override void HandlePacket(ISession sender, NetChannel channel, Dictionary<object, object> data)
+    protected override void HandlePacket(ISession sender, NetChannel channel, RequestActorsPacket _)
     {
         Logger.LogInformation("received request_actors from {Sender} on channel {Channel}", sender.SteamId, channel);
 

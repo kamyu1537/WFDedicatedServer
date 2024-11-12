@@ -6,9 +6,9 @@ using WFDS.Server.Packets;
 namespace WFDS.Server.Handlers;
 
 [PacketType("request_ping")]
-public class RequestPingHandler : PacketHandler
+public class RequestPingHandler : PacketHandler<RequestPingPacket>
 {
-    public override void HandlePacket(ISession sender, NetChannel channel, Dictionary<object, object> data)
+    protected override void HandlePacket(ISession sender, NetChannel channel, RequestPingPacket packet)
     {
         sender.PingReceiveTime = DateTimeOffset.UtcNow;
         sender.SendP2PPacket(NetChannel.GameState, new SendPingPacket

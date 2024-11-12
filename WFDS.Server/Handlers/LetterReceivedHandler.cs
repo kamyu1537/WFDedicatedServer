@@ -1,5 +1,5 @@
 ﻿using Steamworks;
-using WFDS.Common.Helpers;
+using WFDS.Common.Network;
 using WFDS.Common.Types;
 using WFDS.Server.Network;
 using WFDS.Server.Packets;
@@ -7,12 +7,10 @@ using WFDS.Server.Packets;
 namespace WFDS.Server.Handlers;
 
 [PacketType("letter_recieved")]
-public class LetterReceivedHandler : PacketHandler
+public class LetterReceivedHandler : PacketHandler<LetterReceivedPacket>
 {
-    public override void HandlePacket(ISession sender, NetChannel channel, Dictionary<object, object> data)
+    protected override void HandlePacket(ISession sender, NetChannel channel, LetterReceivedPacket packet)
     {
-        var packet = PacketHelper.FromDictionary<LetterReceivedPacket>(data);
-
         if (packet.To != SteamClient.SteamId.Value.ToString())
             return;
 

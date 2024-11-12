@@ -1,19 +1,19 @@
 ﻿namespace WFDS.Godot.Binary;
 
 public static class GodotBinaryConverter
-{   
+{
     public static byte[] Serialize(object? value)
     {
         return Serialize(value, GodotBinaryWriterOptions.Default);
     }
-    
+
     private static byte[] Serialize(object? value, GodotBinaryWriterOptions options)
-    {   
+    {
         using var stream = new MemoryStream();
         using var writer = new GodotBinaryWriter(stream, options);
-        
+
         writer.Write(value);
-        
+
         return stream.ToArray();
     }
 

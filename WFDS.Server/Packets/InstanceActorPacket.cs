@@ -1,5 +1,6 @@
 ﻿using WFDS.Common.Extensions;
 using WFDS.Common.Helpers;
+using WFDS.Common.Network;
 using WFDS.Common.Types;
 using WFDS.Common.Types.Manager;
 using WFDS.Godot.Types;
@@ -20,7 +21,7 @@ public class ActorParamData : IPacket
     public Vector3 Position { get; set; } = Vector3.Zero;
     public Vector3 Rotation { get; set; } = Vector3.Zero;
     
-    public void Parse(Dictionary<object, object> data)
+    public void Deserialize(Dictionary<object, object> data)
     {
         ActorType = data.GetString("actor_type");
         ActorId = data.GetInt("actor_id");
@@ -33,7 +34,7 @@ public class ActorParamData : IPacket
         Rotation = data.GetVector3("rot");
     }
     
-    public void Write(Dictionary<object, object> data)
+    public void Serialize(Dictionary<object, object> data)
     {
         data.TryAdd("actor_type", ActorType);
         data.TryAdd("actor_id", ActorId);
@@ -49,12 +50,12 @@ public class InstanceActorPacket : IPacket
 {
     public ActorParamData Param { get; set; } = ActorParamData.Default;
 
-    public void Parse(Dictionary<object, object> data)
+    public void Deserialize(Dictionary<object, object> data)
     {
         Param = PacketHelper.FromDictionary<ActorParamData>(data.GetObjectDictionary("params"));
     }
 
-    public void Write(Dictionary<object, object> data)
+    public void Serialize(Dictionary<object, object> data)
     {
         data.TryAdd("type", "instance_actor");
         data.TryAdd("params", Param.ToDictionary());

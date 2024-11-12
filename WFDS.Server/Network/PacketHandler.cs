@@ -1,10 +1,11 @@
 ﻿using Steamworks;
+using WFDS.Common.Network;
 using WFDS.Common.Types;
 using WFDS.Common.Types.Manager;
 
 namespace WFDS.Server.Network;
 
-public abstract class PacketHandler : IPacketHandler
+public abstract class PacketHandler<T> : IPacketHandler where T : IPacket, new()
 {
     protected string PacketType { get; private set; } = string.Empty;
     public ISessionManager? SessionManager { get; set; }
@@ -22,8 +23,14 @@ public abstract class PacketHandler : IPacketHandler
         logger.LogInformation("initialized packet handler for {PacketType}", packetType);
         return this;
     }
-    
-    public abstract void HandlePacket(ISession sender, NetChannel channel, Dictionary<object, object> data);
+
+    protected abstract void HandlePacket(ISession sender, NetChannel channel, T packet);
+
+    public void HandlePacket(ISession sender, NetChannel channel, Dictionary<object, object> data)
+    {
+        var packet = PacketHelper.FromDictionary<T>(data);
+        HandlePacket(sender, channel, packet);
+    }
     
     public void SendP2PPacket(SteamId target, NetChannel channel, IPacket packet, string zone = "", long zoneOwner = -1)
     {

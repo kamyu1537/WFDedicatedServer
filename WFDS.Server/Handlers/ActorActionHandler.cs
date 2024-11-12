@@ -1,6 +1,5 @@
 ﻿using System.Text.Json;
 using WFDS.Common.Extensions;
-using WFDS.Common.Helpers;
 using WFDS.Common.Types;
 using WFDS.Server.Network;
 using WFDS.Server.Packets;
@@ -8,7 +7,7 @@ using WFDS.Server.Packets;
 namespace WFDS.Server.Handlers;
 
 [PacketType("actor_action")]
-public class ActorActionHandler : PacketHandler
+public class ActorActionHandler : PacketHandler<ActorActionPacket>
 {
     private static readonly string[] AllowedActions =
     [
@@ -21,10 +20,8 @@ public class ActorActionHandler : PacketHandler
         "_sync_level_bubble"
     ];
 
-    public override void HandlePacket(ISession sender, NetChannel channel, Dictionary<object, object> data)
+    protected override void HandlePacket(ISession sender, NetChannel channel, ActorActionPacket packet)
     {
-        var packet = PacketHelper.FromDictionary<ActorActionPacket>(data);
-
         if (!AllowedActions.Contains(packet.Action))
         {
             return;
@@ -135,7 +132,7 @@ public class ActorActionHandler : PacketHandler
 
             var dic = packet.Params[0].GetObjectDictionary();
             var cosmetics = new Cosmetics();
-            cosmetics.Parse(dic);
+            cosmetics.Deserialize(dic);
             actor.OnCosmeticsUpdated(cosmetics);
         });
     }
@@ -157,7 +154,7 @@ public class ActorActionHandler : PacketHandler
 
             var dic = packet.Params[0].GetObjectDictionary();
             var item = new GameItem();
-            item.Parse(dic);
+            item.Deserialize(dic);
             actor.OnHeldItemUpdated(item);
         });
     }

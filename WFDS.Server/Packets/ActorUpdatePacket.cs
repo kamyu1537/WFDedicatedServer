@@ -11,14 +11,14 @@ public class ActorUpdatePacket : IPacket
     public Vector3 Position { get; set; } = Vector3.Zero;
     public Vector3 Rotation { get; set; } = Vector3.Zero;
 
-    public void Parse(Dictionary<object, object> data)
+    public void Deserialize(Dictionary<object, object> data)
     {
         ActorId = data.GetInt("actor_id");
         Position = data.GetVector3("pos");
         Rotation = data.GetVector3("rot");
     }
 
-    public void Write(Dictionary<object, object> data)
+    public void Serialize(Dictionary<object, object> data)
     {
         data.TryAdd("type", "actor_update");
         data.TryAdd("actor_id", ActorId);

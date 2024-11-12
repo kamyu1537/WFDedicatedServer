@@ -21,7 +21,7 @@ public class Cosmetics : IPacket
     public string Tail { get; set; } = string.Empty;
     public string Legs { get; set; } = string.Empty;
     
-    public void Parse(Dictionary<object, object> data)
+    public void Deserialize(Dictionary<object, object> data)
     {
         Species = data.GetString("species");
         Pattern = data.GetString("pattern");
@@ -40,7 +40,7 @@ public class Cosmetics : IPacket
         Legs = data.GetString("legs");
     }
 
-    public void Write(Dictionary<object, object> data)
+    public void Serialize(Dictionary<object, object> data)
     {
         data.TryAdd("species",Species);
         data.TryAdd("pattern",Pattern);

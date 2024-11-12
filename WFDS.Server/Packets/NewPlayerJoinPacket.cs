@@ -1,9 +1,8 @@
 ﻿using WFDS.Common.Types;
-using WFDS.Server.Network;
 
 namespace WFDS.Server.Packets;
 
-public record BanPacket : IPacket
+public class NewPlayerJoinPacket : IPacket
 {
     public void Deserialize(Dictionary<object, object> data)
     {
@@ -11,6 +10,6 @@ public record BanPacket : IPacket
 
     public void Serialize(Dictionary<object, object> data)
     {
-        data.TryAdd("type", "ban");
+        data.TryAdd("type", "new_player_join");
     }
 }

@@ -7,12 +7,12 @@ public class RequestActorsPacket : IPacket
 {
     public string UserId { get; set; } = string.Empty;
 
-    public void Parse(Dictionary<object, object> data)
+    public void Deserialize(Dictionary<object, object> data)
     {
         UserId = data.GetString("user_id");
     }
 
-    public void Write(Dictionary<object, object> data)
+    public void Serialize(Dictionary<object, object> data)
     {
         data.TryAdd("type", "request_actors");
         data.TryAdd("user_id", UserId);

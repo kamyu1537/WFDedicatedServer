@@ -2,6 +2,7 @@
 using Steamworks;
 using Steamworks.Data;
 using WFDS.Common.Helpers;
+using WFDS.Common.Network;
 using WFDS.Common.Types;
 using WFDS.Common.Types.Manager;
 using WFDS.Godot.Binary;
@@ -329,18 +330,8 @@ public sealed class SessionManager : ISessionManager
 
     public void SendP2PPacket(SteamId steamId, NetChannel channel, IPacket packet, string zone = "", long zoneOwner = -1)
     {
-        var data = PacketHelper.Pool.Get();
-        Action? action = null;
-        try
-        {
-            packet.Write(data);
-            SendP2PPacket(steamId, channel, data, zone, zoneOwner);
-        }
-        finally
-        {
-            action?.Invoke();
-            PacketHelper.Pool.Return(data);   
-        }
+        var data = PacketHelper.ToDictionary(packet);
+        SendP2PPacket(steamId, channel, data, zone, zoneOwner);
     }
 
     public void SendP2PPacket(SteamId steamId, NetChannel channel, object data, string zone = "", long zoneOwner = -1)
@@ -367,16 +358,8 @@ public sealed class SessionManager : ISessionManager
     
     public void BroadcastP2PPacket(NetChannel channel, IPacket packet, string zone = "", long zoneOwner = -1)
     {
-        var data = PacketHelper.Pool.Get();
-        try
-        {
-            packet.Write(data);
-            BroadcastP2PPacket(channel, data, zone, zoneOwner);
-        }
-        finally
-        {
-            PacketHelper.Pool.Return(data);   
-        }
+        var data = PacketHelper.ToDictionary(packet);
+        BroadcastP2PPacket(channel, data, zone, zoneOwner);
     }
 
     public void BroadcastP2PPacket(NetChannel channel, object data, string zone = "", long zoneOwner = -1)

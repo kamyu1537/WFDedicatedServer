@@ -7,7 +7,7 @@ public static class PacketExtensions
     public static Dictionary<object, object> ToDictionary(this IPacket packet)
     {
         var data = new Dictionary<object, object>();
-        packet.Write(data);
+        packet.Serialize(data);
         return data;
     }
 }

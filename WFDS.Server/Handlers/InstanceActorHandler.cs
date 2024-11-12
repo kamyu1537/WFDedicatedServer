@@ -1,17 +1,14 @@
-﻿using WFDS.Common.Helpers;
-using WFDS.Common.Types;
+﻿using WFDS.Common.Types;
 using WFDS.Server.Network;
 using WFDS.Server.Packets;
 
 namespace WFDS.Server.Handlers;
 
 [PacketType("instance_actor")]
-public class InstanceActorHandler : PacketHandler
+public class InstanceActorHandler : PacketHandler<InstanceActorPacket>
 {
-    public override void HandlePacket(ISession sender, NetChannel channel, Dictionary<object, object> data)
+    protected override void HandlePacket(ISession sender, NetChannel channel, InstanceActorPacket packet)
     {
-        var packet = PacketHelper.FromDictionary<InstanceActorPacket>(data);
-        
         Logger.LogInformation("received instance_actor from {Sender} on channel {Channel} / {ActorId} {ActorType} ", sender.SteamId, channel, packet.Param.ActorId, packet.Param.ActorType);
         
         if (packet.Param.ActorType == "player") CreatePlayerActor(sender, packet);

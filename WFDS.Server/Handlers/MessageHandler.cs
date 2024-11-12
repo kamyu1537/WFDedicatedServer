@@ -1,4 +1,5 @@
 ﻿using WFDS.Common.Helpers;
+using WFDS.Common.Network;
 using WFDS.Common.Types;
 using WFDS.Server.Network;
 using WFDS.Server.Packets;
@@ -6,12 +7,10 @@ using WFDS.Server.Packets;
 namespace WFDS.Server.Handlers;
 
 [PacketType("message")]
-public class MessageHandler : PacketHandler
+public class MessageHandler : PacketHandler<MessagePacket>
 {
-    public override void HandlePacket(ISession sender, NetChannel channel, Dictionary<object, object> data)
+    protected override void HandlePacket(ISession sender, NetChannel channel, MessagePacket packet)
     {
-        var packet = PacketHelper.FromDictionary<MessagePacket>(data);
-
         Logger.LogInformation("received message from {Sender} ({Zone}/{ZoneOwner}) on channel {Channel} / [{Color}] {Message}", sender.SteamId, packet.Zone, packet.ZoneOwner, channel, packet.Color, packet.Message);
         sender.Actor?.OnMessage(packet.Message, packet.Color, packet.Local, packet.Position, packet.Zone, packet.ZoneOwner);
     }

@@ -18,14 +18,14 @@ public class ActorReplicationData : IPacket
         };
     }
     
-    public void Parse(Dictionary<object, object> data)
+    public void Deserialize(Dictionary<object, object> data)
     {
         ActorType = data.GetString("type");
         ActorId = data.GetInt("id");
         OwnerId = data.GetInt("owner_id");
     }
 
-    public void Write(Dictionary<object, object> data)
+    public void Serialize(Dictionary<object, object> data)
     {
         data.TryAdd("type", ActorType);
         data.TryAdd("id", ActorId);

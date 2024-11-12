@@ -13,7 +13,7 @@ public class MessagePacket : IPacket
     public string Zone { get; set; } = string.Empty;
     public long ZoneOwner { get; set; }
 
-    public void Parse(Dictionary<object, object> data)
+    public void Deserialize(Dictionary<object, object> data)
     {
         Message = data.GetString("message");
         Color = data.GetString("color");
@@ -23,7 +23,7 @@ public class MessagePacket : IPacket
         ZoneOwner = data.GetInt("zone_owner");
     }
 
-    public void Write(Dictionary<object, object> data)
+    public void Serialize(Dictionary<object, object> data)
     {
         data.TryAdd("type", "message");
         data.TryAdd("message", Message);

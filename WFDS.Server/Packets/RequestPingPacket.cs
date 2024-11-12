@@ -8,12 +8,12 @@ public class RequestPingPacket : IPacket
 {
     public SteamId Sender { get; set; } = 0;
 
-    public void Parse(Dictionary<object, object> data)
+    public void Deserialize(Dictionary<object, object> data)
     {
         Sender = data.GetParseULong("sender");
     }
 
-    public void Write(Dictionary<object, object> data)
+    public void Serialize(Dictionary<object, object> data)
     {
         data.TryAdd("type", "request_ping");
         data.TryAdd("sender", Sender.Value.ToString());

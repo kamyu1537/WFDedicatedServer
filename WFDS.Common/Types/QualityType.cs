@@ -14,7 +14,7 @@ public class QualityType : IPacket
     public long Particle { get; set; } = 0;
     public string Title { get; set; } = string.Empty;
 
-    public void Parse(Dictionary<object, object> data)
+    public void Deserialize(Dictionary<object, object> data)
     {
         Color = data.GetString("color");
         Name = data.GetString("name");
@@ -27,7 +27,7 @@ public class QualityType : IPacket
         Title = data.GetString("title");
     }
 
-    public void Write(Dictionary<object, object> data)
+    public void Serialize(Dictionary<object, object> data)
     {
         data.TryAdd("color", Color);
         data.TryAdd("name", Name);

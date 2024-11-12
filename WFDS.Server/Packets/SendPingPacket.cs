@@ -8,12 +8,12 @@ public class SendPingPacket : IPacket
 {
     public SteamId FromId { get; set; } = 0;
 
-    public void Parse(Dictionary<object, object> data)
+    public void Deserialize(Dictionary<object, object> data)
     {
         FromId = data.GetParseULong("from");
     }
 
-    public void Write(Dictionary<object, object> data)
+    public void Serialize(Dictionary<object, object> data)
     {
         var time = DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString();
         

@@ -14,14 +14,14 @@ public class ActorActionPacket : IPacket
     public string Action { get; private set; } = string.Empty;
     public List<object> Params { get; private set; } = [];
 
-    public void Parse(Dictionary<object, object> data)
+    public void Deserialize(Dictionary<object, object> data)
     {
         ActorId = data.GetInt("actor_id");
         Action = data.GetString("action");
         Params = data.GetObjectList("params");
     }
 
-    public void Write(Dictionary<object, object> data)
+    public void Serialize(Dictionary<object, object> data)
     {
         data.TryAdd("type", "actor_action");
         data.TryAdd("actor_id", ActorId);

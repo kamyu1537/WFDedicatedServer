@@ -1,5 +1,6 @@
 ﻿using WFDS.Common.Extensions;
 using WFDS.Common.Helpers;
+using WFDS.Common.Network;
 
 namespace WFDS.Common.Types;
 
@@ -12,7 +13,7 @@ public class GameItem : IPacket
     public QualityType Quality { get; set; } = QualityType.Normal;
     public List<object> Tags { get; set; } = [];
     
-    public void Parse(Dictionary<object, object> data)
+    public void Deserialize(Dictionary<object, object> data)
     {
         Id = data.GetString("id");
         Size = (float)data.GetFloat("size");
@@ -22,7 +23,7 @@ public class GameItem : IPacket
         Quality = PacketHelper.FromDictionary<QualityType>(data.GetObjectDictionary("quality"));
     }
 
-    public void Write(Dictionary<object, object> data)
+    public void Serialize(Dictionary<object, object> data)
     {
         data.TryAdd("id", Id);
         data.TryAdd("size", Size);

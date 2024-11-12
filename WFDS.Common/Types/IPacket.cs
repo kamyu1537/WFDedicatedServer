@@ -2,6 +2,6 @@
 
 public interface IPacket
 {
-    public void Parse(Dictionary<object, object> data);
-    public void  Write(Dictionary<object, object> data);
+    public void Deserialize(Dictionary<object, object> data);
+    public void  Serialize(Dictionary<object, object> data);
 }
