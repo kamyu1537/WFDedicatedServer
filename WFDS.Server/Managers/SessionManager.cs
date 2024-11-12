@@ -67,7 +67,7 @@ public sealed class SessionManager : ISessionManager
         _cap = cap;
         _created = true;
 
-        SteamMatchmaking.CreateLobbyAsync(_cap);
+        SteamMatchmaking.CreateLobbyAsync(_cap + 1);
     }
 
     private void SetupLobby(Lobby lobby)
@@ -80,7 +80,7 @@ public sealed class SessionManager : ISessionManager
 
         lobby.SetData("name", _name);
         lobby.SetData("lobby_name", _name);
-        lobby.SetData("cap", _cap.ToString());
+        lobby.SetData("cap", (_cap + 1).ToString());
         lobby.SetData("age_limit", _adult ? "true" : "");
 
         lobby.SetData("banned_players", "");
