@@ -53,10 +53,7 @@ public sealed class AmbientBirdActor : IActor
 
         if (near)
         {
-            if (ActorManager?.TryRemoveActor(ActorId, ActorRemoveTypes.QueueFree, out _) ?? false)
-            {
-                Logger?.LogInformation("bird {ActorId} is removed", ActorId);
-            }
+            DecayTimer = 0;
         }
     }
 
