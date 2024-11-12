@@ -1,4 +1,5 @@
-﻿using WFDS.Common.Types;
+﻿using WFDS.Common.Helpers;
+using WFDS.Common.Types;
 using WFDS.Server.Network;
 using WFDS.Server.Packets;
 
@@ -9,8 +10,7 @@ public class ActorUpdateHandler : PacketHandler
 {
     public override void HandlePacket(ISession sender, NetChannel channel, Dictionary<object, object> data)
     {
-        var packet = new ActorUpdatePacket();
-        packet.Parse(data);
+        var packet = PacketHelper.FromDictionary<ActorUpdatePacket>(data);
 
         ActorManager?.SelectActor(packet.ActorId, actor =>
         {

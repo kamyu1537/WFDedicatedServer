@@ -37,9 +37,4 @@ public class MessagePacket : IPacket
             ["zone_owner"] = ZoneOwner
         };
     }
-
-    public IPacket ToPacket()
-    {
-        return this;
-    }
 }

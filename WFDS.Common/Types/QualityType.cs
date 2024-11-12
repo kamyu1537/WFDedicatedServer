@@ -43,10 +43,6 @@ public class QualityType : IPacket
         };
     }
 
-    private QualityType()
-    {
-    }
-
     private static QualityType Create(string color, string name, float diff, float bDiff, float worth, string mod, float op, long particle, string title)
     {
         var type = new QualityType
@@ -63,13 +59,6 @@ public class QualityType : IPacket
         };
 
         return type;
-    }
-
-    public static QualityType FromDictionary(Dictionary<object, object> data)
-    {
-        var fishQualityData = new QualityType();
-        fishQualityData.Parse(data);
-        return fishQualityData;
     }
 
 

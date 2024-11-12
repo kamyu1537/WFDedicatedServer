@@ -56,14 +56,18 @@ public sealed class Session(ISessionManager sessionManager, ILogger logger) : IS
     {
         SessionManager.SendP2PPacket(SteamId, NetChannel.GameState, new LetterReceivedPacket
         {
-            LatterId = new Random().Next(),
-            From = SteamClient.SteamId.ToString(),
             To = target.Value.ToString(),
-            Closing = "From, ",
-            User = "[SERVER]",
-            Header = "Letter",
-            Body = body,
-            Items = []
+            Data = new LetterData
+            {
+                LetterId = new Random().Next(),
+                To = SteamClient.SteamId.ToString(),
+                From = SteamClient.SteamId.ToString(),
+                Closing = "From, ",
+                User = "[SERVER]",
+                Header = "Letter",
+                Body = body,
+                Items = []
+            }
         });
     }
 

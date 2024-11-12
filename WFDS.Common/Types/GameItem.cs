@@ -1,4 +1,5 @@
 ﻿using WFDS.Common.Extensions;
+using WFDS.Common.Helpers;
 
 namespace WFDS.Common.Types;
 
@@ -16,9 +17,9 @@ public class GameItem : IPacket
         Id = data.GetString("id");
         Size = (float)data.GetFloat("size");
         Ref = data.GetInt("ref");
-        var qualityDic = data.GetObjectDictionary("quality");
-        Quality = QualityType.FromDictionary(qualityDic);
         Tags = data.GetObjectList("tags");
+        
+        Quality = PacketHelper.FromDictionary<QualityType>(data.GetObjectDictionary("quality"));
     }
 
     public Dictionary<object, object> ToDictionary()

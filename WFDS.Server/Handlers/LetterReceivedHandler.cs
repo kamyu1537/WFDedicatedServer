@@ -1,4 +1,5 @@
 ﻿using Steamworks;
+using WFDS.Common.Helpers;
 using WFDS.Common.Types;
 using WFDS.Server.Network;
 using WFDS.Server.Packets;
@@ -10,16 +11,16 @@ public class LetterReceivedHandler : PacketHandler
 {
     public override void HandlePacket(ISession sender, NetChannel channel, Dictionary<object, object> data)
     {
-        var packet = new LetterReceivedPacket();
-        packet.Parse(data);
+        var packet = PacketHelper.FromDictionary<LetterReceivedPacket>(data);
 
         if (packet.To != SteamClient.SteamId.Value.ToString())
             return;
 
-        Logger.LogInformation("received letter from {Sender} ({From} -> {To}) on channel {Channel} / {Header}: {Body} - {Closing} {User}", sender.SteamId, packet.From, packet.To, channel, packet.Header, packet.Body, packet.Closing, packet.User);
+        Logger.LogInformation("received letter from {Sender} ({From} -> {To}) on channel {Channel} / {Header}: {Body} - {Closing} {User}", sender.SteamId, packet.Data.From, packet.Data.To, channel, packet.Data.Header, packet.Data.Body, packet.Data.Closing, packet.Data.User);
 
-        packet.LatterId = new Random().Next();
-        (packet.From, packet.To) = (packet.To, packet.From);
+        packet.Data.LetterId = new Random().Next();
+        (packet.Data.From, packet.Data.To) = (packet.To, packet.Data.From);
+        packet.To = packet.Data.To;
 
         sender.SendP2PPacket(NetChannel.GameState, packet);
     }

@@ -1,5 +1,6 @@
 ﻿using System.Text.Json;
 using WFDS.Common.Extensions;
+using WFDS.Common.Helpers;
 using WFDS.Common.Types;
 using WFDS.Server.Network;
 using WFDS.Server.Packets;
@@ -22,12 +23,10 @@ public class ActorActionHandler : PacketHandler
 
     public override void HandlePacket(ISession sender, NetChannel channel, Dictionary<object, object> data)
     {
-        var packet = new ActorActionPacket();
-        packet.Parse(data);
+        var packet = PacketHelper.FromDictionary<ActorActionPacket>(data);
 
         if (!AllowedActions.Contains(packet.Action))
         {
-            // Logger.LogInformation("received actor_action from {Name}[{SteamId}] for actor {ActorId} : {Action} / {Data}", sender.Friend.Name, sender.SteamId, packet.ActorId, packet.Action, JsonSerializer.Serialize(packet.Params));
             return;
         }
 
