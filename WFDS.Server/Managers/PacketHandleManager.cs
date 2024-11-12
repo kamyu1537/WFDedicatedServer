@@ -58,12 +58,12 @@ public class PacketHandleManager : IPacketHandleManager
             _session.SelectSession(sender, session =>
             {
                 session.PingReceiveTime = DateTimeOffset.UtcNow;
-
                 if (_handlers.TryGetValue(typeName, out var handler))
                 {
                     handler.HandlePacket(session, channel, dic);
                 }
             });
+            dic.Clear();
         }
         else
         {
