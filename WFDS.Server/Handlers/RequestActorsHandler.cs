@@ -14,8 +14,5 @@ public class RequestActorsHandler : PacketHandler<RequestActorsPacket>
         var packet = new ActorRequestSendPacket();
         ActorManager?.SelectOwnedActors(actor => packet.Actors.Add(ActorReplicationData.FromActor(actor)));
         sender.SendP2PPacket(NetChannel.GameState, packet);
-        
-        // update all actors
-        ActorManager?.SelectOwnedActors(actor => actor.SendUpdatePacket(sender));
     }
 }
