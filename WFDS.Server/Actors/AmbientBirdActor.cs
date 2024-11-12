@@ -22,7 +22,7 @@ public sealed class AmbientBirdActor : IActor
     public DateTimeOffset CreateTime { get; set; } = DateTimeOffset.UtcNow;
 
     public bool IsDeadActor { get; set; }
-    public long ActorUpdateDefaultCooldown => 0;
+    public long ActorUpdateDefaultCooldown => 32;
     public long ActorUpdateCooldown { get; set; }
     
 
