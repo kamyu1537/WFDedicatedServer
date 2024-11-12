@@ -21,10 +21,6 @@ public interface ISessionManager
     void BanPlayers(string[] steamId);
     void RemoveBanPlayer(SteamId steamId);
     
-    
     void SendP2PPacket(SteamId steamId, NetChannel channel, IPacket packet, string zone = "", long zoneOwner = -1);
-    void SendP2PPacket(SteamId steamId, NetChannel channel, object data, string zone = "", long zoneOwner = -1);
-    
     void BroadcastP2PPacket(NetChannel channel, IPacket packet, string zone = "", long zoneOwner = -1);
-    void BroadcastP2PPacket(NetChannel channel, object data, string zone = "", long zoneOwner = -1);
 }

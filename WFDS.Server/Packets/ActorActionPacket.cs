@@ -21,15 +21,12 @@ public class ActorActionPacket : IPacket
         Params = data.GetObjectList("params");
     }
 
-    public Dictionary<object, object> ToDictionary()
+    public void Write(Dictionary<object, object> data)
     {
-        return new Dictionary<object, object>
-        {
-            ["type"] = "actor_action",
-            ["actor_id"] = ActorId,
-            ["action"] = Action,
-            ["params"] = Params
-        };
+        data.TryAdd("type", "actor_action");
+        data.TryAdd("actor_id", ActorId);
+        data.TryAdd("action", Action);
+        data.TryAdd("params", Params);
     }
 
     public static ActorActionPacket CreateWipeActorPacket(long actorId)

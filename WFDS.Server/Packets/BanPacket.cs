@@ -9,11 +9,8 @@ public record BanPacket : IPacket
     {
     }
 
-    public Dictionary<object, object> ToDictionary()
+    public void Write(Dictionary<object, object> data)
     {
-        return new Dictionary<object, object>
-        {
-            { "type", "ban" }
-        };
+        data.TryAdd("type", "ban");
     }
 }

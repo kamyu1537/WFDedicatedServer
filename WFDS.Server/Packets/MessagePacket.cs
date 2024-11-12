@@ -24,17 +24,14 @@ public class MessagePacket : IPacket
         ZoneOwner = data.GetInt("zone_owner");
     }
 
-    public Dictionary<object, object> ToDictionary()
+    public void Write(Dictionary<object, object> data)
     {
-        return new Dictionary<object, object>
-        {
-            ["type"] = "message",
-            ["message"] = Message,
-            ["color"] = Color,
-            ["local"] = Local,
-            ["position"] = Position,
-            ["zone"] = Zone,
-            ["zone_owner"] = ZoneOwner
-        };
+        data.TryAdd("type", "message");
+        data.TryAdd("message", Message);
+        data.TryAdd("color", Color);
+        data.TryAdd("local", Local);
+        data.TryAdd("position", Position);
+        data.TryAdd("zone", Zone);
+        data.TryAdd("zone_owner", ZoneOwner);
     }
 }

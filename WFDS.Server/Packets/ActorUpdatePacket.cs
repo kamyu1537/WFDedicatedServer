@@ -18,15 +18,12 @@ public class ActorUpdatePacket : IPacket
         Rotation = data.GetVector3("rot");
     }
 
-    public Dictionary<object, object> ToDictionary()
+    public void Write(Dictionary<object, object> data)
     {
-        return new Dictionary<object, object>
-        {
-            ["type"] = "actor_update",
-            ["actor_id"] = ActorId,
-            ["pos"] = Position,
-            ["rot"] = Rotation
-        };
+        data.TryAdd("type", "actor_update");
+        data.TryAdd("actor_id", ActorId);
+        data.TryAdd("pos", Position);
+        data.TryAdd("rot", Rotation);
     }
 }
 

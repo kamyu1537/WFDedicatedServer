@@ -13,12 +13,9 @@ public class RequestActorsPacket : IPacket
         UserId = data.GetString("user_id");
     }
 
-    public Dictionary<object, object> ToDictionary()
+    public void Write(Dictionary<object, object> data)
     {
-        return new Dictionary<object, object>
-        {
-            ["type"] = "request_actors",
-            ["user_id"] = UserId
-        };
+        data.TryAdd("type", "request_actors");
+        data.TryAdd("user_id", UserId);
     }
 }

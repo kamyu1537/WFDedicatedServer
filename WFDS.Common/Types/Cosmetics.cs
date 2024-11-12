@@ -40,26 +40,23 @@ public class Cosmetics : IPacket
         Legs = data.GetString("legs");
     }
 
-    public Dictionary<object, object> ToDictionary()
+    public void Write(Dictionary<object, object> data)
     {
-        return new Dictionary<object, object>
-        {
-            ["species"] = Species,
-            ["pattern"] = Pattern,
-            ["primary_color"] = PrimaryColor,
-            ["secondary_color"] = SecondaryColor,
-            ["hat"] = Hat,
-            ["undershirt"] = Undershirt,
-            ["overshirt"] = Overshirt,
-            ["title"] = Title,
-            ["bobber"] = Bobber,
-            ["eye"] = Eye,
-            ["nose"] = Nose,
-            ["mouth"] = Mouth,
-            ["accessory"] = Accessory,
-            ["tail"] = Tail,
-            ["legs"] = Legs
-        };
+        data.TryAdd("species",Species);
+        data.TryAdd("pattern",Pattern);
+        data.TryAdd("primary_color",PrimaryColor);
+        data.TryAdd("secondary_color",SecondaryColor);
+        data.TryAdd("hat",Hat);
+        data.TryAdd("undershirt",Undershirt);
+        data.TryAdd("overshirt",Overshirt);
+        data.TryAdd("title",Title);
+        data.TryAdd("bobber",Bobber);
+        data.TryAdd("eye",Eye);
+        data.TryAdd("nose",Nose);
+        data.TryAdd("mouth",Mouth);
+        data.TryAdd("accessory",Accessory);
+        data.TryAdd("tail",Tail);
+        data.TryAdd("legs", Legs);
     }
 
     public static Cosmetics Default => new()

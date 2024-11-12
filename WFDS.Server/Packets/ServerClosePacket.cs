@@ -8,11 +8,8 @@ public class ServerClosePacket : IPacket
     {
     }
 
-    public Dictionary<object, object> ToDictionary()
+    public void Write(Dictionary<object, object> data)
     {
-        return new Dictionary<object, object>
-        {
-            ["type"] = "server_close"
-        };
+        data.TryAdd("type", "server_close");
     }
 }

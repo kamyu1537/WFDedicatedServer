@@ -1,7 +1,9 @@
 ﻿using System.Collections.Concurrent;
+using Microsoft.Extensions.ObjectPool;
 using Steamworks;
 using Steamworks.Data;
 using WFDS.Common.Helpers;
+using WFDS.Common.Policies;
 using WFDS.Common.Types;
 using WFDS.Common.Types.Manager;
 using WFDS.Godot.Binary;
@@ -17,6 +19,8 @@ public sealed class SessionManager : ISessionManager
     private const string LobbyMode = "GodotsteamLobby";
     private const string LobbyRef = "webfishing_gamelobby";
     private const string GameVersion = "1.09";
+    
+    private static ObjectPool<Dictionary<object, object>> DictionaryPool { get; } = new DefaultObjectPool<Dictionary<object, object>>(new DictionaryPooledObjectPolicy());
 
     private readonly ILogger<SessionManager> _logger;
     private readonly ILoggerFactory _loggerFactory;
@@ -329,8 +333,16 @@ public sealed class SessionManager : ISessionManager
 
     public void SendP2PPacket(SteamId steamId, NetChannel channel, IPacket packet, string zone = "", long zoneOwner = -1)
     {
-        var data = packet.ToDictionary();
-        SendP2PPacket(steamId, channel, data, zone, zoneOwner);
+        var data = DictionaryPool.Get();
+        try
+        {
+            packet.Write(data);
+            SendP2PPacket(steamId, channel, data, zone, zoneOwner);
+        }
+        finally
+        {
+            DictionaryPool.Return(data);   
+        }
     }
 
     public void SendP2PPacket(SteamId steamId, NetChannel channel, object data, string zone = "", long zoneOwner = -1)
@@ -357,8 +369,16 @@ public sealed class SessionManager : ISessionManager
 
     public void BroadcastP2PPacket(NetChannel channel, IPacket packet, string zone = "", long zoneOwner = -1)
     {
-        var data = packet.ToDictionary();
-        BroadcastP2PPacket(channel, data, zone, zoneOwner);
+        var data = DictionaryPool.Get();
+        try
+        {
+            packet.Write(data);
+            BroadcastP2PPacket(channel, data, zone, zoneOwner);
+        }
+        finally
+        {
+            DictionaryPool.Return(data);   
+        }
     }
 
     public void BroadcastP2PPacket(NetChannel channel, object data, string zone = "", long zoneOwner = -1)

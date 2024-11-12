@@ -25,13 +25,10 @@ public class ActorReplicationData : IPacket
         OwnerId = data.GetInt("owner_id");
     }
 
-    public Dictionary<object, object> ToDictionary()
+    public void Write(Dictionary<object, object> data)
     {
-        return new Dictionary<object, object>
-        {
-            ["type"] = ActorType,
-            ["id"] = ActorId,
-            ["owner_id"] = OwnerId
-        };
+        data.TryAdd("type", ActorType);
+        data.TryAdd("id", ActorId);
+        data.TryAdd("owner_id", OwnerId);
     }
 }

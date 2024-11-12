@@ -13,7 +13,5 @@ public interface IPacketHandler
     void HandlePacket(ISession sender, NetChannel channel, Dictionary<object, object> data);
 
     void SendP2PPacket(SteamId target, NetChannel channel, IPacket packet, string zone = "", long zoneOwner = -1);
-    void SendP2PPacket(SteamId target, NetChannel channel, Dictionary<object, object> data, string zone, long zoneOwner = -1);
     void BroadcastP2PPacket(NetChannel channel, IPacket packet, string zone = "", long zoneOwner = -1);
-    void BroadcastP2PPacket(NetChannel channel, Dictionary<object, object> data, string zone = "", long zoneOwner = -1);
 }

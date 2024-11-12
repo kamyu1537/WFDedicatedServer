@@ -9,11 +9,8 @@ public record KickPacket : IPacket
     {
     }
 
-    public Dictionary<object, object> ToDictionary()
+    public void Write(Dictionary<object, object> data)
     {
-        return new Dictionary<object, object>
-        {
-            { "type", "kick" }
-        };
+        data.TryAdd("type", "kick");
     }
 }

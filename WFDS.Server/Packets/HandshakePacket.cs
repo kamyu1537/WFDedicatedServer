@@ -13,12 +13,9 @@ public class HandshakePacket : IPacket
         UserId = data.GetString("user_id");
     }
 
-    public Dictionary<object, object> ToDictionary()
+    public void Write(Dictionary<object, object> data)
     {
-        return new Dictionary<object, object>
-        {
-            ["type"] = "handshake",
-            ["user_id"] = UserId
-        };
+        data.TryAdd("type", "handshake");
+        data.TryAdd("user_id", UserId);
     }
 }

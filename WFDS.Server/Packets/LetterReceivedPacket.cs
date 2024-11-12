@@ -29,19 +29,16 @@ public class LetterData : IPacket
         Items = data.GetObjectList("items");
     }
 
-    public Dictionary<object, object> ToDictionary()
+    public void Write(Dictionary<object, object> data)
     {
-        return new Dictionary<object, object>
-        {
-            ["letter_id"] = LetterId,
-            ["to"] = To,
-            ["from"] = From,
-            ["header"] = Header,
-            ["body"] = Body,
-            ["closing"] = Closing,
-            ["user"] = User,
-            ["items"] = Items
-        };
+        data.TryAdd("letter_id", LetterId);
+        data.TryAdd("to", To);
+        data.TryAdd("from", From);
+        data.TryAdd("header", Header);
+        data.TryAdd("body", Body);
+        data.TryAdd("closing", Closing);
+        data.TryAdd("user", User);
+        data.TryAdd("items", Items);
     }
 }
 
@@ -56,13 +53,10 @@ public class LetterReceivedPacket : IPacket
         Data = PacketHelper.FromDictionary<LetterData>(data.GetObjectDictionary("data"));
     }
 
-    public Dictionary<object, object> ToDictionary()
+    public void Write(Dictionary<object, object> data)
     {
-        return new Dictionary<object, object>
-        {
-            ["type"] = "letter_recieved",
-            ["to"] = To,
-            ["data"] = Data.ToDictionary()
-        };
+        data.TryAdd("type", "letter_recieved");
+        data.TryAdd("to", To);
+        data.TryAdd("data", Data.ToDictionary());
     }
 }

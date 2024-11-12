@@ -14,15 +14,12 @@ public class SendPingPacket : IPacket
         FromId = data.GetParseULong("from");
     }
 
-    public Dictionary<object, object> ToDictionary()
+    public void Write(Dictionary<object, object> data)
     {
         var time = DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString();
-
-        return new Dictionary<object, object>
-        {
-            ["type"] = "send_ping",
-            ["from"] = FromId.Value.ToString(),
-            ["time"] = time
-        };
+        
+        data.TryAdd("type", "send_ping");
+        data.TryAdd("from", FromId.Value.ToString());
+        data.TryAdd("time", time);
     }
 }

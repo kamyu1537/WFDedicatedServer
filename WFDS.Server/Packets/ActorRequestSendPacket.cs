@@ -15,12 +15,9 @@ public class ActorRequestSendPacket : IPacket
             .ToList();
     }
 
-    public Dictionary<object, object> ToDictionary()
+    public void Write(Dictionary<object, object> data)
     {
-        return new Dictionary<object, object>
-        {
-            { "type", "actor_request_send" },
-            { "list", Actors.Select(object (x) => x.ToDictionary()).ToList() }
-        };
+        data.TryAdd("type", "actor_request_send");
+        data.TryAdd("list", Actors.Select(object (x) => x.ToDictionary()).ToList());
     }
 }

@@ -27,21 +27,11 @@ public abstract class PacketHandler : IPacketHandler
     
     public void SendP2PPacket(SteamId target, NetChannel channel, IPacket packet, string zone = "", long zoneOwner = -1)
     {
-        SendP2PPacket(target, channel, packet.ToDictionary(), zone, zoneOwner);
-    }
-
-    public void SendP2PPacket(SteamId target, NetChannel channel, Dictionary<object, object> data, string zone, long zoneOwner = -1)
-    {
-        SessionManager?.SendP2PPacket(target, channel, data, zone, zoneOwner);
+        SessionManager?.SendP2PPacket(target, channel, packet, zone, zoneOwner);
     }
 
     public void BroadcastP2PPacket(NetChannel channel, IPacket packet, string zone = "", long zoneOwner = -1)
     {
-        SessionManager?.BroadcastP2PPacket(channel, packet.ToDictionary(), zone, zoneOwner);
-    }
-
-    public void BroadcastP2PPacket(NetChannel channel, Dictionary<object, object> data, string zone = "", long zoneOwner = -1)
-    {
-        SessionManager?.BroadcastP2PPacket(channel, data, zone, zoneOwner);
+        SessionManager?.BroadcastP2PPacket(channel, packet, zone, zoneOwner);
     }
 }
