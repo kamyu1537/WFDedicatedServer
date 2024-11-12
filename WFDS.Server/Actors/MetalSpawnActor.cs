@@ -11,6 +11,7 @@ public sealed class MetalSpawnActor : IActor
 {
     public ILogger? Logger { get; set; }
     public IActorManager? ActorManager { get; set; }
+    public ISessionManager? SessionManager { get; set; }
     
     public string ActorType => "metal_spawn";
     public long ActorId { get; init; }
@@ -52,5 +53,6 @@ public sealed class MetalSpawnActor : IActor
     {
         Logger = null;
         ActorManager = null;
+        SessionManager = null;
     }
 }

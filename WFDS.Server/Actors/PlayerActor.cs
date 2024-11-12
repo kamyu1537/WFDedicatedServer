@@ -9,6 +9,7 @@ public sealed class PlayerActor(ISession session) : IPlayerActor
 {
     public ILogger? Logger { get; set; }
     public IActorManager? ActorManager { get; set; }
+    public ISessionManager? SessionManager { get; set; }
 
     public string ActorType => "player";
     public long ActorId { get; init; }
@@ -56,6 +57,7 @@ public sealed class PlayerActor(ISession session) : IPlayerActor
     {
         Logger = null;
         ActorManager = null;
+        SessionManager = null;
     }
 
     public void OnCosmeticsUpdated(Cosmetics cosmetics)

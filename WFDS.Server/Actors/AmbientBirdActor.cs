@@ -9,6 +9,7 @@ public sealed class AmbientBirdActor : IActor
 {
     public ILogger? Logger { get; set; }
     public IActorManager? ActorManager { get; set; }
+    public ISessionManager? SessionManager { get; set; }
     
     public string ActorType => "ambient_bird";
     public long ActorId { get; init; }
@@ -71,5 +72,6 @@ public sealed class AmbientBirdActor : IActor
     {
         Logger = null;
         ActorManager = null;
+        SessionManager = null;
     }
 }

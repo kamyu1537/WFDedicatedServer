@@ -151,6 +151,7 @@ public sealed class ActorManager(
         
         actor.Logger = logger;
         actor.ActorManager = this;
+        actor.SessionManager = sessionManager;
     }
 
     public bool TryCreateHostActor<T>(Vector3 position, out T actor) where T : IActor, new()
@@ -276,8 +277,8 @@ public sealed class ActorManager(
 
         try
         {
-            var wipe = ActorActionPacket.CreateWipeActorPacket(actorId);
-            sessionManager.BroadcastP2PPacket(NetChannel.ActorAction, wipe);
+            var queue = ActorActionPacket.CreateQueueFreePacket(actor.ActorId);
+            sessionManager.BroadcastP2PPacket(NetChannel.ActorAction, queue);
 
             if (actor.CreatorId.Value != SteamClient.SteamId.Value)
             {
@@ -289,8 +290,8 @@ public sealed class ActorManager(
                 return false;
             }
 
-            var queue = ActorActionPacket.CreateQueueFreePacket(actor.ActorId);
-            sessionManager.BroadcastP2PPacket(NetChannel.ActorAction, queue);
+            var wipe = ActorActionPacket.CreateWipeActorPacket(actorId);
+            sessionManager.BroadcastP2PPacket(NetChannel.ActorAction, wipe);
             return true;
         }
         finally

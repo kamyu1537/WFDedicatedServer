@@ -9,6 +9,7 @@ public interface IActor : IDisposable
 {
     ILogger? Logger { get; set; }
     IActorManager? ActorManager { get; set; }
+    ISessionManager? SessionManager { get; set; }
     
     string ActorType { get; }
     long ActorId { get; init; }

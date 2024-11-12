@@ -2,6 +2,7 @@
 using WFDS.Common.Types;
 using WFDS.Common.Types.Manager;
 using WFDS.Godot.Types;
+using WFDS.Server.Packets;
 
 namespace WFDS.Server.Actors;
 
@@ -9,6 +10,7 @@ public sealed class RemoteActor : IActor
 {
     public ILogger? Logger { get; set; }
     public IActorManager? ActorManager { get; set; }
+    public ISessionManager? SessionManager { get; set; }
     
     public string ActorType { get; init; } = string.Empty;
     public long ActorId { get; init; }
@@ -53,5 +55,6 @@ public sealed class RemoteActor : IActor
     {
         Logger = null;
         ActorManager = null;
+        SessionManager = null;
     }
 }

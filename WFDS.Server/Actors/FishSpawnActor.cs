@@ -9,6 +9,7 @@ public sealed class FishSpawnActor : IActor
 {
     public ILogger? Logger { get; set; }
     public IActorManager? ActorManager { get; set; }
+    public ISessionManager? SessionManager { get; set; }
     
     public string ActorType => "fish_spawn";
     public long ActorId { get; init; }
@@ -49,5 +50,6 @@ public sealed class FishSpawnActor : IActor
     {
         Logger = null;
         ActorManager = null;
+        SessionManager = null;
     }
 }
