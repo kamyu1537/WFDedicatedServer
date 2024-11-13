@@ -1,23 +1,13 @@
 ﻿namespace WFDS.Godot.Types;
 
-public class NodePath
+public struct NodePath(string[] names, string[] subNames, bool absolute)
 {
-    public string[] Names { get; set; }
-    public string[] SubNames { get; set; }
-    public bool Absolute { get; set; }
+    public string[] Names { get; set; } = names;
+    public string[] SubNames { get; set; } = subNames;
+    public bool Absolute { get; set; } = absolute;
 
-    public NodePath(string path)
+    public NodePath(string path) : this(path.Trim('/').Split('/'), [], path.StartsWith('/'))
     {
-        Absolute = path.StartsWith('/');
-        Names = path.Trim('/').Split('/');
-        SubNames = [];
-    }
-
-    public NodePath(string[] names, string[] subNames, bool absolute)
-    {
-        Names = names;
-        SubNames = subNames;
-        Absolute = absolute;
     }
 
     public override string ToString()

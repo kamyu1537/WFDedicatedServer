@@ -1,9 +1,9 @@
 ﻿using WFDS.Common.Types.Manager;
-using WFDS.Godot.Types;
+using WFDS.Server.Managers;
 
 namespace WFDS.Server.Services;
 
-public class AmbientSpawnScheduleService(IActorManager actor, IGameSessionManager session, IMapManager map) : IHostedService
+public class AmbientSpawnScheduleService(IGameSessionManager session, IActorSpawnManager spawn) : IHostedService
 {
     private static readonly TimeSpan AmbientSpawnTimeoutPeriod = TimeSpan.FromSeconds(10);
     private readonly Random _random = new();
@@ -30,21 +30,6 @@ public class AmbientSpawnScheduleService(IActorManager actor, IGameSessionManage
         var index = _random.Next() % 3;
 
         if (index == 2)
-            SpawnAmbientBirdActor();
-    }
-    
-    private void SpawnAmbientBirdActor()
-    {
-        var count = _random.Next() % 3 + 1;
-        var point = map.TrashPoints[_random.Next() % map.TrashPoints.Count];
-
-        for (var i = 0; i < count; i++)
-        {
-            var x = _random.NextSingle() * 5f - 2.5f;
-            var z = _random.NextSingle() * 5f - 2.5f;
-            var pos = point.Transform.Origin + new Vector3(x, 0, z);
-
-            actor.SpawnAmbientBirdActor(pos);
-        }
+            spawn.SpawnAmbientBirdActor();
     }
 }

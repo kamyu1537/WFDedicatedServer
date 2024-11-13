@@ -1,6 +1,6 @@
 ﻿namespace WFDS.Godot.Types;
 
-public record Plane(
+public record struct Plane(
     Vector3 Normal,
     float Distance
     );

@@ -1,10 +1,9 @@
-﻿using WFDS.Common.Types;
-using WFDS.Common.Types.Manager;
-using WFDS.Godot.Types;
+﻿using WFDS.Common.Types.Manager;
+using WFDS.Server.Managers;
 
 namespace WFDS.Server.Services;
 
-public class MetalSpawnScheduleService(ILogger<MetalSpawnScheduleService> logger, IActorManager actor, IGameSessionManager session, IMapManager map) : IHostedService
+public class MetalSpawnScheduleService(ILogger<MetalSpawnScheduleService> logger, IActorSpawnManager spawn, IGameSessionManager session) : IHostedService
 {
     private static readonly TimeSpan MetalSpawnTimeoutPeriod = TimeSpan.FromSeconds(20);
     private Timer? _timer;
@@ -27,30 +26,12 @@ public class MetalSpawnScheduleService(ILogger<MetalSpawnScheduleService> logger
         var count = session.GetSessionCount();
         if (count < 1) return;
 
-        var metal = SpawnMetalActor();
+        var metal = spawn.SpawnMetalActor();
         if (metal != null)
         {
             logger.LogInformation("spawn {ActorType} ({ActorId}) at {Pos}", metal.ActorType, metal.ActorId, metal.Position);
         }
     }
 
-    private IActor? SpawnMetalActor()
-    {
-        var point = RandomPickMetalPoint();
-        var x = _random.NextSingle() - 0.5f;
-        var z = _random.NextSingle() - 0.5f;
-        var pos = point.Transform.Origin + new Vector3(x, 0, z);
-
-        return actor.SpawnMetalActor(pos);
-    }
-
-    private PositionNode RandomPickMetalPoint()
-    {
-        if (_random.NextSingle() < 0.15)
-        {
-            return map.ShorelinePoints[_random.Next() % map.ShorelinePoints.Count];
-        }
-
-        return map.TrashPoints[_random.Next() % map.TrashPoints.Count];
-    }
+    
 }

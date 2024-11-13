@@ -1,6 +1,6 @@
 ﻿namespace WFDS.Godot.Types;
 
-public record Vector2(float X, float Y)
+public record struct Vector2(float X, float Y)
 {
     public static Vector2 Zero => new(0, 0);
     

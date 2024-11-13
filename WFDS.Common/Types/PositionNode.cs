@@ -8,5 +8,5 @@ public class PositionNode
     public string Type { get; set; } = string.Empty;
     public string Parent { get; set; } = string.Empty;
     public string[] Groups { get; set; } = [];
-    public Transform3D Transform { get; set; } = Transform3D.Zero;
+    public Transform3D Transform { get; set; } = Transform3D.Identity;
 }

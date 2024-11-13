@@ -59,7 +59,12 @@ public static class DictionaryExtensions
         if (!dic.TryGetValue(key, out var value))
             return Vector3.Zero;
 
-        return value as Vector3 ?? Vector3.Zero;
+        if (value is Vector3 vector3)
+        {
+            return vector3;
+        }
+
+        return Vector3.Zero;
     }
 
     public static string GetString(this Dictionary<object, object> dic, string key)
