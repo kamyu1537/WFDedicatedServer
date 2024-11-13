@@ -17,7 +17,7 @@ public sealed class SessionManager : ISessionManager
     private const int RoomCodeLength = 6;
     private const string LobbyMode = "GodotsteamLobby";
     private const string LobbyRef = "webfishing_gamelobby";
-    private const string GameVersion = "1.09";
+    private const string GameVersion = "1.1";
 
     private readonly ILogger<SessionManager> _logger;
     private readonly ILoggerFactory _loggerFactory;
