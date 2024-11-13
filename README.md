@@ -5,7 +5,7 @@ It is a simple server that can be used to host a game of WebFishing.
 
 ## Game Version
 - 1.1
-- 
+
 ## Prerequisites
 - NET 8.0
 
