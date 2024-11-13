@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using WFDS.Godot.Extension;
 using WFDS.Godot.Types;
 
 // ReSharper disable InconsistentNaming
@@ -125,7 +126,7 @@ public sealed class GodotBinaryWriter(Stream stream, GodotBinaryWriterOptions op
 
     private void WriteInt64(long value)
     {
-        if (value is >= int.MinValue and <= int.MaxValue)
+        if (value.IsInt())
         {
             WriteInt32((int)value);
             return;
@@ -143,6 +144,12 @@ public sealed class GodotBinaryWriter(Stream stream, GodotBinaryWriterOptions op
 
     private void WriteFloat64(double value)
     {
+        if (value.IsFloat())
+        {
+            WriteFloat32((float)value);
+            return;
+        }
+        
         Writer.Write(GodotType.Double);
         Writer.Write(value);
     }

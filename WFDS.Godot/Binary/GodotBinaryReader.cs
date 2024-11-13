@@ -38,7 +38,7 @@ public sealed class GodotBinaryReader(Stream stream) : IDisposable
         }
         else if (header == GodotType.Int32)
         {
-            return ReadInt32();
+            return (long)ReadInt32();
         }
         else if (header == GodotType.Int64)
         {
@@ -47,7 +47,7 @@ public sealed class GodotBinaryReader(Stream stream) : IDisposable
 
         else if (header == GodotType.Float)
         {
-            return ReadFloat();
+            return (double)ReadFloat();
         }
         else if (header == GodotType.Double)
         {
