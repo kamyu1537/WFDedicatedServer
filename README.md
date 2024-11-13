@@ -4,7 +4,7 @@ This is a dedicated server for the game WebFishing.
 It is a simple server that can be used to host a game of WebFishing.
 
 ## Supported Version
-- 1.09
+- 1.1
 
 ## Configuration
 modify appsettings.json file
