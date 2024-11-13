@@ -9,7 +9,7 @@ namespace WFDS.Server.Handlers;
 [PacketType("letter_recieved")]
 public class LetterReceivedHandler : PacketHandler<LetterReceivedPacket>
 {
-    protected override void HandlePacket(ISession sender, NetChannel channel, LetterReceivedPacket packet)
+    protected override void HandlePacket(IGameSession sender, NetChannel channel, LetterReceivedPacket packet)
     {
         if (packet.To != SteamClient.SteamId.Value.ToString())
             return;

@@ -4,7 +4,7 @@ using WFDS.Godot.Types;
 
 namespace WFDS.Server.Services;
 
-public class MetalSpawnScheduleService(ILogger<MetalSpawnScheduleService> logger, IActorManager actor, ISessionManager session, IMapManager map) : IHostedService
+public class MetalSpawnScheduleService(ILogger<MetalSpawnScheduleService> logger, IActorManager actor, IGameSessionManager session, IMapManager map) : IHostedService
 {
     private static readonly TimeSpan MetalSpawnTimeoutPeriod = TimeSpan.FromSeconds(20);
     private Timer? _timer;

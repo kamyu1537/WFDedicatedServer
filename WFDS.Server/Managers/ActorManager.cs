@@ -11,7 +11,7 @@ namespace WFDS.Server.Managers;
 
 public sealed class ActorManager(
     ILogger<ActorManager> logger,
-    ISessionManager sessionManager,
+    IGameSessionManager sessionManager,
     IActorIdManager idManager)
     : IActorManager
 {
@@ -22,6 +22,26 @@ public sealed class ActorManager(
     private readonly ConcurrentDictionary<long, IActor> _actors = [];
     private readonly ConcurrentDictionary<SteamId, IPlayerActor> _players = [];
 
+    public IActor? GetActor(long actorId)
+    {
+        return _actors.TryGetValue(actorId, out var actor) ? actor : null;
+    }
+
+    public ImmutableArray<IActor> GetActors()
+    {
+        return [.._actors.Values];
+    }
+
+    public ImmutableArray<IActor> GetActorsByType(string actorType)
+    {
+        return [.._actors.Values.Where(actor => actor.ActorType == actorType)];
+    }
+
+    public ImmutableArray<IActor> GetOwnedActors()
+    {
+        return [.._owned.Values];
+    }
+    
     public void SelectActor(long actorId, Action<IActor> update)
     {
         if (!_actors.TryGetValue(actorId, out var actor))

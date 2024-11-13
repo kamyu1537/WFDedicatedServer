@@ -5,7 +5,7 @@ namespace WFDS.Server.Services;
 public class ConfigurationChangeService(
     ILogger<ConfigurationChangeService> logger,
     IConfiguration configuration,
-    ISessionManager session
+    IGameSessionManager session
 ) : IHostedService
 {
     private IDisposable? _reloadToken;

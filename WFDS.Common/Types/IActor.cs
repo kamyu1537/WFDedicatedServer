@@ -9,7 +9,7 @@ public interface IActor : IDisposable
 {
     ILogger? Logger { get; set; }
     IActorManager? ActorManager { get; set; }
-    ISessionManager? SessionManager { get; set; }
+    IGameSessionManager? SessionManager { get; set; }
     
     string ActorType { get; }
     long ActorId { get; init; }
@@ -24,8 +24,8 @@ public interface IActor : IDisposable
     DateTimeOffset CreateTime { get; set; }
 
     bool IsDeadActor { get; set; }
-    long ActorUpdateDefaultCooldown { get; }
-    long ActorUpdateCooldown { get; set; }
+    long NetworkShareDefaultCooldown { get; }
+    long NetworkShareCooldown { get; set; }
 
     void OnCreated();
     void OnRemoved(ActorRemoveTypes type);

@@ -7,7 +7,7 @@ namespace WFDS.Server.Handlers;
 [PacketType("actor_request_send")]
 public class ActorRequestSendHandler : PacketHandler<ActorRequestSendPacket>
 {
-    protected override void HandlePacket(ISession sender, NetChannel channel, ActorRequestSendPacket packet)
+    protected override void HandlePacket(IGameSession sender, NetChannel channel, ActorRequestSendPacket packet)
     { 
         foreach (var actor in packet.Actors)
         {

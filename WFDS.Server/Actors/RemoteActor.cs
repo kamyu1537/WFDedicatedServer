@@ -10,7 +10,7 @@ public sealed class RemoteActor : IActor
 {
     public ILogger? Logger { get; set; }
     public IActorManager? ActorManager { get; set; }
-    public ISessionManager? SessionManager { get; set; }
+    public IGameSessionManager? SessionManager { get; set; }
     
     public string ActorType { get; init; } = string.Empty;
     public long ActorId { get; init; }
@@ -24,8 +24,8 @@ public sealed class RemoteActor : IActor
     public DateTimeOffset CreateTime { get; set; } = DateTimeOffset.UtcNow;
 
     public bool IsDeadActor { get; set; } = true;
-    public long ActorUpdateDefaultCooldown => 0;
-    public long ActorUpdateCooldown { get; set; }
+    public long NetworkShareDefaultCooldown => 0;
+    public long NetworkShareCooldown { get; set; }
     
     public void OnCreated()
     {

@@ -5,7 +5,7 @@ using WFDS.Server.Packets;
 
 namespace WFDS.Server.Services;
 
-public class RequestPingScheduleService(ISessionManager sessionManager) : IHostedService
+public class RequestPingScheduleService(IGameSessionManager sessionManager) : IHostedService
 {
     private static readonly TimeSpan RequestPingTimeoutPeriod = TimeSpan.FromSeconds(8);
     private Timer? _timer;

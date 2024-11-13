@@ -8,6 +8,11 @@ public interface IActorManager
 {
     int GetActorCount();
     int GetActorCountByType(string actorType);
+    IActor? GetActor(long actorId);
+    ImmutableArray<IActor> GetActors();
+    ImmutableArray<IActor> GetActorsByType(string actorType);
+    ImmutableArray<IActor> GetOwnedActors();
+    
     void SelectActor(long actorId, Action<IActor> action);
     void SelectActors(Action<IActor> action);
     

@@ -2,7 +2,7 @@
 
 namespace WFDS.Server.Services;
 
-public class LobbyUpdateScheduleService(ISessionManager session) : IHostedService
+public class LobbyUpdateScheduleService(IGameSessionManager session) : IHostedService
 {
     private static readonly TimeSpan LobbyUpdateTimeoutPeriod = TimeSpan.FromSeconds(30);
     private Timer? _timer;

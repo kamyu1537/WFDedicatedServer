@@ -5,7 +5,7 @@ using WFDS.Server.Packets;
 
 namespace WFDS.Server.Services;
 
-public class ActorNetworkShareService(IActorManager manager, ISessionManager session) : BackgroundService
+public class ActorNetworkShareService(IActorManager manager, IGameSessionManager session) : BackgroundService
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
@@ -34,10 +34,10 @@ public class ActorNetworkShareService(IActorManager manager, ISessionManager ses
         if (actor.CreatorId != SteamClient.SteamId.Value)
             return;
         
-        actor.ActorUpdateCooldown -= 1;
-        if (actor.ActorUpdateCooldown > 0) return;
+        actor.NetworkShareCooldown -= 1;
+        if (actor.NetworkShareCooldown > 0) return;
         
-        actor.ActorUpdateCooldown = actor.ActorUpdateDefaultCooldown;
+        actor.NetworkShareCooldown = actor.NetworkShareDefaultCooldown;
         actor.SendUpdatePacket(session);
     }
 }

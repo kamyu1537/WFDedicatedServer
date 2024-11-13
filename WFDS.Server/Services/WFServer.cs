@@ -7,7 +7,7 @@ namespace WFDS.Server.Services;
 public class WFServer(
     ILogger<WFServer> logger,
     IOptions<ServerSetting> settings,
-    ISessionManager session,
+    IGameSessionManager session,
     IMapManager map
 ) : BackgroundService
 {

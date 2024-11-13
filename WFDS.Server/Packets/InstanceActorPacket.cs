@@ -81,7 +81,7 @@ public static class InstanceActorExtensions
         };
     }
 
-    public static void SendInstanceActor(this IActor actor, ISessionManager session)
+    public static void SendInstanceActor(this IActor actor, IGameSessionManager session)
     {
         session.BroadcastP2PPacket(NetChannel.GameState, actor.ToInstancePacket());
     }

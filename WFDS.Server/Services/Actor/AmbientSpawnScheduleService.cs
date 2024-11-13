@@ -3,7 +3,7 @@ using WFDS.Godot.Types;
 
 namespace WFDS.Server.Services;
 
-public class AmbientSpawnScheduleService(IActorManager actor, ISessionManager session, IMapManager map) : IHostedService
+public class AmbientSpawnScheduleService(IActorManager actor, IGameSessionManager session, IMapManager map) : IHostedService
 {
     private static readonly TimeSpan AmbientSpawnTimeoutPeriod = TimeSpan.FromSeconds(10);
     private readonly Random _random = new();

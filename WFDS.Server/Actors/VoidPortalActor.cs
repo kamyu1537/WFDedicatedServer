@@ -9,7 +9,7 @@ public sealed class VoidPortalActor : IActor
 {
     public ILogger? Logger { get; set; }
     public IActorManager? ActorManager { get; set; }
-    public ISessionManager? SessionManager { get; set; }
+    public IGameSessionManager? SessionManager { get; set; }
     
     public string ActorType => "void_portal";
     public long ActorId { get; init; }
@@ -23,8 +23,8 @@ public sealed class VoidPortalActor : IActor
     public DateTimeOffset CreateTime { get; set; } = DateTimeOffset.UtcNow;
 
     public bool IsDeadActor { get; set; }
-    public long ActorUpdateDefaultCooldown => 32;
-    public long ActorUpdateCooldown { get; set; }
+    public long NetworkShareDefaultCooldown => 32;
+    public long NetworkShareCooldown { get; set; }
     
 
     public void OnCreated()

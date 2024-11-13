@@ -4,6 +4,7 @@ namespace WFDS.Server;
 
 public interface IServerSetting
 {
+    ushort AdminPort { get; set; }
     string ServerName { get; set; }
     string RoomCode { get; set; }
     int MaxPlayers { get; set; }
@@ -15,6 +16,7 @@ public interface IServerSetting
 
 public class ServerSetting : IServerSetting
 {
+    public ushort AdminPort { get; set; } = 18300;
     public string ServerName { get; set; } = "WFDS Server";
     public string RoomCode { get; set; } = string.Empty; // 비어있으면 랜덤 생성, 최대 5자
     public int MaxPlayers { get; set; } = 12;

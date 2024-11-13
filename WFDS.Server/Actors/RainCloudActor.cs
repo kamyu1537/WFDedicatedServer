@@ -9,7 +9,7 @@ public sealed class RainCloudActor : IActor
 {
     public ILogger? Logger { get; set; }
     public IActorManager? ActorManager { get; set; }
-    public ISessionManager? SessionManager { get; set; }
+    public IGameSessionManager? SessionManager { get; set; }
     
     public string ActorType => "raincloud";
     public long ActorId { get; init; }
@@ -22,8 +22,8 @@ public sealed class RainCloudActor : IActor
     public long DecayTimer { get; set; } = 32500;
     public DateTimeOffset CreateTime { get; set; } = DateTimeOffset.UtcNow;
     public bool IsDeadActor { get; set; } = false;
-    public long ActorUpdateDefaultCooldown => 8;
-    public long ActorUpdateCooldown { get; set; }
+    public long NetworkShareDefaultCooldown => 8;
+    public long NetworkShareCooldown { get; set; }
     
     private const float Speed = 0.17f;
     private float _direction;

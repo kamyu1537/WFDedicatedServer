@@ -8,12 +8,12 @@ namespace WFDS.Server.Network;
 public abstract class PacketHandler<T> : IPacketHandler where T : IPacket, new()
 {
     protected string PacketType { get; private set; } = string.Empty;
-    public ISessionManager? SessionManager { get; set; }
+    public IGameSessionManager? SessionManager { get; set; }
     public IActorManager? ActorManager { get; set; }
 
     protected ILogger Logger { get; private set; } = null!;
 
-    public IPacketHandler Initialize(string packetType, ISessionManager lobbyManager, IActorManager actorManager, ILogger logger)
+    public IPacketHandler Initialize(string packetType, IGameSessionManager lobbyManager, IActorManager actorManager, ILogger logger)
     {
         PacketType = packetType;
         SessionManager = lobbyManager;
@@ -24,9 +24,9 @@ public abstract class PacketHandler<T> : IPacketHandler where T : IPacket, new()
         return this;
     }
 
-    protected abstract void HandlePacket(ISession sender, NetChannel channel, T packet);
+    protected abstract void HandlePacket(IGameSession sender, NetChannel channel, T packet);
 
-    public void HandlePacket(ISession sender, NetChannel channel, Dictionary<object, object> data)
+    public void HandlePacket(IGameSession sender, NetChannel channel, Dictionary<object, object> data)
     {
         var packet = PacketHelper.FromDictionary<T>(data);
         HandlePacket(sender, channel, packet);

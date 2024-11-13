@@ -12,9 +12,9 @@ using Color = System.Drawing.Color;
 
 namespace WFDS.Server.Network;
 
-public sealed class Session(ISessionManager sessionManager, ILogger logger) : ISession
+public sealed class GameSession(IGameSessionManager sessionManager, ILogger logger) : IGameSession
 {
-    public ISessionManager SessionManager { get; } = sessionManager;
+    public IGameSessionManager SessionManager { get; } = sessionManager;
     public ILogger Logger { get; } = logger;
 
     public bool Disposed { get; set; }

@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Serilog;
 using WFDS.Common.Types.Manager;
 using WFDS.Server;
@@ -17,7 +18,7 @@ Log.Logger = new LoggerConfiguration()
 
 try
 {
-    var builder = Host.CreateApplicationBuilder(args);
+    var builder = WebApplication.CreateBuilder(args);
 
     var configuration = new ConfigurationBuilder()
         .AddJsonFile("appsettings.json", false, true)
@@ -26,16 +27,21 @@ try
         .AddEnvironmentVariables()
         .Build();
 
-    builder.Services.Configure<ServerSetting>(configuration.GetSection("Server"));
-
+    var section = configuration.GetSection("Server");
+    var setting = section.Get<ServerSetting>();
+    
+    ArgumentNullException.ThrowIfNull(setting, nameof(setting));
+    
+    builder.Services.Configure<ServerSetting>(section);
     builder.Services.AddSerilog();
 
     builder.Services.AddSingleton<IMapManager, MapManager>();
     builder.Services.AddSingleton<IPacketHandleManager, PacketHandleManager>();
     builder.Services.AddSingleton<IActorIdManager, ActorIdManager>();
     builder.Services.AddSingleton<IActorManager, ActorManager>();
-    builder.Services.AddSingleton<ISessionManager, SessionManager>();
+    builder.Services.AddSingleton<IGameSessionManager, SessionManager>();
 
+    /////////////////////////////////////////////////////////////////
     // server
     builder.Services.AddHostedService<WFServer>();
     
@@ -56,10 +62,39 @@ try
     // actor
     builder.Services.AddHostedService<ActorUpdateService>();
     builder.Services.AddHostedService<ActorNetworkShareService>();
+    /////////////////////////////////////////////////////////////////
+
+    builder.Services.AddSerilog(Log.Logger);
+    builder.Services.AddControllers();
+    builder.Services.AddEndpointsApiExplorer();
+
+    builder.Services.AddSwaggerGen(options =>
+    {
+        options.SupportNonNullableReferenceTypes();
+        options.EnableAnnotations();
+    });
+
+    builder.Services.Configure<RouteOptions>(x => x.LowercaseUrls = true);
+    builder.Services.AddMvc().AddJsonOptions(x =>
+    {
+        x.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower;
+        x.JsonSerializerOptions.WriteIndented = true;
+    });
 
     // server start
-    var host = builder.Build();
-    await host.RunAsync();
+    var app = builder.Build();
+    app.MapControllers();
+    
+    app.UseSwagger();
+    app.UseSwaggerUI(options =>
+    {
+        options.SwaggerEndpoint("/swagger/v1/swagger.json", "WFDS.Server");
+        options.RoutePrefix = "";
+    });
+    
+    app.Urls.Add($"http://*:{setting.AdminPort}/");
+    
+    await app.RunAsync();
 }
 catch (Exception ex)
 {

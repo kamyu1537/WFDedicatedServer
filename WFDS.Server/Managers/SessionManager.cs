@@ -1,4 +1,5 @@
 ﻿using System.Collections.Concurrent;
+using System.Collections.Immutable;
 using Steamworks;
 using Steamworks.Data;
 using WFDS.Common.Helpers;
@@ -11,7 +12,7 @@ using WFDS.Server.Packets;
 
 namespace WFDS.Server.Managers;
 
-public sealed class SessionManager : ISessionManager
+public sealed class SessionManager : IGameSessionManager
 {
     private const int MaxPlayers = 16;
     private const int RoomCodeLength = 6;
@@ -23,7 +24,7 @@ public sealed class SessionManager : ISessionManager
     private readonly ILoggerFactory _loggerFactory;
 
     private readonly HashSet<ulong> _banned = [];
-    private readonly ConcurrentDictionary<ulong, Session> _sessions = [];
+    private readonly ConcurrentDictionary<ulong, GameSession> _sessions = [];
 
     private bool _created;
     private string _name = string.Empty;
@@ -46,6 +47,36 @@ public sealed class SessionManager : ISessionManager
         SteamMatchmaking.OnLobbyMemberDisconnected += OnLobbyMemberDisconnected;
         SteamMatchmaking.OnLobbyMemberDataChanged += OnLobbyMemberDataChanged;
         SteamNetworking.OnP2PSessionRequest += OnP2PSessionRequest;
+    }
+
+    public string GetName()
+    {
+        return _name;
+    }
+    
+    public string GetCode()
+    {
+        return _code;
+    }
+    
+    public GameLobbyType GetLobbyType()
+    {
+        return _lobbyType;
+    }
+    
+    public bool IsPublic()
+    {
+        return _public;
+    }
+    
+    public bool IsAdult()
+    {
+        return _adult;
+    }
+    
+    public int GetCapacity()
+    {
+        return _cap;
     }
 
     public void CreateLobby(string serverName, string code, GameLobbyType lobbyType, bool @public, bool adult, int cap = MaxPlayers)
@@ -145,30 +176,30 @@ public sealed class SessionManager : ISessionManager
         _lobby?.SetData("banned_players", string.Join(",", _banned));
     }
 
-    private static bool IsInZone(Session session, string zone, long zoneOwner)
+    private static bool IsInZone(GameSession gameSession, string zone, long zoneOwner)
     {
         if (string.IsNullOrEmpty(zone))
         {
             return true;
         }
 
-        if (session.Disposed)
+        if (gameSession.Disposed)
         {
             return false;
         }
 
-        if (!session.ActorCreated)
+        if (!gameSession.ActorCreated)
         {
             return false;
         }
 
-        if (session.Actor == null)
+        if (gameSession.Actor == null)
         {
             return false;
         }
 
-        var actorZone = session.Actor.Zone;
-        var actorZoneOwner = session.Actor.ZoneOwner;
+        var actorZone = gameSession.Actor.Zone;
+        var actorZoneOwner = gameSession.Actor.ZoneOwner;
 
         return actorZone == zone && (zoneOwner == -1 || actorZoneOwner == zoneOwner);
     }
@@ -208,7 +239,7 @@ public sealed class SessionManager : ISessionManager
         _logger.LogInformation("lobby member joined: {Member}", member);
 
         var logger = _loggerFactory.CreateLogger("session_" + member.Id);
-        var session = new Session(this, logger)
+        var session = new GameSession(this, logger)
         {
             Friend = member,
             SteamId = member.Id,
@@ -305,12 +336,22 @@ public sealed class SessionManager : ISessionManager
         return _sessions.Count;
     }
 
+    public IGameSession? GetSession(SteamId steamId)
+    {
+        return _sessions.TryGetValue(steamId.Value, out var session) ? session : null;
+    }
+    
+    public ImmutableArray<IGameSession> GetSessions()
+    {
+        return [.._sessions.Values];
+    }
+
     public bool IsSessionValid(SteamId steamId)
     {
         return _sessions.ContainsKey(steamId.Value);
     }
 
-    public void SelectSessions(Action<ISession> action)
+    public void SelectSessions(Action<IGameSession> action)
     {
         foreach (var session in _sessions.Values)
         {
@@ -318,7 +359,7 @@ public sealed class SessionManager : ISessionManager
         }
     }
 
-    public void SelectSession(SteamId target, Action<ISession> action)
+    public void SelectSession(SteamId target, Action<IGameSession> action)
     {
         if (!_sessions.TryGetValue(target.Value, out var session))
         {

@@ -11,12 +11,12 @@ public class PacketHandleManager : IPacketHandleManager
 {
     private readonly ILogger<PacketHandleManager> _logger;
     private readonly Dictionary<string, IPacketHandler> _handlers;
-    private readonly ISessionManager _session;
+    private readonly IGameSessionManager _session;
 
     public PacketHandleManager(
         ILogger<PacketHandleManager> logger,
         ILoggerFactory loggerFactory,
-        ISessionManager session,
+        IGameSessionManager session,
         IActorManager actor
     )
     {
@@ -57,7 +57,7 @@ public class PacketHandleManager : IPacketHandleManager
             PrintDebugLog(typeName, dic, sender, channel);
             _session.SelectSession(sender, session =>
             {
-                session.PingReceiveTime = DateTimeOffset.UtcNow;
+                session.PacketReceiveTime = DateTimeOffset.UtcNow;
                 if (_handlers.TryGetValue(typeName, out var handler))
                 {
                     handler.HandlePacket(session, channel, dic);

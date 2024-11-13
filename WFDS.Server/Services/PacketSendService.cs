@@ -2,7 +2,7 @@
 
 namespace WFDS.Server.Services;
 
-public class PacketSendService(ISessionManager session) : BackgroundService
+public class PacketSendService(IGameSessionManager session) : BackgroundService
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {

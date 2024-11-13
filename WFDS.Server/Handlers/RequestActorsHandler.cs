@@ -7,7 +7,7 @@ namespace WFDS.Server.Handlers;
 [PacketType("request_actors")]
 public class RequestActorsHandler : PacketHandler<RequestActorsPacket>
 {
-    protected override void HandlePacket(ISession sender, NetChannel channel, RequestActorsPacket _)
+    protected override void HandlePacket(IGameSession sender, NetChannel channel, RequestActorsPacket _)
     {
         Logger.LogInformation("received request_actors from {Sender} on channel {Channel}", sender.SteamId, channel);
 

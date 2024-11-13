@@ -20,7 +20,7 @@ public class ActorActionHandler : PacketHandler<ActorActionPacket>
         "_sync_level_bubble"
     ];
 
-    protected override void HandlePacket(ISession sender, NetChannel channel, ActorActionPacket packet)
+    protected override void HandlePacket(IGameSession sender, NetChannel channel, ActorActionPacket packet)
     {
         if (!AllowedActions.Contains(packet.Action))
         {
@@ -38,7 +38,7 @@ public class ActorActionHandler : PacketHandler<ActorActionPacket>
         SyncLevelBubble(sender, packet);
     }
 
-    private void QueueFree(ISession sender, ActorActionPacket packet)
+    private void QueueFree(IGameSession sender, ActorActionPacket packet)
     {
         if (packet.Action != "queue_free") return;
         
@@ -57,7 +57,7 @@ public class ActorActionHandler : PacketHandler<ActorActionPacket>
         });
     }
 
-    private void WipeActor(ISession sender, ActorActionPacket packet)
+    private void WipeActor(IGameSession sender, ActorActionPacket packet)
     {
         if (packet.Action != "_wipe_actor") return;
         
@@ -87,7 +87,7 @@ public class ActorActionHandler : PacketHandler<ActorActionPacket>
         });
     }
 
-    private void SetZone(ISession sender, ActorActionPacket packet)
+    private void SetZone(IGameSession sender, ActorActionPacket packet)
     {
         if (packet.Action != "_set_zone") return;
         
@@ -115,7 +115,7 @@ public class ActorActionHandler : PacketHandler<ActorActionPacket>
         });
     }
 
-    private void UpdateCosmetics(ISession sender, ActorActionPacket packet)
+    private void UpdateCosmetics(IGameSession sender, ActorActionPacket packet)
     {
         if (packet.Action != "_update_cosmetics") return;
         
@@ -137,7 +137,7 @@ public class ActorActionHandler : PacketHandler<ActorActionPacket>
         });
     }
 
-    private void UpdateHeldItem(ISession sender, ActorActionPacket packet)
+    private void UpdateHeldItem(IGameSession sender, ActorActionPacket packet)
     {
         if (packet.Action != "_update_held_item") return;
         
@@ -159,7 +159,7 @@ public class ActorActionHandler : PacketHandler<ActorActionPacket>
         });
     }
 
-    private void SyncCreateBubble(ISession sender, ActorActionPacket packet)
+    private void SyncCreateBubble(IGameSession sender, ActorActionPacket packet)
     {
         if (packet.Action != "_sync_create_bubble") return;
         if (packet.Params.Count != 1)
@@ -178,7 +178,7 @@ public class ActorActionHandler : PacketHandler<ActorActionPacket>
         });
     }
     
-    private void SyncLevelBubble(ISession sender, ActorActionPacket packet)
+    private void SyncLevelBubble(IGameSession sender, ActorActionPacket packet)
     {
         if (packet.Action != "_sync_level_bubble") return;
         if (packet.Params.Count != 0)

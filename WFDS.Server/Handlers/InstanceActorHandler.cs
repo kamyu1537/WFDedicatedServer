@@ -7,7 +7,7 @@ namespace WFDS.Server.Handlers;
 [PacketType("instance_actor")]
 public class InstanceActorHandler : PacketHandler<InstanceActorPacket>
 {
-    protected override void HandlePacket(ISession sender, NetChannel channel, InstanceActorPacket packet)
+    protected override void HandlePacket(IGameSession sender, NetChannel channel, InstanceActorPacket packet)
     {
         Logger.LogInformation("received instance_actor from {Sender} on channel {Channel} / {ActorId} {ActorType} ", sender.SteamId, channel, packet.Param.ActorId, packet.Param.ActorType);
         
@@ -30,7 +30,7 @@ public class InstanceActorHandler : PacketHandler<InstanceActorPacket>
         return OnlyHostActors.Contains(packet.Param.ActorType);
     }
 
-    private void CreateRemoteActor(ISession sender, InstanceActorPacket packet)
+    private void CreateRemoteActor(IGameSession sender, InstanceActorPacket packet)
     {
         if (IsHostActor(packet))
         {
@@ -46,7 +46,7 @@ public class InstanceActorHandler : PacketHandler<InstanceActorPacket>
         }
     }
 
-    private void CreatePlayerActor(ISession sender, InstanceActorPacket packet)
+    private void CreatePlayerActor(IGameSession sender, InstanceActorPacket packet)
     {
         if (sender.ActorCreated)
         {

@@ -5,11 +5,11 @@ using WFDS.Godot.Types;
 
 namespace WFDS.Server.Actors;
 
-public sealed class PlayerActor(ISession session) : IPlayerActor
+public sealed class PlayerActor(IGameSession session) : IPlayerActor
 {
     public ILogger? Logger { get; set; }
     public IActorManager? ActorManager { get; set; }
-    public ISessionManager? SessionManager { get; set; }
+    public IGameSessionManager? SessionManager { get; set; }
 
     public string ActorType => "player";
     public long ActorId { get; init; }
@@ -22,9 +22,9 @@ public sealed class PlayerActor(ISession session) : IPlayerActor
     public long DecayTimer { get; set; }
     public DateTimeOffset CreateTime { get; set; } = DateTimeOffset.UtcNow;
     public bool IsDeadActor { get; set; } = true;
-    public long ActorUpdateDefaultCooldown => 0;
-    public long ActorUpdateCooldown { get; set; }
-    public ISession Session => session;
+    public long NetworkShareDefaultCooldown => 0;
+    public long NetworkShareCooldown { get; set; }
+    public IGameSession Session => session;
 
     public GameItem HeldItem { get; set; } = GameItem.Default;
     public Cosmetics Cosmetics { get; set; } = Cosmetics.Default;

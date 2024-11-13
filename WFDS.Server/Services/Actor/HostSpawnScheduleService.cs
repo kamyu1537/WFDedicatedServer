@@ -4,7 +4,7 @@ using WFDS.Godot.Types;
 
 namespace WFDS.Server.Services;
 
-public class HostSpawnScheduleService(ILogger<HostSpawnScheduleService> logger, IActorManager actor, ISessionManager session, IMapManager map) : IHostedService
+public class HostSpawnScheduleService(ILogger<HostSpawnScheduleService> logger, IActorManager actor, IGameSessionManager session, IMapManager map) : IHostedService
 {
     private const int DefaultAlienCooldown = 6;
     private const int ResetAlienCooldown = 16;

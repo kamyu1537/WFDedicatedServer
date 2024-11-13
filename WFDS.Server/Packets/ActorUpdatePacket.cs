@@ -29,7 +29,7 @@ public class ActorUpdatePacket : IPacket
 
 public static class ActorUpdatePacketExtensions
 {
-    public static void SendUpdatePacket(this IActor actor, ISessionManager lobby)
+    public static void SendUpdatePacket(this IActor actor, IGameSessionManager lobby)
     {
         var packet = new ActorUpdatePacket
         {
@@ -41,7 +41,7 @@ public static class ActorUpdatePacketExtensions
         lobby.BroadcastP2PPacket(NetChannel.ActorUpdate, packet, actor.Zone, actor.ZoneOwner);
     }
 
-    public static void SendUpdatePacket(this IActor actor, ISession target)
+    public static void SendUpdatePacket(this IActor actor, IGameSession target)
     {
         var packet = new ActorUpdatePacket
         {

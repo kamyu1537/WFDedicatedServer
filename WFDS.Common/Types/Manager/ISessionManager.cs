@@ -1,9 +1,18 @@
-﻿using Steamworks;
+﻿using System.Collections.Immutable;
+using Steamworks;
+using Steamworks.Data;
 
 namespace WFDS.Common.Types.Manager;
 
-public interface ISessionManager
+public interface IGameSessionManager
 {
+    string GetName();
+    string GetCode();
+    GameLobbyType GetLobbyType();
+    bool IsPublic();
+    bool IsAdult();
+    int GetCapacity();
+    
     void CreateLobby(string serverName, string roomCode, GameLobbyType lobbyType, bool isPublic, bool isAdult, int maxPlayers);
     Task LeaveLobbyAsync();
     
@@ -11,9 +20,11 @@ public interface ISessionManager
     void KickNoHandshakePlayers();
     
     int GetSessionCount();
+    IGameSession? GetSession(SteamId steamId);
+    ImmutableArray<IGameSession> GetSessions();
     bool IsSessionValid(SteamId steamId);
-    void SelectSession(SteamId steamId, Action<ISession> action);
-    void SelectSessions(Action<ISession> action);
+    void SelectSession(SteamId steamId, Action<IGameSession> action);
+    void SelectSessions(Action<IGameSession> action);
     
     void ServerClose(SteamId steamId);
     void KickPlayer(SteamId steamId);

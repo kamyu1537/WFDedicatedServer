@@ -6,9 +6,9 @@ using WFDS.Common.Types.Manager;
 
 namespace WFDS.Common.Types;
 
-public interface ISession : IDisposable
+public interface IGameSession : IDisposable
 {
-    ISessionManager SessionManager { get; }
+    IGameSessionManager SessionManager { get; }
     ILogger Logger { get; }
 
     bool Disposed { get; set; }
