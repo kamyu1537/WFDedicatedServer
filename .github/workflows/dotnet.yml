@@ -18,21 +18,34 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+      
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: 8.0.x
+        
     - name: Restore dependencies
       run: dotnet restore
+      
     - name: Build
       run: dotnet build --configuration Release --no-restore
+      
     - name: Publish
       run: dotnet publish --configuration Release --no-build --output ./publish
-    - name: Zip
+      
+    - name: Compress Publish Directory
       run: Compress-Archive -Path ./publish/* -DestinationPath ./publish.zip
+      
+    - name: Create CHANGELOG.md
+      id: changelog
+      run: |
+        echo "## CHANGELOG" > CHANGELOG.md
+        git log $(git describe --tags --abbrev=0)..HEAD --pretty=format:"* %s" >> CHANGELOG.md
+      
     - name: Create Release
       id: create_release
       uses: softprops/action-gh-release@v2
       with:
         files: ./publish.zip
+        body_path: CHANGELOG.md
         name: ${{ github.ref_name }}
