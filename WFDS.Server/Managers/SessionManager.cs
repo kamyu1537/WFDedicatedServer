@@ -441,6 +441,7 @@ public sealed class SessionManager : ISessionManager
         {
             _logger.LogInformation("try ban player: {Member}", session.Friend);
             session.SendP2PPacket(NetChannel.GameState, new BanPacket());
+            BroadcastP2PPacket(NetChannel.GameState, new ForceDisconnectPlayerPacket { UserId = session.SteamId });
         });
 
         SteamNetworking.CloseP2PSessionWithUser(target);
