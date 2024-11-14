@@ -45,6 +45,15 @@ public sealed class SessionManager : IGameSessionManager
         SteamMatchmaking.OnLobbyMemberLeave += OnLobbyMemberLeave;
         SteamMatchmaking.OnLobbyMemberDisconnected += OnLobbyMemberDisconnected;
         SteamMatchmaking.OnLobbyMemberDataChanged += OnLobbyMemberDataChanged;
+        
+        SteamMatchmaking.OnLobbyInvite += OnLobbyInvite;
+        SteamMatchmaking.OnLobbyEntered += OnLobbyEntered;
+        SteamMatchmaking.OnLobbyGameCreated += OnLobbyGameCreated;
+        SteamMatchmaking.OnLobbyDataChanged += OnLobbyDataChanged;
+        SteamMatchmaking.OnLobbyMemberKicked += OnLobbyMemberKicked;
+        SteamMatchmaking.OnLobbyMemberBanned += OnLobbyMemberBanned;
+        SteamMatchmaking.OnChatMessage += OnChatMessage;
+        
         SteamNetworking.OnP2PSessionRequest += OnP2PSessionRequest;
     }
 
@@ -78,13 +87,40 @@ public sealed class SessionManager : IGameSessionManager
         return _cap;
     }
 
+    public bool IsLobbyValid()
+    {
+        if (!_lobby.HasValue)
+        {
+            return true;
+        }
+
+        var lobby = _lobby.Value;
+        if (!lobby.IsOwnedBy(SteamClient.SteamId))
+        {
+            return false;
+        }
+
+        uint ip = 0;
+        ushort port = 0;
+        SteamId serverId = 0;
+        if (!lobby.GetGameServer(ref ip, ref port, ref serverId))
+        {
+            _lobby = null;
+            _created = false;
+            return false;
+        }
+
+        // _logger.LogInformation("lobby game server: {Ip}:{Port} {SteamId}", new IPAddress(ip), port, serverId);
+        return true;
+    }
+
     public void CreateLobby(string serverName, string code, GameLobbyType lobbyType, bool @public, bool adult, int cap = MaxPlayers)
     {
         if (_created)
         {
             return;
         }
-
+        
         _code = code;
         if (_code.Length != RoomCodeLength || string.IsNullOrWhiteSpace(_code))
         {
@@ -103,6 +139,7 @@ public sealed class SessionManager : IGameSessionManager
 
     private void SetupLobby(Lobby lobby)
     {
+        lobby.SetGameServer(SteamClient.SteamId);
         lobby.SetData("mode", LobbyMode);
         lobby.SetData("ref", LobbyRef);
         lobby.SetData("version", GameVersion);
@@ -218,72 +255,6 @@ public sealed class SessionManager : IGameSessionManager
         UpdateConsoleTitle();
     }
 
-    private void OnLobbyCreated(Result result, Lobby lobby)
-    {
-        if (result != Result.OK)
-        {
-            _logger.LogError("failed to create lobby: {Result}", result);
-            return;
-        }
-
-        _logger.LogInformation("lobby created: id({LobbyId}) roomCode({RoomCode}) lobbyType({LobbyType}) public({Public}) adult({Adult}) cap({Cap})", lobby.Id, _code, _lobbyType, _public, _adult, _cap);
-
-        _lobby = lobby;
-        SetupLobby(lobby);
-        UpdateBrowserValue();
-    }
-
-    private void OnLobbyMemberJoined(Lobby lobby, Friend member)
-    {
-        _logger.LogInformation("lobby member joined: {Member}", member);
-
-        var logger = _loggerFactory.CreateLogger("session_" + member.Id);
-        var session = new GameSession(this, logger)
-        {
-            Friend = member,
-            SteamId = member.Id,
-            ConnectTime = DateTimeOffset.UtcNow
-        };
-
-        if (!_sessions.TryAdd(member.Id.Value, session))
-        {
-            _logger.LogWarning("failed to add session: {Member}", member);
-            session.Kick();
-            return;
-        }
-
-        UpdateConsoleTitle();
-    }
-
-    private void OnLobbyMemberLeave(Lobby lobby, Friend member)
-    {
-        SteamNetworking.CloseP2PSessionWithUser(member.Id);
-
-        _logger.LogInformation("lobby member left: {Member}", member);
-        RemoveSession(member);
-    }
-
-    private void OnLobbyMemberDisconnected(Lobby lobby, Friend member)
-    {
-        SteamNetworking.CloseP2PSessionWithUser(member.Id);
-
-        _logger.LogWarning("lobby member disconnected: {Member}", member);
-        RemoveSession(member);
-    }
-
-    private void OnLobbyMemberDataChanged(Lobby lobby, Friend member)
-    {
-        _logger.LogInformation("lobby member data changed: {Member}", member);
-
-        SelectSession(member.Id, session => { session.Friend = member; });
-    }
-
-    private void OnP2PSessionRequest(SteamId requester)
-    {
-        _logger.LogWarning("P2P session request: {SteamId}", requester);
-        SelectSession(requester, _ => { SteamNetworking.AcceptP2PSessionWithUser(requester); });
-    }
-
     private static string GenerationRoomCode()
     {
         const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
@@ -328,8 +299,6 @@ public sealed class SessionManager : IGameSessionManager
         _logger.LogInformation("update console title: {Title}", newTitle);
         Console.Title = newTitle;
     }
-
-    // ------------------- Interface Implementation -------------------
     public int GetSessionCount()
     {
         return _sessions.Count;
@@ -512,4 +481,117 @@ public sealed class SessionManager : IGameSessionManager
 
         UpdateBannedPlayers();
     }
+    
+    ////////////////////////////////////////////////////////////////////////////////
+    #region Steamworks Callbacks
+    
+    private void OnLobbyCreated(Result result, Lobby lobby)
+    {
+        if (result != Result.OK)
+        {
+            _logger.LogError("failed to create lobby: {Result}", result);
+            return;
+        }
+
+        _logger.LogInformation("lobby created: id({LobbyId}) roomCode({RoomCode}) lobbyType({LobbyType}) public({Public}) adult({Adult}) cap({Cap})", lobby.Id, _code, _lobbyType, _public, _adult, _cap);
+
+        _lobby = lobby;
+        SetupLobby(lobby);
+        UpdateBrowserValue();
+    }
+
+    private void OnLobbyMemberJoined(Lobby lobby, Friend member)
+    {
+        _logger.LogInformation("lobby member joined: {Member}", member);
+
+        var logger = _loggerFactory.CreateLogger("session_" + member.Id);
+        var session = new GameSession(this, logger)
+        {
+            Friend = member,
+            SteamId = member.Id,
+            ConnectTime = DateTimeOffset.UtcNow
+        };
+
+        if (!_sessions.TryAdd(member.Id.Value, session))
+        {
+            _logger.LogWarning("failed to add session: {Member}", member);
+            session.Kick();
+            return;
+        }
+
+        UpdateConsoleTitle();
+    }
+
+    private void OnLobbyMemberLeave(Lobby lobby, Friend member)
+    {
+        SteamNetworking.CloseP2PSessionWithUser(member.Id);
+
+        _logger.LogInformation("lobby member left: {Member}", member);
+        RemoveSession(member);
+    }
+
+    private void OnLobbyMemberDisconnected(Lobby lobby, Friend member)
+    {
+        SteamNetworking.CloseP2PSessionWithUser(member.Id);
+
+        _logger.LogWarning("lobby member disconnected: {Member}", member);
+        if (member.Id == SteamClient.SteamId)
+        {
+            _logger.LogWarning("host disconnected: {Member}", member);
+            _created = false;
+            return;
+        }
+        
+        RemoveSession(member);
+    }
+
+    private void OnLobbyMemberDataChanged(Lobby lobby, Friend member)
+    {
+        _logger.LogInformation("lobby member data changed: {Member}", member);
+
+        SelectSession(member.Id, session => { session.Friend = member; });
+    }
+    
+    private void OnLobbyInvite(Friend arg1, Lobby arg2)
+    {
+        _logger.LogWarning("lobby invite: {Friend} {Lobby}", arg1, arg2.Id);
+    }
+
+    private void OnLobbyEntered(Lobby obj)
+    {
+        _logger.LogInformation("lobby entered: {Lobby}", obj.Id);
+    }
+
+    private void OnLobbyGameCreated(Lobby arg1, uint arg2, ushort arg3, SteamId arg4)
+    {
+        _logger.LogWarning("lobby game created: {Lobby} {Ip} {Port} {SteamId}", arg1.Id, arg2, arg3, arg4);
+    }
+
+    private void OnLobbyDataChanged(Lobby obj)
+    {
+        _logger.LogInformation("lobby data changed: {Lobby}", obj.Id);
+    }
+
+    private void OnLobbyMemberKicked(Lobby arg1, Friend arg2, Friend arg3)
+    {
+        _logger.LogWarning("lobby member kicked: {Friend} {Friend}", arg2, arg3);
+    }
+
+    private void OnLobbyMemberBanned(Lobby arg1, Friend arg2, Friend arg3)
+    {
+        _logger.LogWarning("lobby member banned: {Friend} {Friend}", arg2, arg3);
+    }
+
+    private void OnChatMessage(Lobby arg1, Friend arg2, string arg3)
+    {
+        _logger.LogWarning("chat message: {Friend} {Message}", arg2, arg3);
+    }
+
+    private void OnP2PSessionRequest(SteamId requester)
+    {
+        _logger.LogWarning("P2P session request: {SteamId}", requester);
+        SelectSession(requester, _ => { SteamNetworking.AcceptP2PSessionWithUser(requester); });
+    }
+    
+    #endregion
 }

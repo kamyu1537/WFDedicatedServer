@@ -12,6 +12,8 @@ public interface IGameSessionManager
     bool IsPublic();
     bool IsAdult();
     int GetCapacity();
+
+    bool IsLobbyValid();
     
     void CreateLobby(string serverName, string roomCode, GameLobbyType lobbyType, bool isPublic, bool isAdult, int maxPlayers);
     Task LeaveLobbyAsync();

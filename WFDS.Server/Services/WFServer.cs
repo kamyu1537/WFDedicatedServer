@@ -32,6 +32,18 @@ public class WFServer(
         
         while (!stoppingToken.IsCancellationRequested)
         {
+            if (session.IsLobbyValid())
+            {
+                session.CreateLobby(
+                    settings.Value.ServerName,
+                    settings.Value.RoomCode,
+                    settings.Value.LobbyType,
+                    settings.Value.Public,
+                    settings.Value.Adult,
+                    settings.Value.MaxPlayers
+                );
+            }
+            
             await Task.Delay(1000, stoppingToken);
         }
     }
