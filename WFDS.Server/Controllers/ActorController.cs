@@ -1,5 +1,4 @@
-﻿using System.Collections.Immutable;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 using WFDS.Common.Types;
 using WFDS.Common.Types.Manager;

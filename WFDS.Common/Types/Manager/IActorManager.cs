@@ -1,7 +1,5 @@
-﻿using System.Collections.Immutable;
-using System.Numerics;
+﻿using System.Numerics;
 using Steamworks;
-using WFDS.Godot.Types;
 
 namespace WFDS.Common.Types.Manager;
 

@@ -3,7 +3,6 @@ using System.Numerics;
 using Steamworks;
 using WFDS.Common.Types;
 using WFDS.Common.Types.Manager;
-using WFDS.Godot.Types;
 using WFDS.Server.Actors;
 using WFDS.Server.Packets;
 

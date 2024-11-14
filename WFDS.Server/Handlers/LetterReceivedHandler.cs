@@ -1,5 +1,4 @@
 ﻿using Steamworks;
-using WFDS.Common.Network;
 using WFDS.Common.Types;
 using WFDS.Server.Network;
 using WFDS.Server.Packets;

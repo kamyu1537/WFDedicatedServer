@@ -1,7 +1,6 @@
 ﻿using System.Numerics;
 using WFDS.Common.Extensions;
 using WFDS.Common.Types;
-using WFDS.Godot.Types;
 
 namespace WFDS.Server.Packets;
 

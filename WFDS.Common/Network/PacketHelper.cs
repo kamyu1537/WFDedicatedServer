@@ -1,5 +1,4 @@
 ﻿using WFDS.Common.Types;
-using WFDS.Godot.Binary;
 
 namespace WFDS.Common.Network;
 

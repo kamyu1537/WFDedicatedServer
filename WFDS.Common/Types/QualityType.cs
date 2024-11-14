@@ -1,6 +1,4 @@
-﻿using WFDS.Common.Extensions;
-
-namespace WFDS.Common.Types;
+﻿namespace WFDS.Common.Types;
 
 public class QualityType
 {
