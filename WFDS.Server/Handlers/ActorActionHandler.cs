@@ -209,6 +209,7 @@ public class ActorActionHandler(ILogger<ActorActionHandler> logger, IActorManage
         }
 
         ActorEventChannel.PublishAsync(new PlayerLevelUpEvent(player.ActorId)).Wait();
+        await Task.Yield();
     }
 }
 
