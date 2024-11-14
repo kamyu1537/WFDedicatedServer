@@ -12,7 +12,7 @@ public class ActorRequestSendHandler : PacketHandler<ActorRequestSendPacket>
         foreach (var actor in packet.Actors)
         {
             if (actor.ActorType == "player") continue; // 여기에서 플레이어는 생성하면 안됨!!
-            Logger.LogInformation("received actor_request_send from {Member} : {Actor} {ActorType}", sender.Friend, actor.ActorId, actor.ActorType);
+            Logger.LogDebug("received actor_request_send from {Member} : {Actor} {ActorType}", sender.Friend, actor.ActorId, actor.ActorType);
             ActorManager?.TryCreateRemoteActor(sender.SteamId, actor.ActorId, actor.ActorType, out _);
         }
     }

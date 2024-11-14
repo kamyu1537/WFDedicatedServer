@@ -10,7 +10,7 @@ public class NewPlayerJoinHandler : PacketHandler<NewPlayerJoinPacket>
 {
     protected override void HandlePacket(IGameSession sender, NetChannel channel, NewPlayerJoinPacket packet)
     {
-        Logger.LogInformation("received new_player_join from {Sender} on channel {Channel}", sender.SteamId, channel);
+        Logger.LogDebug("received new_player_join from {Sender} on channel {Channel}", sender.SteamId, channel);
         
         // request actors
         sender.SendP2PPacket(NetChannel.GameState, new RequestActorsPacket

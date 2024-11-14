@@ -27,7 +27,7 @@ public class ActorActionHandler : PacketHandler<ActorActionPacket>
             return;
         }
 
-        Logger.LogInformation("received actor_action from {Member} for actor {ActorId} : {Action} / {Data}", sender.Friend, packet.ActorId, packet.Action, JsonSerializer.Serialize(packet.Params));
+        Logger.LogDebug("received actor_action from {Member} for actor {ActorId} : {Action} / {Data}", sender.Friend, packet.ActorId, packet.Action, JsonSerializer.Serialize(packet.Params));
 
         QueueFree(sender, packet);
         WipeActor(sender, packet);

@@ -9,7 +9,7 @@ public class InstanceActorHandler : PacketHandler<InstanceActorPacket>
 {
     protected override void HandlePacket(IGameSession sender, NetChannel channel, InstanceActorPacket packet)
     {
-        Logger.LogInformation("received instance_actor from {Sender} on channel {Channel} / {ActorId} {ActorType} ", sender.SteamId, channel, packet.Param.ActorId, packet.Param.ActorType);
+        Logger.LogDebug("received instance_actor from {Sender} on channel {Channel} / {ActorId} {ActorType} ", sender.SteamId, channel, packet.Param.ActorId, packet.Param.ActorType);
         
         if (packet.Param.ActorType == "player") CreatePlayerActor(sender, packet);
         else CreateRemoteActor(sender, packet);

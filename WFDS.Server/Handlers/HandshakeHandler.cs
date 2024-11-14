@@ -9,7 +9,7 @@ public class HandshakeHandler : PacketHandler<HandshakePacket>
 {
     protected override void HandlePacket(IGameSession sender, NetChannel channel, HandshakePacket packet)
     {
-        Logger.LogInformation("received handshake from {Sender} : {UserId}", sender.Friend, packet.UserId);
+        Logger.LogDebug("received handshake from {Sender} : {UserId}", sender.Friend, packet.UserId);
 
         sender.HandshakeReceived = true;
         sender.HandshakeReceiveTime = DateTimeOffset.UtcNow;

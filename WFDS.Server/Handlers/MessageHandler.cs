@@ -9,7 +9,7 @@ public class MessageHandler : PacketHandler<MessagePacket>
 {
     protected override void HandlePacket(IGameSession sender, NetChannel channel, MessagePacket packet)
     {
-        Logger.LogInformation("received message from {Sender} ({Zone}/{ZoneOwner}) on channel {Channel} / [{Color}] {Message}", sender.SteamId, packet.Zone, packet.ZoneOwner, channel, packet.Color, packet.Message);
+        Logger.LogDebug("received message from {Sender} ({Zone}/{ZoneOwner}) on channel {Channel} / [{Color}] {Message}", sender.SteamId, packet.Zone, packet.ZoneOwner, channel, packet.Color, packet.Message);
         sender.Actor?.OnMessage(packet.Message, packet.Color, packet.Local, packet.Position, packet.Zone, packet.ZoneOwner);
     }
 }

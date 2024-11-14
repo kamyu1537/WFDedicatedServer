@@ -13,7 +13,7 @@ public class LetterReceivedHandler : PacketHandler<LetterReceivedPacket>
         if (packet.To != SteamClient.SteamId.Value.ToString())
             return;
 
-        Logger.LogInformation("received letter from {Sender} ({From} -> {To}) on channel {Channel} / {Header}: {Body} - {Closing} {User}", sender.SteamId, packet.Data.From, packet.Data.To, channel, packet.Data.Header, packet.Data.Body, packet.Data.Closing, packet.Data.User);
+        Logger.LogDebug("received letter from {Sender} ({From} -> {To}) on channel {Channel} / {Header}: {Body} - {Closing} {User}", sender.SteamId, packet.Data.From, packet.Data.To, channel, packet.Data.Header, packet.Data.Body, packet.Data.Closing, packet.Data.User);
 
         packet.Data.LetterId = new Random().Next();
         (packet.Data.From, packet.Data.To) = (packet.To, packet.Data.From);
