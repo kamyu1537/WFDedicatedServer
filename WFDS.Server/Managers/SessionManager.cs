@@ -525,6 +525,7 @@ public sealed class SessionManager : IGameSessionManager
             return;
         }
 
+        ChannelEvent.PublishAsync(new PlayerJoinedEvent(member.Id)).Wait();
         UpdateConsoleTitle();
     }
 

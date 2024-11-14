@@ -15,4 +15,5 @@ public record PlayerHeldItemUpdateEvent(SteamId PlayerId, GameItem Item) : IChan
 public record PlayerMessageEvent(SteamId PlayerId, string Message, string Color, bool Local, Vector3 Position, string Zone, long ZoneOwner) : IChannelEvent;
 public record PlayerChatMessageEvent(SteamId PlayerId, string Message) : IChannelEvent;
 public record PlayerLevelUpEvent(SteamId PlayerId) : IChannelEvent;
+public record PlayerJoinedEvent(SteamId PlayerId) : IChannelEvent;
 public record PlayerLeaveEvent(SteamId PlayerId) : IChannelEvent;
