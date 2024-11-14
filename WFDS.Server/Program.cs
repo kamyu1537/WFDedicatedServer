@@ -2,6 +2,7 @@ using System.Text.Json;
 using Serilog;
 using WFDS.Common.ChannelEvents;
 using WFDS.Common.Types.Manager;
+using WFDS.Plugin;
 using WFDS.Server;
 using WFDS.Server.Managers;
 using WFDS.Server.Services;
@@ -19,6 +20,7 @@ Log.Logger = new LoggerConfiguration()
 
 try
 {
+    var plugins = PluginManager.LoadPlugins();
     var builder = WebApplication.CreateBuilder(args);
     builder.Host.UseConsoleLifetime();
 
@@ -43,6 +45,12 @@ try
     builder.Services.AddSingleton<IActorManager, ActorManager>();
     builder.Services.AddSingleton<IActorSpawnManager, ActorSpawnManager>();
     builder.Services.AddSingleton<IGameSessionManager, SessionManager>();
+
+    foreach (var plugin in plugins)
+    {
+        plugin.EventHandlers.ToList().ForEach(x => builder.Services.AddTransient(x));
+        plugin.PacketHandlers.ToList().ForEach(x => builder.Services.AddTransient(x));
+    }
 
     /////////////////////////////////////////////////////////////////
     // server

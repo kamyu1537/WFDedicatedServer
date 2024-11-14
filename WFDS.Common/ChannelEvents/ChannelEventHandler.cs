@@ -10,7 +10,7 @@ public interface IChannelEvent
 {
 }
 
-internal interface IChannelEventHandler
+public interface IChannelEventHandler
 {
     Type EventType { get; }
     Task HandleAsync(IChannelEvent e);

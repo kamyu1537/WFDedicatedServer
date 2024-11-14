@@ -11,6 +11,7 @@
 
     <ItemGroup>
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.0" />
+        <PackageReference Include="Serilog" Version="4.1.0" />
         <PackageReference Include="System.Text.Json" Version="9.0.0" />
         <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.0" />
         <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="7.0.0" />
@@ -30,6 +31,7 @@
     <ItemGroup>
         <ProjectReference Include="..\WFDS.Common\WFDS.Common.csproj" />
         <ProjectReference Include="..\WFDS.Godot\WFDS.Godot.csproj"/>
+        <ProjectReference Include="..\WFDS.Plugin\WFDS.Plugin.csproj" />
     </ItemGroup>
 
     <ItemGroup>
@@ -39,28 +41,28 @@
     </ItemGroup>
 
     <ItemGroup>
-        <None Include="Plugins\win64\steam_api64.dll">
+        <None Include="NativeLibraries\win64\steam_api64.dll">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
             <Link>steam_api64.dll</Link>
         </None>
-        <None Include="Plugins\win64\steamclient64.dll">
+        <None Include="NativeLibraries\win64\steamclient64.dll">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
             <Link>steamclient64.dll</Link>
         </None>
-        <None Include="Plugins\win64\tier0_s64.dll">
+        <None Include="NativeLibraries\win64\tier0_s64.dll">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
             <Link>tier0_s64.dll</Link>
         </None>
-        <None Include="Plugins\win64\vstdlib_s64.dll">
+        <None Include="NativeLibraries\win64\vstdlib_s64.dll">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
             <Link>vstdlib_s64.dll</Link>
         </None>
 
-        <None Include="Plugins\linux64\libsteam_api.so">
+        <None Include="NativeLibraries\linux64\libsteam_api.so">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
             <Link>libsteam_api.so</Link>
         </None>
-        <None Include="Plugins\linux64\libsteam_api.so">
+        <None Include="NativeLibraries\linux64\libsteam_api.so">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
             <Link>steamclient.so</Link>
         </None>
