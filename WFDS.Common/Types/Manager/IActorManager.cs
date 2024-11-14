@@ -1,4 +1,5 @@
 ﻿using System.Collections.Immutable;
+using System.Numerics;
 using Steamworks;
 using WFDS.Godot.Types;
 

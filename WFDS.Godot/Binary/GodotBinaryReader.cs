@@ -1,5 +1,8 @@
-﻿using System.Text;
+﻿using System.Numerics;
+using System.Text;
 using WFDS.Godot.Types;
+using Plane = WFDS.Godot.Types.Plane;
+using Quaternion = WFDS.Godot.Types.Quaternion;
 
 namespace WFDS.Godot.Binary;
 

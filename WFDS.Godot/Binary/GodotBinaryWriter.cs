@@ -1,6 +1,9 @@
-﻿using System.Text;
+﻿using System.Numerics;
+using System.Text;
 using WFDS.Godot.Extension;
 using WFDS.Godot.Types;
+using Plane = WFDS.Godot.Types.Plane;
+using Quaternion = WFDS.Godot.Types.Quaternion;
 
 // ReSharper disable InconsistentNaming
 

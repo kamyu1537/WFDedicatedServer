@@ -1,7 +1,7 @@
-﻿using Steamworks;
+﻿using System.Numerics;
+using Steamworks;
 using WFDS.Common.Types;
 using WFDS.Common.Types.Manager;
-using WFDS.Godot.Types;
 
 namespace WFDS.Server.Actors;
 
@@ -40,7 +40,7 @@ public sealed class AmbientBirdActor : IActor
         var near = false;
         ActorManager?.SelectPlayerActors(player =>
         {
-            var distance = Position.Distance(player.Position);
+            var distance = Vector3.Distance(Position, player.Position);
             if (distance < 10)
             {
                 Logger?.LogInformation("bird {ActorId} is near player {PlayerId}", ActorId, player.ActorId);

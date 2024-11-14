@@ -1,4 +1,5 @@
-﻿using WFDS.Common.Extensions;
+﻿using System.Numerics;
+using WFDS.Common.Extensions;
 using WFDS.Common.Helpers;
 using WFDS.Common.Network;
 using WFDS.Common.Types;

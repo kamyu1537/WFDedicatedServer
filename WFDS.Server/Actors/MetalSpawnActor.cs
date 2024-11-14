@@ -1,4 +1,5 @@
-﻿using Serilog;
+﻿using System.Numerics;
+using Serilog;
 using Steamworks;
 using WFDS.Common.Types;
 using WFDS.Common.Types.Manager;

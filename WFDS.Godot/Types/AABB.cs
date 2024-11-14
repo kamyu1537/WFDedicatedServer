@@ -1,4 +1,6 @@
-﻿namespace WFDS.Godot.Types;
+﻿using System.Numerics;
+
+namespace WFDS.Godot.Types;
 
 // ReSharper disable InconsistentNaming
 public record struct AABB(

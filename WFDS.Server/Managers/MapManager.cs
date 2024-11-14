@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Numerics;
+using System.Text;
 using System.Text.Json;
 using WFDS.Common.Extensions;
 using WFDS.Common.Types;

@@ -1,4 +1,5 @@
-﻿using WFDS.Godot.Types;
+﻿using System.Numerics;
+using WFDS.Godot.Types;
 
 namespace WFDS.Common.Extensions;
 

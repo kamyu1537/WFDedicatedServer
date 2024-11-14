@@ -1,4 +1,6 @@
-﻿using Steamworks;
+﻿using System.Numerics;
+using Steamworks;
+using WFDS.Common.Extensions;
 using WFDS.Common.Types;
 using WFDS.Common.Types.Manager;
 using WFDS.Godot.Types;
@@ -30,7 +32,7 @@ public sealed class RainCloudActor : IActor
 
     public void OnCreated()
     {
-        var center = (Position - new Vector3(30, 40, -50)).Normalized();
+        var center = Vector3.Normalize(Position - new Vector3(30, 40, -50));
         _direction = new Vector2(center.X, center.Z).Angle();
     }
     
@@ -40,7 +42,7 @@ public sealed class RainCloudActor : IActor
 
     public void OnUpdate(double delta)
     {
-        var vel = new Vector2(1, 0).Rotate(_direction) * Speed;
+        var vel = new Vector2(1, 0).Rotated(_direction) * Speed;
         Position += new Vector3(vel.X, 0f, vel.X) * (float)delta;
     }
 

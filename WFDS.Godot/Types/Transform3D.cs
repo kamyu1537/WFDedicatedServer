@@ -1,4 +1,6 @@
-﻿namespace WFDS.Godot.Types;
+﻿using System.Numerics;
+
+namespace WFDS.Godot.Types;
 
 public record struct Transform3D(
     Vector3 X,
@@ -7,5 +9,5 @@ public record struct Transform3D(
     Vector3 Origin
 )
 {
-    public static Transform3D Identity { get; } = new(Vector3.Right, Vector3.Up, Vector3.Forward, Vector3.Zero);
+    public static Transform3D Identity { get; } = new(Vector3.UnitX, Vector3.UnitY, Vector3.UnitZ, Vector3.Zero);
 }

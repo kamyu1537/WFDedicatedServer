@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System.Numerics;
+using Microsoft.Extensions.Logging;
 using Steamworks;
 using WFDS.Common.Types.Manager;
 using WFDS.Godot.Types;

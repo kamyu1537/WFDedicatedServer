@@ -1,4 +1,5 @@
 ﻿using System.Collections.Concurrent;
+using System.Numerics;
 using System.Text.Json;
 using Steamworks;
 using WFDS.Common.Extensions;
