@@ -31,6 +31,7 @@
     <ItemGroup>
         <ProjectReference Include="..\WFDS.Common\WFDS.Common.csproj" />
         <ProjectReference Include="..\WFDS.Godot\WFDS.Godot.csproj"/>
+        <ProjectReference Include="..\WFDS.Network\WFDS.Network.csproj" />
         <ProjectReference Include="..\WFDS.Plugin\WFDS.Plugin.csproj" />
     </ItemGroup>
 

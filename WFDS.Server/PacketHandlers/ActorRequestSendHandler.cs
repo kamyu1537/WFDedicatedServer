@@ -1,7 +1,7 @@
 ﻿using WFDS.Common.Types;
 using WFDS.Common.Types.Manager;
-using WFDS.Server.Network;
-using WFDS.Server.Packets;
+using WFDS.Network;
+using WFDS.Network.Packets;
 
 namespace WFDS.Server.PacketHandlers;
 

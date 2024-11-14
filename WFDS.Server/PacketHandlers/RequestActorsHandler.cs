@@ -1,12 +1,12 @@
 ﻿using WFDS.Common.Types;
 using WFDS.Common.Types.Manager;
-using WFDS.Server.Network;
-using WFDS.Server.Packets;
+using WFDS.Network;
+using WFDS.Network.Packets;
 
 namespace WFDS.Server.PacketHandlers;
 
 [PacketType("request_actors")]
-public class RequestActorsHandler(ILogger<RequestActorsHandler> logger, IActorManager actorManager) : PacketHandler<RequestActorsPacket>
+public class RequestActorsHandler(ILogger<RequestActorsHandler> logger, IActorManager actorManager, ISessionManager sessionManager) : PacketHandler<RequestActorsPacket>
 {
     protected override async Task HandlePacketAsync(IGameSession sender, NetChannel channel, RequestActorsPacket _)
     {
@@ -15,7 +15,8 @@ public class RequestActorsHandler(ILogger<RequestActorsHandler> logger, IActorMa
         var packet = new ActorRequestSendPacket();
         var owned = actorManager.GetOwnedActors().Select(ActorReplicationData.FromActor);
         packet.Actors.AddRange(owned);
-        sender.SendP2PPacket(NetChannel.GameState, packet);
+        
+        sessionManager.SendP2PPacket(sender.SteamId, NetChannel.GameState, packet);
         await Task.Yield();
     }
 }

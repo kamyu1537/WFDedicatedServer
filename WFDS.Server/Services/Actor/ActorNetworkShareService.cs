@@ -1,11 +1,12 @@
 ﻿using Steamworks;
+using WFDS.Common.Extensions;
 using WFDS.Common.Types;
 using WFDS.Common.Types.Manager;
-using WFDS.Server.Packets;
+using WFDS.Network.Packets;
 
 namespace WFDS.Server.Services;
 
-public class ActorNetworkShareService(IActorManager manager, IGameSessionManager session) : BackgroundService
+public class ActorNetworkShareService(IActorManager actorManager, ISessionManager sessionManager) : BackgroundService
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
@@ -18,11 +19,11 @@ public class ActorNetworkShareService(IActorManager manager, IGameSessionManager
 
     private void Tick()
     {
-        var count = session.GetSessionCount();
+        var count = sessionManager.GetSessionCount();
         if (count < 1)
             return;
 
-        var owned = manager.GetOwnedActors();
+        var owned = actorManager.GetOwnedActors();
         foreach (var actor in owned)
         {
             NetworkShare(actor);
@@ -42,6 +43,6 @@ public class ActorNetworkShareService(IActorManager manager, IGameSessionManager
         if (actor.NetworkShareCooldown > 0) return;
         
         actor.NetworkShareCooldown = actor.NetworkShareDefaultCooldown;
-        actor.SendUpdatePacket(session);
+        actor.BroadcastInZone(NetChannel.ActorUpdate, ActorUpdatePacket.Create(actor), actorManager, sessionManager);
     }
 }

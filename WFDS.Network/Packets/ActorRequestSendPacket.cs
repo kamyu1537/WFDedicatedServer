@@ -2,7 +2,7 @@
 using WFDS.Common.Network;
 using WFDS.Common.Types;
 
-namespace WFDS.Server.Packets;
+namespace WFDS.Network.Packets;
 
 public class ActorRequestSendPacket : IPacket
 {

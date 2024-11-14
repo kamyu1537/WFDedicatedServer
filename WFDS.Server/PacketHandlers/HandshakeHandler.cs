@@ -1,6 +1,6 @@
 ﻿using WFDS.Common.Types;
-using WFDS.Server.Network;
-using WFDS.Server.Packets;
+using WFDS.Network;
+using WFDS.Network.Packets;
 
 namespace WFDS.Server.PacketHandlers;
 

@@ -3,7 +3,7 @@ using WFDS.Server.Managers;
 
 namespace WFDS.Server.Services;
 
-public class MetalSpawnScheduleService(ILogger<MetalSpawnScheduleService> logger, IActorSpawnManager spawn, IGameSessionManager session) : IHostedService
+public class MetalSpawnScheduleService(ILogger<MetalSpawnScheduleService> logger, IActorSpawnManager spawn, ISessionManager session) : IHostedService
 {
     private static readonly TimeSpan MetalSpawnTimeoutPeriod = TimeSpan.FromSeconds(20);
     private Timer? _timer;

@@ -4,8 +4,8 @@ using WFDS.Common.ChannelEvents;
 using WFDS.Common.Extensions;
 using WFDS.Common.Types;
 using WFDS.Common.Types.Manager;
-using WFDS.Server.Network;
-using WFDS.Server.Packets;
+using WFDS.Network;
+using WFDS.Network.Packets;
 
 namespace WFDS.Server.PacketHandlers;
 
@@ -101,12 +101,6 @@ public class ActorActionHandler(ILogger<ActorActionHandler> logger, IActorManage
             return;
         }
 
-        if (!sender.ActorCreated)
-        {
-            logger.LogError("actor not created for {Member}", sender.Friend);
-            return;
-        }
-
         var actor = actorManager.GetActor(packet.ActorId);
         if (actor != null)
         {
@@ -115,9 +109,6 @@ public class ActorActionHandler(ILogger<ActorActionHandler> logger, IActorManage
 
             var zone = packet.Params[0].GetString();
             var zoneOwner = packet.Params[1].GetNumber();
-
-            actor.Zone = zone;
-            actor.ZoneOwner = zoneOwner;
             await ChannelEvent.PublishAsync(new ActorZoneUpdateEvent(actor.ActorId, zone, zoneOwner));
         }
     }
@@ -142,8 +133,6 @@ public class ActorActionHandler(ILogger<ActorActionHandler> logger, IActorManage
         var dic = packet.Params[0].GetObjectDictionary();
         var cosmetics = new Cosmetics();
         cosmetics.Deserialize(dic);
-
-        player.Cosmetics = cosmetics;
         await ChannelEvent.PublishAsync(new PlayerCosmeticsUpdateEvent(sender.SteamId, cosmetics));
     }
 
@@ -167,8 +156,6 @@ public class ActorActionHandler(ILogger<ActorActionHandler> logger, IActorManage
         var dic = packet.Params[0].GetObjectDictionary();
         var item = new GameItem();
         item.Deserialize(dic);
-
-        player.HeldItem = item;
         await ChannelEvent.PublishAsync(new PlayerHeldItemUpdateEvent(sender.SteamId, item));
     }
 

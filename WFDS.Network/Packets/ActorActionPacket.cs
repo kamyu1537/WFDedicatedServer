@@ -1,7 +1,7 @@
 ﻿using WFDS.Common.Extensions;
 using WFDS.Common.Types;
 
-namespace WFDS.Server.Packets;
+namespace WFDS.Network.Packets;
 
 /*
  * queue_free : 프롭 삭제

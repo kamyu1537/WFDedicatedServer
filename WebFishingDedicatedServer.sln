@@ -12,6 +12,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Plugins", "Plugins", "{573F
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WelcomeMessagePlugin", "WelcomeMessagePlugin\WelcomeMessagePlugin.csproj", "{67024ECD-9116-4B78-9192-71A9DFFA837A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WFDS.Network", "WFDS.Network\WFDS.Network.csproj", "{233FED13-E634-414F-BA1C-F0405E211D17}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -38,6 +40,10 @@ Global
 		{67024ECD-9116-4B78-9192-71A9DFFA837A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{67024ECD-9116-4B78-9192-71A9DFFA837A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{67024ECD-9116-4B78-9192-71A9DFFA837A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{233FED13-E634-414F-BA1C-F0405E211D17}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{233FED13-E634-414F-BA1C-F0405E211D17}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{233FED13-E634-414F-BA1C-F0405E211D17}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{233FED13-E634-414F-BA1C-F0405E211D17}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{67024ECD-9116-4B78-9192-71A9DFFA837A} = {573F14AA-7273-4CBD-951D-E788CF3DB156}

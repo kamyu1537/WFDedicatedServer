@@ -1,11 +1,11 @@
 ﻿using Steamworks;
 using WFDS.Common.Types;
 using WFDS.Common.Types.Manager;
-using WFDS.Server.Packets;
+using WFDS.Network.Packets;
 
 namespace WFDS.Server.Services;
 
-public class RequestPingScheduleService(IGameSessionManager sessionManager) : IHostedService
+public class RequestPingScheduleService(ISessionManager sessionManager) : IHostedService
 {
     private static readonly TimeSpan RequestPingTimeoutPeriod = TimeSpan.FromSeconds(8);
     private Timer? _timer;

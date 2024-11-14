@@ -3,7 +3,7 @@ using WFDS.Server.Managers;
 
 namespace WFDS.Server.Services;
 
-public class AmbientSpawnScheduleService(IGameSessionManager session, IActorSpawnManager spawn) : IHostedService
+public class AmbientSpawnScheduleService(ISessionManager session, IActorSpawnManager spawn) : IHostedService
 {
     private static readonly TimeSpan AmbientSpawnTimeoutPeriod = TimeSpan.FromSeconds(10);
     private readonly Random _random = new();

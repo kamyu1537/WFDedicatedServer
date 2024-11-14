@@ -1,13 +1,13 @@
 ﻿using Steamworks;
 using WFDS.Common.Types;
 using WFDS.Common.Types.Manager;
-using WFDS.Server.Network;
-using WFDS.Server.Packets;
+using WFDS.Network;
+using WFDS.Network.Packets;
 
 namespace WFDS.Server.Handlers;
 
 [PacketType("letter_recieved")]
-public class LetterReceivedHandler(ILogger<LetterReceivedHandler> logger) : PacketHandler<LetterReceivedPacket>
+public class LetterReceivedHandler(ILogger<LetterReceivedHandler> logger, ISessionManager sessionManager) : PacketHandler<LetterReceivedPacket>
 {
     protected override async Task HandlePacketAsync(IGameSession sender, NetChannel channel, LetterReceivedPacket packet)
     {
@@ -20,7 +20,7 @@ public class LetterReceivedHandler(ILogger<LetterReceivedHandler> logger) : Pack
         (packet.Data.From, packet.Data.To) = (packet.To, packet.Data.From);
         packet.To = packet.Data.To;
 
-        sender.SendP2PPacket(NetChannel.GameState, packet);
+        sessionManager.SendP2PPacket(sender.SteamId, NetChannel.GameState, packet);
         await Task.Yield();
     }
 }

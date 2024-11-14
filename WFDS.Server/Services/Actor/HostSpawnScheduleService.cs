@@ -4,7 +4,7 @@ using WFDS.Server.Managers;
 
 namespace WFDS.Server.Services;
 
-public class HostSpawnScheduleService(ILogger<HostSpawnScheduleService> logger, IActorManager actor, IActorSpawnManager spawn, IGameSessionManager session) : IHostedService
+public class HostSpawnScheduleService(ILogger<HostSpawnScheduleService> logger, IActorManager actor, IActorSpawnManager spawn, ISessionManager session) : IHostedService
 {
     private const int DefaultAlienCooldown = 6;
     private const int ResetAlienCooldown = 16;

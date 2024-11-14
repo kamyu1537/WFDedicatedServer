@@ -1,8 +1,9 @@
-﻿using System.Numerics;
+﻿using System.Drawing;
+using System.Numerics;
 using WFDS.Common.Extensions;
 using WFDS.Common.Types;
 
-namespace WFDS.Server.Packets;
+namespace WFDS.Network.Packets;
 
 public class MessagePacket : IPacket
 {
@@ -32,5 +33,18 @@ public class MessagePacket : IPacket
         data.TryAdd("position", Position);
         data.TryAdd("zone", Zone);
         data.TryAdd("zone_owner", ZoneOwner);
+    }
+    
+    public static MessagePacket Create(string message, Color color, bool local = false)
+    {
+        return new MessagePacket
+        {
+            Message = message,
+            Color = color.ToHex(true),
+            Local = local,
+            Position = Vector3.Zero,
+            Zone = "",
+            ZoneOwner = -1
+        };
     }
 }

@@ -2,13 +2,17 @@
 
 namespace WFDS.Server.Services;
 
-public class PacketSendService(IGameSessionManager session) : BackgroundService
+public class PacketSendService(ISessionManager sessionManager) : BackgroundService
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         while (!stoppingToken.IsCancellationRequested)
         {
-            session.SelectSessions(player => player.ProcessPacket());
+            foreach (var session in sessionManager.GetSessions())
+            {
+                session.ProcessPacket();
+            }
+            
             await Task.Delay(1000 / 240, stoppingToken); // 240 fps
         }
     }

@@ -9,7 +9,7 @@ public sealed class RainCloudActor : IActor
 {
     public ILogger? Logger { get; set; }
     public IActorManager? ActorManager { get; set; }
-    public IGameSessionManager? SessionManager { get; set; }
+    public ISessionManager? SessionManager { get; set; }
 
     public string ActorType => "raincloud";
     public long ActorId { get; init; }

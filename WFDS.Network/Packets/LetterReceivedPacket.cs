@@ -1,8 +1,9 @@
-﻿using WFDS.Common.Extensions;
+﻿using Steamworks;
+using WFDS.Common.Extensions;
 using WFDS.Common.Network;
 using WFDS.Common.Types;
 
-namespace WFDS.Server.Packets;
+namespace WFDS.Network.Packets;
 
 public class LetterData : IPacket
 {
@@ -58,5 +59,24 @@ public class LetterReceivedPacket : IPacket
         data.TryAdd("type", "letter_recieved");
         data.TryAdd("to", To);
         data.TryAdd("data", Data.ToDictionary());
+    }
+    
+    public static LetterReceivedPacket Create(SteamId to, string body, List<GameItem> items)
+    {
+        return new LetterReceivedPacket
+        {
+            To = to.Value.ToString(),
+            Data = new LetterData
+            {
+                LetterId = new Random().Next(),
+                To = SteamClient.SteamId.ToString(),
+                From = SteamClient.SteamId.ToString(),
+                Closing = "From, ",
+                User = "[SERVER]",
+                Header = "Letter",
+                Body = body,
+                Items = items.Select(object (x) => PacketHelper.ToDictionary(x)).ToList()
+            }
+        };
     }
 }

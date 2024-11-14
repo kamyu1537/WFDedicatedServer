@@ -3,13 +3,13 @@ using WFDS.Common.Network;
 using WFDS.Common.Types;
 using WFDS.Common.Types.Manager;
 
-namespace WFDS.Server.Network;
+namespace WFDS.Network;
 
 public abstract class PacketHandler<T> : IPacketHandler where T : IPacket, new()
 {
-    private IGameSessionManager SessionManager { get; set; } = null!;
+    private ISessionManager SessionManager { get; set; } = null!;
     
-    public void Initialize(IGameSessionManager sessionManager)
+    public void Initialize(ISessionManager sessionManager)
     {
         SessionManager = sessionManager;
     }
@@ -22,13 +22,13 @@ public abstract class PacketHandler<T> : IPacketHandler where T : IPacket, new()
         await HandlePacketAsync(sender, channel, packet);
     }
     
-    public void SendP2PPacket(SteamId target, NetChannel channel, IPacket packet, string zone = "", long zoneOwner = -1)
+    public void SendP2PPacket(SteamId target, NetChannel channel, IPacket packet)
     {
-        SessionManager.SendP2PPacket(target, channel, packet, zone, zoneOwner);
+        SessionManager.SendP2PPacket(target, channel, packet);
     }
 
-    public void BroadcastP2PPacket(NetChannel channel, IPacket packet, string zone = "", long zoneOwner = -1)
+    public void BroadcastP2PPacket(NetChannel channel, IPacket packet)
     {
-        SessionManager.BroadcastP2PPacket(channel, packet, zone, zoneOwner);
+        SessionManager.BroadcastP2PPacket(channel, packet);
     }
 }

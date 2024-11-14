@@ -8,7 +8,7 @@ namespace WFDS.Server.Controllers;
 [Tags("session")]
 [Route("api/v1/session")]
 
-public class SessionController(IGameSessionManager manager) : Controller
+public class SessionController(ISessionManager manager) : Controller
 {
     [HttpGet("info")]
     [SwaggerOperation("get lobby info")]
@@ -52,30 +52,10 @@ public class SessionController(IGameSessionManager manager) : Controller
         {
             session.SteamId,
             session.Friend,
-            session.ActorCreated,
             session.ConnectTime,
             session.HandshakeReceiveTime,
             session.PingReceiveTime,
             session.PacketReceiveTime,
-            Actor = session.Actor == null ? null
-                : new
-                {
-                    session.Actor.ActorId,
-                    session.Actor.ActorType,
-                    session.Actor.CreatorId,
-                    session.Actor.Zone,
-                    session.Actor.ZoneOwner,
-                    session.Actor.HeldItem,
-                    session.Actor.Cosmetics,
-                    session.Actor.Position,
-                    session.Actor.Rotation,
-                    session.Actor.Decay,
-                    session.Actor.DecayTimer,
-                    session.Actor.CreateTime,
-                    session.Actor.IsDeadActor,
-                    session.Actor.NetworkShareDefaultCooldown,
-                    session.Actor.NetworkShareCooldown,
-                },
         });
     }
     

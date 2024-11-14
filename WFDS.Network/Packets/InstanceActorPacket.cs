@@ -4,7 +4,7 @@ using WFDS.Common.Network;
 using WFDS.Common.Types;
 using WFDS.Common.Types.Manager;
 
-namespace WFDS.Server.Packets;
+namespace WFDS.Network.Packets;
 
 public class ActorParamData : IPacket
 {
@@ -59,11 +59,8 @@ public class InstanceActorPacket : IPacket
         data.TryAdd("type", "instance_actor");
         data.TryAdd("params", Param.ToDictionary());
     }
-}
-
-public static class InstanceActorExtensions
-{
-    private static InstanceActorPacket ToInstancePacket(this IActor actor)
+    
+    public static InstanceActorPacket Create(IActor actor)
     {
         return new InstanceActorPacket
         {
@@ -78,10 +75,5 @@ public static class InstanceActorExtensions
                 Rotation = actor.Rotation
             }
         };
-    }
-
-    public static void SendInstanceActor(this IActor actor, IGameSessionManager session)
-    {
-        session.BroadcastP2PPacket(NetChannel.GameState, actor.ToInstancePacket());
     }
 }

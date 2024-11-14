@@ -44,7 +44,7 @@ try
     builder.Services.AddSingleton<IActorIdManager, ActorIdManager>();
     builder.Services.AddSingleton<IActorManager, ActorManager>();
     builder.Services.AddSingleton<IActorSpawnManager, ActorSpawnManager>();
-    builder.Services.AddSingleton<IGameSessionManager, SessionManager>();
+    builder.Services.AddSingleton<ISessionManager, SessionManager>();
 
     /////////////////////////////////////////////////////////////////
     // server

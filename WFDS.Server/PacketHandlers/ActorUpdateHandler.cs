@@ -1,8 +1,8 @@
 ﻿using WFDS.Common.ChannelEvents;
 using WFDS.Common.Types;
 using WFDS.Common.Types.Manager;
-using WFDS.Server.Network;
-using WFDS.Server.Packets;
+using WFDS.Network;
+using WFDS.Network.Packets;
 
 namespace WFDS.Server.PacketHandlers;
 
@@ -18,9 +18,6 @@ public class ActorUpdateHandler(IActorManager actorManager) : PacketHandler<Acto
         {
             return;
         }
-            
-        actor.Position = packet.Position;
-        actor.Rotation = packet.Rotation;
         
         await ChannelEvent.PublishAsync(new ActorUpdateEvent(actor.ActorId, packet.Position, packet.Rotation));
     }

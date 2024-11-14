@@ -3,7 +3,7 @@ using System.Text.Json;
 using Steamworks;
 using WFDS.Common.Types;
 using WFDS.Common.Types.Manager;
-using WFDS.Server.Network;
+using WFDS.Network;
 
 namespace WFDS.Server.Managers;
 
@@ -27,12 +27,12 @@ public static class PacketHandlerExtensions
 public class PacketHandleManager : IPacketHandleManager
 {
     private readonly ILogger<PacketHandleManager> _logger;
-    private readonly IGameSessionManager _sessionManager;
+    private readonly ISessionManager _sessionManager;
     private readonly IServiceProvider _provider;
 
     private readonly Dictionary<string, Type[]> _handlerTypes;
 
-    public PacketHandleManager(ILogger<PacketHandleManager> logger, IServiceProvider provider, IGameSessionManager sessionManager)
+    public PacketHandleManager(ILogger<PacketHandleManager> logger, IServiceProvider provider, ISessionManager sessionManager)
     {
         _logger = logger;
         _provider = provider;

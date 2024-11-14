@@ -2,14 +2,12 @@
 
     <PropertyGroup>
         <TargetFramework>net9.0</TargetFramework>
-        <LangVersion>13</LangVersion>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\WFDS.Plugin\WFDS.Plugin.csproj" />
-      <ProjectReference Include="..\WFDS.Server\WFDS.Server.csproj" />
+      <ProjectReference Include="..\WFDS.Common\WFDS.Common.csproj" />
     </ItemGroup>
 
 </Project>

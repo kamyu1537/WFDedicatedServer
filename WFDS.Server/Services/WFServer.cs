@@ -7,7 +7,7 @@ namespace WFDS.Server.Services;
 public class WFServer(
     ILogger<WFServer> logger,
     IOptions<ServerSetting> settings,
-    IGameSessionManager session,
+    ISessionManager session,
     IMapManager map
 ) : BackgroundService
 {
@@ -46,19 +46,19 @@ public class WFServer(
             
             await Task.Delay(1000, stoppingToken);
         }
-
-        await Cleanup();
     }
 
-    private async Task Cleanup()
+    public override async Task StopAsync(CancellationToken cancellationToken)
     {
         var sessions = session.GetSessions();
         foreach (var player in sessions)
         {
-            player.ServerClose();
+            session.ServerClose(player.SteamId);
         }
         
         await session.LeaveLobbyAsync();
         SteamClient.Shutdown();
+        
+        await base.StopAsync(cancellationToken);
     }
 }

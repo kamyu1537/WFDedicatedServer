@@ -2,7 +2,7 @@
 
 namespace WFDS.Common.Types.Manager;
 
-public interface IGameSessionManager
+public interface ISessionManager
 {
     string GetName();
     string GetCode();
@@ -10,6 +10,9 @@ public interface IGameSessionManager
     bool IsPublic();
     bool IsAdult();
     int GetCapacity();
+    
+    void SetPublic(bool isPublic);
+    void SetLobbyType(GameLobbyType lobbyType);
 
     bool IsLobbyValid();
     
@@ -23,8 +26,6 @@ public interface IGameSessionManager
     IGameSession? GetSession(SteamId steamId);
     IEnumerable<IGameSession> GetSessions();
     bool IsSessionValid(SteamId steamId);
-    void SelectSession(SteamId steamId, Action<IGameSession> action);
-    void SelectSessions(Action<IGameSession> action);
     
     void ServerClose(SteamId steamId);
     void KickPlayer(SteamId steamId);
@@ -32,6 +33,6 @@ public interface IGameSessionManager
     void BanPlayers(string[] steamId);
     void RemoveBanPlayer(SteamId steamId);
     
-    void SendP2PPacket(SteamId steamId, NetChannel channel, IPacket packet, string zone = "", long zoneOwner = -1, bool useSession = true);
-    void BroadcastP2PPacket(NetChannel channel, IPacket packet, string zone = "", long zoneOwner = -1);
+    void SendP2PPacket(SteamId steamId, NetChannel channel, IPacket packet, bool useSession = true);
+    void BroadcastP2PPacket(NetChannel channel, IPacket packet, bool useSession = true);
 }

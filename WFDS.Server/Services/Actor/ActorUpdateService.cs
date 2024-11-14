@@ -5,7 +5,7 @@ using WFDS.Common.Types.Manager;
 
 namespace WFDS.Server.Services;
 
-public class ActorUpdateService(ILogger<ActorUpdateService> logger, IActorManager manager, IGameSessionManager session) : BackgroundService
+public class ActorUpdateService(ILogger<ActorUpdateService> logger, IActorManager manager, ISessionManager session) : BackgroundService
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {

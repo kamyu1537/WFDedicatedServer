@@ -1,7 +1,7 @@
 ﻿using WFDS.Common.Types;
 using WFDS.Common.Types.Manager;
-using WFDS.Server.Network;
-using WFDS.Server.Packets;
+using WFDS.Network;
+using WFDS.Network.Packets;
 
 namespace WFDS.Server.PacketHandlers;
 
@@ -37,7 +37,7 @@ public class InstanceActorHandler(ILogger<InstanceActorHandler> logger, IActorMa
         if (IsHostActor(packet))
         {
             logger.LogError("player request host actor {Member} - {ActorId} {ActorType}", sender.Friend, packet.Param.ActorId, packet.Param.ActorType);
-            sender.Kick();
+            
             return;
         }
 
@@ -50,20 +50,15 @@ public class InstanceActorHandler(ILogger<InstanceActorHandler> logger, IActorMa
 
     private void CreatePlayerActor(IGameSession sender, InstanceActorPacket packet)
     {
-        if (sender.ActorCreated)
+        if (actorManager.GetPlayerActor(sender.SteamId) != null)
         {
-            logger.LogError("player actor already exists for {Member}", sender.Friend);
+            logger.LogError("player already has actor {Member} - {ActorId} {ActorType}", sender.Friend, packet.Param.ActorId, packet.Param.ActorType);
             return;
         }
-
-        var created = actorManager.TryCreatePlayerActor(sender.SteamId, packet.Param.ActorId, out var actor);
-        if (!created)
-        {
-            logger.LogError("failed to create player actor {ActorId} {ActorType}", packet.Param.ActorId, packet.Param.ActorType);
-            return;
-        }
-
-        sender.ActorCreated = true;
-        sender.Actor = actor;
+        
+        var created = actorManager.TryCreatePlayerActor(sender.SteamId, packet.Param.ActorId, out _);
+        if (created) return;
+        
+        logger.LogError("failed to create player actor {ActorId} {ActorType}", packet.Param.ActorId, packet.Param.ActorType);
     }
 }

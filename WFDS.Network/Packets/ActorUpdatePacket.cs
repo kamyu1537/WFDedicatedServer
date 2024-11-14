@@ -1,9 +1,10 @@
 ﻿using System.Numerics;
+using WFDS.Common.ChannelEvents;
 using WFDS.Common.Extensions;
 using WFDS.Common.Types;
 using WFDS.Common.Types.Manager;
 
-namespace WFDS.Server.Packets;
+namespace WFDS.Network.Packets;
 
 public class ActorUpdatePacket : IPacket
 {
@@ -25,31 +26,14 @@ public class ActorUpdatePacket : IPacket
         data.TryAdd("pos", Position);
         data.TryAdd("rot", Rotation);
     }
-}
-
-public static class ActorUpdatePacketExtensions
-{
-    public static void SendUpdatePacket(this IActor actor, IGameSessionManager lobby)
+    
+    public static ActorUpdatePacket Create(IActor actor)
     {
-        var packet = new ActorUpdatePacket
+        return new ActorUpdatePacket
         {
             ActorId = actor.ActorId,
             Position = actor.Position,
             Rotation = actor.Rotation
         };
-
-        lobby.BroadcastP2PPacket(NetChannel.ActorUpdate, packet, actor.Zone, actor.ZoneOwner);
-    }
-
-    public static void SendUpdatePacket(this IActor actor, IGameSession target)
-    {
-        var packet = new ActorUpdatePacket
-        {
-            ActorId = actor.ActorId,
-            Position = actor.Position,
-            Rotation = actor.Rotation
-        };
-
-        target.SendP2PPacket(NetChannel.ActorUpdate, packet, actor.Zone, actor.ZoneOwner);
     }
 }
