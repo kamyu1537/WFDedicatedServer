@@ -46,12 +46,6 @@ try
     builder.Services.AddSingleton<IActorSpawnManager, ActorSpawnManager>();
     builder.Services.AddSingleton<IGameSessionManager, SessionManager>();
 
-    foreach (var plugin in plugins)
-    {
-        plugin.EventHandlers.ToList().ForEach(x => builder.Services.AddTransient(x));
-        plugin.PacketHandlers.ToList().ForEach(x => builder.Services.AddTransient(x));
-    }
-
     /////////////////////////////////////////////////////////////////
     // server
     builder.Services.AddHostedService<WFServer>();
@@ -77,6 +71,12 @@ try
     builder.Services.AddChannelEventHandlers();
     builder.Services.AddHostedService<ChannelEventService>();
     /////////////////////////////////////////////////////////////////
+    // plugin
+    foreach (var plugin in plugins)
+    {
+        plugin.EventHandlers.ToList().ForEach(x => builder.Services.AddTransient(x));
+        plugin.PacketHandlers.ToList().ForEach(x => builder.Services.AddTransient(x));
+    }
 
     builder.Services.AddSerilog(Log.Logger);
     builder.Services.AddControllers();
