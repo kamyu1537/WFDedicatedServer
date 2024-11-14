@@ -69,6 +69,7 @@ public class PacketHandleManager : IPacketHandleManager
             if (session == null)
             {
                 _logger.LogWarning("received packet from {Sender} on channel {Channel} without session", sender, channel);
+                _sessionManager.KickPlayer(sender);
                 return;
             }
 

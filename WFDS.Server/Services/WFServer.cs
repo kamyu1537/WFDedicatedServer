@@ -46,18 +46,19 @@ public class WFServer(
             
             await Task.Delay(1000, stoppingToken);
         }
+
+        await Cleanup();
     }
-    
-    public override async Task StopAsync(CancellationToken cancellationToken)
+
+    private async Task Cleanup()
     {
-        session.SelectSessions(player => {
+        var sessions = session.GetSessions();
+        foreach (var player in sessions)
+        {
             player.ServerClose();
-        });
+        }
         
         await session.LeaveLobbyAsync();
         SteamClient.Shutdown();
-        
-        logger.LogInformation("MainWorker stopped");
-        await base.StopAsync(cancellationToken);
     }
 }

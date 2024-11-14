@@ -337,32 +337,41 @@ public sealed class SessionManager : IGameSessionManager
         action(session);
     }
 
-    public void SendP2PPacket(SteamId steamId, NetChannel channel, IPacket packet, string zone = "", long zoneOwner = -1)
+    public void SendP2PPacket(SteamId steamId, NetChannel channel, IPacket packet, string zone = "", long zoneOwner = -1, bool useSession = true)
     {
         var data = PacketHelper.ToDictionary(packet);
-        SendP2PPacket(steamId, channel, data, zone, zoneOwner);
+        SendP2PPacket(steamId, channel, data, zone, zoneOwner, useSession);
     }
 
-    public void SendP2PPacket(SteamId steamId, NetChannel channel, object data, string zone = "", long zoneOwner = -1)
+    public void SendP2PPacket(SteamId steamId, NetChannel channel, object data, string zone = "", long zoneOwner = -1, bool useSession = true)
     {
         if (!_lobby.HasValue)
         {
             return;
         }
 
-        if (!_sessions.TryGetValue(steamId.Value, out var session))
+        if (useSession)
         {
-            return;
-        }
+            if (!_sessions.TryGetValue(steamId.Value, out var session))
+            {
+                return;
+            }
 
-        if (!IsInZone(session, zone, zoneOwner))
+            if (!IsInZone(session, zone, zoneOwner))
+            {
+                return;
+            }
+            
+            var bytes = GodotBinaryConverter.Serialize(data);
+            var compressed = GZipHelper.Compress(bytes);
+            session.Packets.Enqueue((channel, compressed));
+        }
+        else
         {
-            return;
+            var bytes = GodotBinaryConverter.Serialize(data);
+            var compressed = GZipHelper.Compress(bytes);
+            SteamNetworking.SendP2PPacket(steamId, compressed, nChannel: channel.Value);
         }
-
-        var bytes = GodotBinaryConverter.Serialize(data);
-        var compressed = GZipHelper.Compress(bytes);
-        session.Packets.Enqueue((channel, compressed));
     }
     
     public void BroadcastP2PPacket(NetChannel channel, IPacket packet, string zone = "", long zoneOwner = -1)
@@ -409,14 +418,9 @@ public sealed class SessionManager : IGameSessionManager
         {
             return;
         }
-
-        SelectSession(target, session =>
-        {
-            _logger.LogInformation("try kick player: {Member}", session.Friend);
-            session.SendP2PPacket(NetChannel.GameState, new ServerClosePacket());
-        });
-
-        SteamNetworking.CloseP2PSessionWithUser(target);
+        
+        _logger.LogInformation("try kick player: {SteamId}", target);
+        SendP2PPacket(target, NetChannel.GameState, new ServerClosePacket(), "", -1, false);
     }
 
     public void KickPlayer(SteamId target)
@@ -437,7 +441,7 @@ public sealed class SessionManager : IGameSessionManager
             _logger.LogInformation("try kick player: {Member}", session.Friend);
             session.SendP2PPacket(NetChannel.GameState, new KickPacket());
         });
-
+        
         SteamNetworking.CloseP2PSessionWithUser(target);
     }
 
@@ -590,7 +594,13 @@ public sealed class SessionManager : IGameSessionManager
     private void OnP2PSessionRequest(SteamId requester)
     {
         _logger.LogWarning("P2P session request: {SteamId}", requester);
-        SelectSession(requester, _ => { SteamNetworking.AcceptP2PSessionWithUser(requester); });
+        SteamNetworking.AcceptP2PSessionWithUser(requester);
+        
+        if (GetSession(requester) == null)
+        {
+            _logger.LogWarning("P2P session request from session: {SteamId}", requester);
+            ServerClose(requester);
+        }
     }
     
     #endregion

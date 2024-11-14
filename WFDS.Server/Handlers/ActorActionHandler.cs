@@ -98,7 +98,7 @@ public class ActorActionHandler(ILogger<ActorActionHandler> logger, IActorManage
             {
                 if (actor.CreatorId != sender.SteamId)
                 {
-                    actorManager.TryRemoveActor(actorId, ActorRemoveTypes.WipeActor, out _);
+                    actorManager.TryRemoveActor(packet.ActorId, ActorRemoveTypes.WipeActor, out _);
                 }
             }
         }

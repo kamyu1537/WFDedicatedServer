@@ -19,6 +19,7 @@ Log.Logger = new LoggerConfiguration()
 try
 {
     var builder = WebApplication.CreateBuilder(args);
+    builder.Host.UseConsoleLifetime();
 
     var configuration = new ConfigurationBuilder()
         .AddJsonFile("appsettings.json", false, true)
