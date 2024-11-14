@@ -2,7 +2,7 @@
 
 namespace WFDS.Godot.Types;
 
-public record struct Transform3D(
+public record Transform3D(
     Vector3 X,
     Vector3 Y,
     Vector3 Z,

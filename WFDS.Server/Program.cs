@@ -51,6 +51,7 @@ try
     builder.Services.AddHostedService<LobbyUpdateScheduleService>();
     
     // packet
+    builder.Services.AddPacketHandlers();
     builder.Services.AddHostedService<PacketProcessService>();
     builder.Services.AddHostedService<PacketSendService>();
     
@@ -63,6 +64,8 @@ try
     // actor
     builder.Services.AddHostedService<ActorUpdateService>();
     builder.Services.AddHostedService<ActorNetworkShareService>();
+    builder.Services.AddActorEventHandlers();
+    builder.Services.AddHostedService<ActorEventService>();
     /////////////////////////////////////////////////////////////////
 
     builder.Services.AddSerilog(Log.Logger);

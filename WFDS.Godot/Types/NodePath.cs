@@ -1,6 +1,6 @@
 ﻿namespace WFDS.Godot.Types;
 
-public struct NodePath(string[] names, string[] subNames, bool absolute)
+public class NodePath(string[] names, string[] subNames, bool absolute)
 {
     public string[] Names { get; set; } = names;
     public string[] SubNames { get; set; } = subNames;

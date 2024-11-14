@@ -1,21 +1,23 @@
 ﻿using Steamworks;
 using WFDS.Common.Types;
+using WFDS.Common.Types.Manager;
 using WFDS.Server.Network;
 using WFDS.Server.Packets;
 
 namespace WFDS.Server.Handlers;
 
 [PacketType("new_player_join")]
-public class NewPlayerJoinHandler : PacketHandler<NewPlayerJoinPacket>
+public class NewPlayerJoinHandler(ILogger<NewPlayerJoinHandler> logger) : PacketHandler<NewPlayerJoinPacket>
 {
-    protected override void HandlePacket(IGameSession sender, NetChannel channel, NewPlayerJoinPacket packet)
+    protected override async Task HandlePacketAsync(IGameSession sender, NetChannel channel, NewPlayerJoinPacket packet)
     {
-        Logger.LogDebug("received new_player_join from {Sender} on channel {Channel}", sender.SteamId, channel);
+        logger.LogDebug("received new_player_join from {Sender} on channel {Channel}", sender.SteamId, channel);
         
         // request actors
         sender.SendP2PPacket(NetChannel.GameState, new RequestActorsPacket
         {
             UserId = SteamClient.SteamId.Value.ToString()
         });
+        await Task.Yield();
     }
 }

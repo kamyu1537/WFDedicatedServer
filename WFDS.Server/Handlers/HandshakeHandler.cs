@@ -1,17 +1,19 @@
 ﻿using WFDS.Common.Types;
+using WFDS.Common.Types.Manager;
 using WFDS.Server.Network;
 using WFDS.Server.Packets;
 
 namespace WFDS.Server.Handlers;
 
 [PacketType("handshake")]
-public class HandshakeHandler : PacketHandler<HandshakePacket>
+public class HandshakeHandler(ILogger<HandshakeHandler> logger) : PacketHandler<HandshakePacket>
 {
-    protected override void HandlePacket(IGameSession sender, NetChannel channel, HandshakePacket packet)
+    protected override async Task HandlePacketAsync(IGameSession sender, NetChannel channel, HandshakePacket packet)
     {
-        Logger.LogDebug("received handshake from {Sender} : {UserId}", sender.Friend, packet.UserId);
+        logger.LogDebug("received handshake from {Sender} : {UserId}", sender.Friend, packet.UserId);
 
         sender.HandshakeReceived = true;
         sender.HandshakeReceiveTime = DateTimeOffset.UtcNow;
+        await Task.Yield();
     }
 }

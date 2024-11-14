@@ -21,8 +21,12 @@ public class ActorNetworkShareService(IActorManager manager, IGameSessionManager
         var count = session.GetSessionCount();
         if (count < 1)
             return;
-        
-        manager.SelectOwnedActors(NetworkShare);
+
+        var owned = manager.GetOwnedActors();
+        foreach (var actor in owned)
+        {
+            NetworkShare(actor);
+        }
     }
 
     // _network_share

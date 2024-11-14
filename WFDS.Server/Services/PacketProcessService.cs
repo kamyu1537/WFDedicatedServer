@@ -8,6 +8,13 @@ namespace WFDS.Server.Services;
 
 public class PacketProcessService(ILogger<PacketProcessService> logger, IPacketHandleManager packetHandleManager) : BackgroundService
 {
+    private static readonly NetChannel[] Channels =
+    {
+        NetChannel.ActorUpdate,
+        NetChannel.ActorAction,
+        NetChannel.GameState
+    };
+
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         logger.LogInformation("PacketProcessService is starting.");
@@ -17,9 +24,8 @@ public class PacketProcessService(ILogger<PacketProcessService> logger, IPacketH
             TryProcessChannel(NetChannel.ActorUpdate);
             TryProcessChannel(NetChannel.ActorAction);
             TryProcessChannel(NetChannel.GameState);
-
-            // TryProcessChannel(NetChannel.ActorAnimation);
 #if false
+            TryProcessChannel(NetChannel.ActorAnimation);
             TryProcessChannel(NetChannel.Chalk);
             TryProcessChannel(NetChannel.Guitar);
             TryProcessChannel(NetChannel.Speech);

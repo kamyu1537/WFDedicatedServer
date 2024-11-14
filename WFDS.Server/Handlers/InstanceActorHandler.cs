@@ -1,18 +1,20 @@
 ﻿using WFDS.Common.Types;
+using WFDS.Common.Types.Manager;
 using WFDS.Server.Network;
 using WFDS.Server.Packets;
 
 namespace WFDS.Server.Handlers;
 
 [PacketType("instance_actor")]
-public class InstanceActorHandler : PacketHandler<InstanceActorPacket>
+public class InstanceActorHandler(ILogger<InstanceActorHandler> logger, IActorManager actorManager) : PacketHandler<InstanceActorPacket>
 {
-    protected override void HandlePacket(IGameSession sender, NetChannel channel, InstanceActorPacket packet)
+    protected override async Task HandlePacketAsync(IGameSession sender, NetChannel channel, InstanceActorPacket packet)
     {
-        Logger.LogDebug("received instance_actor from {Sender} on channel {Channel} / {ActorId} {ActorType} ", sender.SteamId, channel, packet.Param.ActorId, packet.Param.ActorType);
+        logger.LogDebug("received instance_actor from {Sender} on channel {Channel} / {ActorId} {ActorType} ", sender.SteamId, channel, packet.Param.ActorId, packet.Param.ActorType);
         
         if (packet.Param.ActorType == "player") CreatePlayerActor(sender, packet);
         else CreateRemoteActor(sender, packet);
+        await Task.Yield();
     }
     
     private static readonly string[] OnlyHostActors =
@@ -34,15 +36,15 @@ public class InstanceActorHandler : PacketHandler<InstanceActorPacket>
     {
         if (IsHostActor(packet))
         {
-            Logger.LogError("player request host actor {Member} - {ActorId} {ActorType}", sender.Friend, packet.Param.ActorId, packet.Param.ActorType);
+            logger.LogError("player request host actor {Member} - {ActorId} {ActorType}", sender.Friend, packet.Param.ActorId, packet.Param.ActorType);
             sender.Kick();
             return;
         }
-            
-        var created = ActorManager?.TryCreateRemoteActor(sender.SteamId, packet.Param.ActorId, packet.Param.ActorType, out _) ?? false;
+
+        var created = actorManager.TryCreateRemoteActor(sender.SteamId, packet.Param.ActorId, packet.Param.ActorType, out _);
         if (!created)
         {
-            Logger.LogError("failed to create remote actor {ActorId} {ActorType}", packet.Param.ActorId, packet.Param.ActorType);
+            logger.LogError("failed to create remote actor {ActorId} {ActorType}", packet.Param.ActorId, packet.Param.ActorType);
         }
     }
 
@@ -50,15 +52,14 @@ public class InstanceActorHandler : PacketHandler<InstanceActorPacket>
     {
         if (sender.ActorCreated)
         {
-            Logger.LogError("player actor already exists for {Member}", sender.Friend);
+            logger.LogError("player actor already exists for {Member}", sender.Friend);
             return;
         }
 
-        IPlayerActor actor = null!;
-        var created = ActorManager?.TryCreatePlayerActor(sender.SteamId, packet.Param.ActorId, out actor) ?? false;
+        var created = actorManager.TryCreatePlayerActor(sender.SteamId, packet.Param.ActorId, out var actor);
         if (!created)
         {
-            Logger.LogError("failed to create player actor {ActorId} {ActorType}", packet.Param.ActorId, packet.Param.ActorType);
+            logger.LogError("failed to create player actor {ActorId} {ActorType}", packet.Param.ActorId, packet.Param.ActorType);
             return;
         }
 

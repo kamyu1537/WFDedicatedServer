@@ -5,12 +5,8 @@ using WFDS.Common.Types.Manager;
 
 namespace WFDS.Common.Types;
 
-public interface IActor : IDisposable
+public interface IActor
 {
-    ILogger? Logger { get; set; }
-    IActorManager? ActorManager { get; set; }
-    IGameSessionManager? SessionManager { get; set; }
-    
     string ActorType { get; }
     long ActorId { get; init; }
     SteamId CreatorId { get; init; }
@@ -26,10 +22,4 @@ public interface IActor : IDisposable
     bool IsDeadActor { get; set; }
     long NetworkShareDefaultCooldown { get; }
     long NetworkShareCooldown { get; set; }
-
-    void OnCreated();
-    void OnRemoved(ActorRemoveTypes type);
-    void OnUpdate(double delta);
-    void OnZoneUpdated(string zone, long zoneOwner);
-    void OnActorUpdated(Vector3 position, Vector3 rotation);
 }

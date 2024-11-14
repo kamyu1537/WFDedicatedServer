@@ -7,10 +7,6 @@ namespace WFDS.Server.Actors;
 
 public sealed class RemoteActor : IActor
 {
-    public ILogger? Logger { get; set; }
-    public IActorManager? ActorManager { get; set; }
-    public IGameSessionManager? SessionManager { get; set; }
-    
     public string ActorType { get; init; } = string.Empty;
     public long ActorId { get; init; }
     public SteamId CreatorId { get; init; }
@@ -48,12 +44,5 @@ public sealed class RemoteActor : IActor
     {
         Position = position;
         Rotation = rotation;
-    }
-    
-    public void Dispose()
-    {
-        Logger = null;
-        ActorManager = null;
-        SessionManager = null;
     }
 }

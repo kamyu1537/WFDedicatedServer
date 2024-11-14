@@ -1,6 +1,6 @@
 ﻿namespace WFDS.Godot.Types;
 
-public record struct Color(
+public record Color(
     float R,
     float G,
     float B,

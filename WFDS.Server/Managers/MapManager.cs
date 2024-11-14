@@ -93,7 +93,7 @@ public class MapManager(ILogger<MapManager> logger) : IMapManager
             Type = properties.GetString("type"),
             Parent = properties.GetString("parent"),
             Groups = properties.GetStringArray("groups"),
-            Transform = transform.Value
+            Transform = transform
         };
     }
 

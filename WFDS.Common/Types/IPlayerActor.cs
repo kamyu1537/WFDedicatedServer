@@ -6,12 +6,4 @@ public interface IPlayerActor : IActor
 {
     GameItem HeldItem { get; set; }
     Cosmetics Cosmetics { get; set; }
-
-    IGameSession Session { get; }
-
-    void OnCosmeticsUpdated(Cosmetics cosmetics);
-    void OnHeldItemUpdated(GameItem item);
-    void OnLevelUp();
-    void OnMessage(string message, string color, bool local, Vector3 position, string zone, long zoneOwner);
-    void OnChatMessage(string message);
 }

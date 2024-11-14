@@ -3,7 +3,7 @@
 namespace WFDS.Godot.Types;
 
 // ReSharper disable InconsistentNaming
-public record struct AABB(
+public record AABB(
     Vector3 Position,
     Vector3 Size
 );

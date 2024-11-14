@@ -1,6 +1,7 @@
 ﻿using System.Collections.Concurrent;
 using System.Numerics;
 using Steamworks;
+using WFDS.Common.ActorEvents;
 using WFDS.Common.Types;
 using WFDS.Common.Types.Manager;
 using WFDS.Server.Actors;
@@ -40,7 +41,7 @@ public sealed class ActorManager(
     {
         return _owned.Values;
     }
-    
+
     public void SelectActor(long actorId, Action<IActor> update)
     {
         if (!_actors.TryGetValue(actorId, out var actor))
@@ -64,12 +65,27 @@ public sealed class ActorManager(
         return _players.Count;
     }
 
+    public IPlayerActor? GetPlayerActor(SteamId playerId)
+    {
+        return _players.TryGetValue(playerId, out var player) ? player : null;
+    }
+
+    public IEnumerable<IPlayerActor> GetPlayerActors()
+    {
+        return _players.Values;
+    }
+
     public void SelectOwnedActors(Action<IActor> action)
     {
         foreach (var actor in _owned.Values)
         {
             action(actor);
         }
+    }
+
+    public IEnumerable<IActor> GetOwnedActorsByType(string actorType)
+    {
+        return _owned.Values.Where(actor => actor.ActorType == actorType);
     }
 
     public int GetActorCountByCreatorId(SteamId creatorId)
@@ -89,7 +105,7 @@ public sealed class ActorManager(
             action(actor);
         }
     }
-    
+
     public void SelectPlayerActors(Action<IPlayerActor> action)
     {
         foreach (var player in _players.Values)
@@ -137,7 +153,7 @@ public sealed class ActorManager(
             return false;
         }
 
-        actor.OnCreated();
+        ActorEventChannel.PublishAsync(new ActorCreateEvent(actor.ActorId)).Wait();
         if (actor is IPlayerActor player)
         {
             if (!_players.TryAdd(player.CreatorId, player))
@@ -167,10 +183,6 @@ public sealed class ActorManager(
         actor.Zone = MainZone;
         actor.ZoneOwner = -1;
         actor.CreateTime = DateTimeOffset.UtcNow;
-        
-        actor.Logger = logger;
-        actor.ActorManager = this;
-        actor.SessionManager = sessionManager;
     }
 
     public bool TryCreateHostActor<T>(Vector3 position, out T actor) where T : IActor, new()
@@ -203,30 +215,25 @@ public sealed class ActorManager(
             return false;
         }
 
-        var success = false;
-        IPlayerActor? result = null;
-        sessionManager.SelectSession(playerId, session =>
+        var session = sessionManager.GetSession(playerId);
+        if (session == null)
         {
-            result = new PlayerActor(session)
-            {
-                ActorId = actorId,
-                CreatorId = playerId,
-                Zone = MainZone,
-                ZoneOwner = -1,
-                Position = Vector3.Zero,
-                Rotation = Vector3.Zero
-            };
-
-            SetActorDefaultValues(result);
-            success = TryAddActorAndPropagate(result);
-        });
-
-        if (result != null)
-        {
-            actor = result;
+            return false;
         }
         
-        return result != null && success;
+        actor = new PlayerActor
+        {
+            ActorId = actorId,
+            CreatorId = playerId,
+            Zone = MainZone,
+            ZoneOwner = -1,
+            Position = Vector3.Zero,
+            Rotation = Vector3.Zero
+        };
+
+        session.Actor = actor;
+        SetActorDefaultValues(actor);
+        return TryAddActorAndPropagate(actor);
     }
 
     public bool TryCreateRemoteActor(SteamId steamId, long actorId, string actorType, out IActor actor)
@@ -291,32 +298,25 @@ public sealed class ActorManager(
             logger.LogError("player not found {SteamId}", actor.CreatorId);
         }
 
-        actor.OnRemoved(type);
+        ActorEventChannel.PublishAsync(new ActorRemoveEvent(actorId)).Wait();
         idManager.Return(actorId);
 
-        try
+        var queue = ActorActionPacket.CreateQueueFreePacket(actor.ActorId);
+        sessionManager.BroadcastP2PPacket(NetChannel.ActorAction, queue);
+
+        if (actor.CreatorId.Value != SteamClient.SteamId.Value)
         {
-            var queue = ActorActionPacket.CreateQueueFreePacket(actor.ActorId);
-            sessionManager.BroadcastP2PPacket(NetChannel.ActorAction, queue);
-
-            if (actor.CreatorId.Value != SteamClient.SteamId.Value)
-            {
-                return false;
-            }
-
-            if (!_owned.TryRemove(actorId, out _))
-            {
-                return false;
-            }
-
-            var wipe = ActorActionPacket.CreateWipeActorPacket(actorId);
-            sessionManager.BroadcastP2PPacket(NetChannel.ActorAction, wipe);
-            return true;
+            return false;
         }
-        finally
+
+        if (!_owned.TryRemove(actorId, out _))
         {
-            actor.Dispose();
+            return false;
         }
+
+        var wipe = ActorActionPacket.CreateWipeActorPacket(actorId);
+        sessionManager.BroadcastP2PPacket(NetChannel.ActorAction, wipe);
+        return true;
     }
 
     public int GetActorCount() => _actors.Count;

@@ -12,23 +12,18 @@ public interface IActorManager
     IEnumerable<IActor> GetActorsByType(string actorType);
     IEnumerable<IActor> GetOwnedActors();
     
-    void SelectActor(long actorId, Action<IActor> action);
-    void SelectActors(Action<IActor> action);
-    
     int GetPlayerActorCount();
-    void SelectPlayerActor(SteamId steamId, Action<IPlayerActor> action);
-    void SelectPlayerActors(Action<IPlayerActor> action);
-    void SelectPlayerActors(Func<IPlayerActor, bool> action);
+    IPlayerActor? GetPlayerActor(SteamId steamId);
+    IEnumerable<IPlayerActor> GetPlayerActors();
 
     int GetOwnedActorCount();
     int GetOwnedActorCountByType(string actorType);
     List<string> GetOwnedActorTypes();
-    void SelectOwnedActors(Action<IActor> action);
+    IEnumerable<IActor> GetOwnedActorsByType(string actorType);
     
     int GetActorCountByCreatorId(SteamId creatorId);
     int GetActorCountByCreatorIdAndType(SteamId creatorId, string actorType);
     IEnumerable<IActor> GetActorsByCreatorId(SteamId creatorId);
-    void SelectActorsByCreatorId(SteamId creatorId, Action<IActor> action);
     
     bool TryCreateHostActor<T>(Vector3 position, out T actor) where T : IActor, new();
     bool TryCreatePlayerActor(SteamId steamId, long actorId, out IPlayerActor actor);

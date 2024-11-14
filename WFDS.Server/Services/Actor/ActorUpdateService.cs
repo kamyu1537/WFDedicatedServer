@@ -1,4 +1,5 @@
 ﻿using Steamworks;
+using WFDS.Common.ActorEvents;
 using WFDS.Common.Types;
 using WFDS.Common.Types.Manager;
 
@@ -15,12 +16,13 @@ public class ActorUpdateService(ILogger<ActorUpdateService> logger, IActorManage
             var delta = (now - prev) / (double)TimeSpan.TicksPerSecond;
             prev = now;
 
-            Update(delta);
+            await UpdateAsync(delta);
+            await ActorEventChannel.WaitAsync();
             await Task.Delay(1000 / 60, stoppingToken); // godot physics fps is 60
         }
     }
 
-    private void Update(double delta)
+    private async Task UpdateAsync(double delta)
     {
         var actors = manager.GetActors();
         foreach (var actor in actors)
@@ -28,7 +30,7 @@ public class ActorUpdateService(ILogger<ActorUpdateService> logger, IActorManage
             if (Decay(actor)) return;
             if (actor.IsDeadActor) return;
             
-            actor.OnUpdate(delta);
+            await ActorEventChannel.PublishAsync(new ActorTickEvent(actor.ActorId, delta));
         }
     }
 

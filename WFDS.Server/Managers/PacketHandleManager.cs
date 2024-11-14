@@ -7,35 +7,45 @@ using WFDS.Server.Network;
 
 namespace WFDS.Server.Managers;
 
+public static class PacketHandlerExtensions
+{
+    public static IServiceCollection AddPacketHandlers(this IServiceCollection service)
+    {
+        var packetHandlerType = typeof(IPacketHandler);
+        var types = AppDomain.CurrentDomain.GetAssemblies().SelectMany(x => x.GetTypes()).Distinct();
+        _ = types
+            .Where(t => t.IsClass && !t.IsAbstract && packetHandlerType.IsAssignableFrom(t))
+            .Select(t => (t.GetCustomAttribute<PacketTypeAttribute>(), t))
+            .Where(x => x is { Item1: not null, Item2: not null })
+            .Select(x => x.Item2)
+            .Select(x => service.AddTransient(x)).ToArray();
+
+        return service;
+    }
+}
+
 public class PacketHandleManager : IPacketHandleManager
 {
     private readonly ILogger<PacketHandleManager> _logger;
-    private readonly Dictionary<string, IPacketHandler> _handlers;
-    private readonly IGameSessionManager _session;
+    private readonly IGameSessionManager _sessionManager;
+    private readonly IServiceProvider _provider;
 
-    public PacketHandleManager(
-        ILogger<PacketHandleManager> logger,
-        ILoggerFactory loggerFactory,
-        IGameSessionManager session,
-        IActorManager actor
-    )
+    private readonly Dictionary<string, Type[]> _handlerTypes;
+
+    public PacketHandleManager(ILogger<PacketHandleManager> logger, IServiceProvider provider, IGameSessionManager sessionManager)
     {
         _logger = logger;
-        _session = session;
+        _provider = provider;
+        _sessionManager = sessionManager;
 
         var packetHandlerType = typeof(IPacketHandler);
-        var types = Assembly.GetExecutingAssembly().GetTypes(); 
-        _handlers = types
+        var types = AppDomain.CurrentDomain.GetAssemblies().SelectMany(x => x.GetTypes()).Distinct();
+        _handlerTypes = types
             .Where(t => t.IsClass && !t.IsAbstract && packetHandlerType.IsAssignableFrom(t))
-            .Select(t => (t.GetCustomAttribute<PacketTypeAttribute>(), Activator.CreateInstance(t) as IPacketHandler))
+            .Select(t => (t.GetCustomAttribute<PacketTypeAttribute>(), t))
             .Where(x => x is { Item1: not null, Item2: not null })
-            .Select(x => (x.Item1!.PacketType, x.Item2!))
-            .Select(x => (x.Item1, x.Item2.Initialize(
-                x.Item1,
-                session,
-                actor,
-                loggerFactory.CreateLogger(x.Item2.GetType().Name
-                )))).ToDictionary(x => x.Item1, x => x.Item2);
+            .GroupBy(x => x.Item1!.PacketType, x => x.Item2)
+            .ToDictionary(x => x.Key, x => x.ToArray());
     }
 
 
@@ -55,14 +65,25 @@ public class PacketHandleManager : IPacketHandleManager
             }
 
             PrintDebugLog(typeName, dic, sender, channel);
-            _session.SelectSession(sender, session =>
+            var session = _sessionManager.GetSession(sender);
+            if (session == null)
             {
-                session.PacketReceiveTime = DateTimeOffset.UtcNow;
-                if (_handlers.TryGetValue(typeName, out var handler))
+                _logger.LogWarning("received packet from {Sender} on channel {Channel} without session", sender, channel);
+                return;
+            }
+
+            session.PacketReceiveTime = DateTimeOffset.UtcNow;
+            if (!_handlerTypes.TryGetValue(typeName, out var handlerTypes)) return;
+
+            Task.WhenAll(handlerTypes
+                .Select(handlerType => _provider.GetRequiredService(handlerType) as IPacketHandler)
+                .Where(x => x != null)
+                .Select(x =>
                 {
-                    handler.HandlePacket(session, channel, dic);
-                }
-            });
+                    x!.Initialize(_sessionManager);
+                    return x.HandlePacketAsync(session, channel, dic);
+                })).Wait();
+
             dic.Clear();
         }
         else

@@ -1,6 +1,6 @@
 ﻿namespace WFDS.Godot.Types;
 
-public record struct Quaternion(
+public record Quaternion(
     float X,
     float Y,
     float Z,
