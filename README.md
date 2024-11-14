@@ -7,7 +7,7 @@ It is a simple server that can be used to host a game of WebFishing.
 - 1.1
 
 ## Prerequisites
-- NET 8.0
+- NET 9.0
 
 ## How to run the server
 1. Copy the `appsettings.json` file to create a new file named `appsettings.local.json`
