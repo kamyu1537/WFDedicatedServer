@@ -9,9 +9,9 @@ public interface IActorManager
     int GetActorCount();
     int GetActorCountByType(string actorType);
     IActor? GetActor(long actorId);
-    ImmutableArray<IActor> GetActors();
-    ImmutableArray<IActor> GetActorsByType(string actorType);
-    ImmutableArray<IActor> GetOwnedActors();
+    IEnumerable<IActor> GetActors();
+    IEnumerable<IActor> GetActorsByType(string actorType);
+    IEnumerable<IActor> GetOwnedActors();
     
     void SelectActor(long actorId, Action<IActor> action);
     void SelectActors(Action<IActor> action);
@@ -28,7 +28,7 @@ public interface IActorManager
     
     int GetActorCountByCreatorId(SteamId creatorId);
     int GetActorCountByCreatorIdAndType(SteamId creatorId, string actorType);
-    ImmutableArray<IActor> GetActorsByCreatorId(SteamId creatorId);
+    IEnumerable<IActor> GetActorsByCreatorId(SteamId creatorId);
     void SelectActorsByCreatorId(SteamId creatorId, Action<IActor> action);
     
     bool TryCreateHostActor<T>(Vector3 position, out T actor) where T : IActor, new();

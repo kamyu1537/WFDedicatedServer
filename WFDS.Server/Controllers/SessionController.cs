@@ -31,11 +31,11 @@ public class SessionController(IGameSessionManager manager) : Controller
     [SwaggerOperation("get sessions")]
     public IActionResult GetSessions()
     {
-        var sessions = manager.GetSessions();
+        var sessions = manager.GetSessions().ToArray();
         return Json(new
         {
             Count = sessions.Length,
-            Sessions = sessions.Select(x => x.Friend.ToString()).ToImmutableArray()
+            Sessions = sessions.Select(x => x.Friend.ToString())
         });
     }
 

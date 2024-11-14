@@ -14,12 +14,12 @@ public class ActorController(IActorManager manager) : Controller
     [HttpGet("list")]
     public IActionResult GetActors()
     {
-        var actors = manager.GetActors();
+        var actors = manager.GetActors().ToArray();
         
         return Json(new
         {
             Count = actors.Length,
-            Actors = actors.Select(x => $"{x.ActorType} ({x.ActorId})").ToImmutableArray()
+            Actors = actors.Select(x => $"{x.ActorType} ({x.ActorId})").ToArray()
         });
     }
     
@@ -27,12 +27,12 @@ public class ActorController(IActorManager manager) : Controller
     [SwaggerOperation("get actors by type")]
     public IActionResult GetActorsByType(string actorType)
     {
-        var actors = manager.GetActorsByType(actorType);
+        var actors = manager.GetActorsByType(actorType).ToArray();
         
         return Json(new
         {
             Count = actors.Length,
-            Actors = actors.Select(x => $"{x.ActorType} ({x.ActorId})").ToImmutableArray()
+            Actors = actors.Select(x => $"{x.ActorType} ({x.ActorId})")
         });
     }
     
@@ -40,12 +40,12 @@ public class ActorController(IActorManager manager) : Controller
     [SwaggerOperation("get actors by creator id")]
     public IActionResult GetActorsByCreatorId(ulong creatorId)
     {
-        var actors = manager.GetActorsByCreatorId(creatorId);
+        var actors = manager.GetActorsByCreatorId(creatorId).ToArray();
         
         return Json(new
         {
             Count = actors.Length,
-            Actors = actors.Select(x => $"{x.ActorType} ({x.ActorId})").ToImmutableArray()
+            Actors = actors.Select(x => $"{x.ActorType} ({x.ActorId})")
         });
     }
     
@@ -53,12 +53,12 @@ public class ActorController(IActorManager manager) : Controller
     [SwaggerOperation("get owned actors")]
     public IActionResult GetOwnedActors()
     {
-        var actors = manager.GetOwnedActors();
+        var actors = manager.GetOwnedActors().ToArray();
         
         return Json(new
         {
             Count = actors.Length,
-            Actors = actors.Select(x => $"{x.ActorType} ({x.ActorId})").ToImmutableArray()
+            Actors = actors.Select(x => $"{x.ActorType} ({x.ActorId})")
         });
     }
     

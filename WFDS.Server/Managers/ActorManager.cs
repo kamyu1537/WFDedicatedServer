@@ -1,5 +1,4 @@
 ﻿using System.Collections.Concurrent;
-using System.Collections.Immutable;
 using Steamworks;
 using WFDS.Common.Types;
 using WFDS.Common.Types.Manager;
@@ -27,19 +26,19 @@ public sealed class ActorManager(
         return _actors.TryGetValue(actorId, out var actor) ? actor : null;
     }
 
-    public ImmutableArray<IActor> GetActors()
+    public IEnumerable<IActor> GetActors()
     {
-        return [.._actors.Values];
+        return _actors.Values;
     }
 
-    public ImmutableArray<IActor> GetActorsByType(string actorType)
+    public IEnumerable<IActor> GetActorsByType(string actorType)
     {
-        return [.._actors.Values.Where(actor => actor.ActorType == actorType)];
+        return _actors.Values.Where(actor => actor.ActorType == actorType);
     }
 
-    public ImmutableArray<IActor> GetOwnedActors()
+    public IEnumerable<IActor> GetOwnedActors()
     {
-        return [.._owned.Values];
+        return _owned.Values;
     }
     
     public void SelectActor(long actorId, Action<IActor> update)
@@ -125,9 +124,9 @@ public sealed class ActorManager(
         return _owned.Values.Select(actor => actor.ActorType).ToList();
     }
 
-    public ImmutableArray<IActor> GetActorsByCreatorId(SteamId creatorId)
+    public IEnumerable<IActor> GetActorsByCreatorId(SteamId creatorId)
     {
-        return [.._actors.Values.Where(actor => actor.CreatorId == creatorId)];
+        return _actors.Values.Where(actor => actor.CreatorId == creatorId);
     }
 
     private bool TryAddActorAndPropagate(IActor actor)
@@ -243,7 +242,7 @@ public sealed class ActorManager(
         SelectPlayerActor(steamId, player =>
         {
             var ownedActors = GetActorsByCreatorId(steamId);
-            if (ownedActors.Length >= MaxOwnedActorCount)
+            if (ownedActors.Count() >= MaxOwnedActorCount)
             {
                 logger.LogError("owned actor limit reached ({MaxCount})", MaxOwnedActorCount);
                 sessionManager.KickPlayer(steamId);

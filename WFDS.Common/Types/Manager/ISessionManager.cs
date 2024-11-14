@@ -21,7 +21,7 @@ public interface IGameSessionManager
     
     int GetSessionCount();
     IGameSession? GetSession(SteamId steamId);
-    ImmutableArray<IGameSession> GetSessions();
+    IEnumerable<IGameSession> GetSessions();
     bool IsSessionValid(SteamId steamId);
     void SelectSession(SteamId steamId, Action<IGameSession> action);
     void SelectSessions(Action<IGameSession> action);

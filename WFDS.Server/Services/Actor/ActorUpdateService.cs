@@ -22,13 +22,14 @@ public class ActorUpdateService(ILogger<ActorUpdateService> logger, IActorManage
 
     private void Update(double delta)
     {
-        manager.SelectActors(actor =>
+        var actors = manager.GetActors();
+        foreach (var actor in actors)
         {
             if (Decay(actor)) return;
             if (actor.IsDeadActor) return;
             
             actor.OnUpdate(delta);
-        });
+        }
     }
 
     private bool Decay(IActor actor)

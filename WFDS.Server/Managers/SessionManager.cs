@@ -1,5 +1,4 @@
 ﻿using System.Collections.Concurrent;
-using System.Collections.Immutable;
 using Steamworks;
 using Steamworks.Data;
 using WFDS.Common.Helpers;
@@ -341,9 +340,9 @@ public sealed class SessionManager : IGameSessionManager
         return _sessions.TryGetValue(steamId.Value, out var session) ? session : null;
     }
     
-    public ImmutableArray<IGameSession> GetSessions()
+    public IEnumerable<IGameSession> GetSessions()
     {
-        return [.._sessions.Values];
+        return _sessions.Values;
     }
 
     public bool IsSessionValid(SteamId steamId)
