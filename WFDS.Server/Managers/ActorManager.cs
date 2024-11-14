@@ -335,7 +335,7 @@ public sealed class ActorManager(
         var actorCount = GetActorCountByType("ambient_bird");
         if (actorCount >= 7)
         {
-            logger.LogError("raincloud limit reached (7)");
+            logger.LogError("ambient_bird limit reached (7)");
             return null;
         }
 
