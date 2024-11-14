@@ -18,6 +18,7 @@ public sealed class VoidPortalActor : IActor
     public long DecayTimer { get; set; } = 36000;
     public DateTimeOffset CreateTime { get; set; } = DateTimeOffset.UtcNow;
 
+    public bool IsCanWipe => false;
     public bool IsDeadActor { get; set; }
     public long NetworkShareDefaultCooldown => 32;
     public long NetworkShareCooldown { get; set; }

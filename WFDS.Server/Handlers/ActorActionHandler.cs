@@ -1,4 +1,5 @@
 ﻿using System.Text.Json;
+using Steamworks;
 using WFDS.Common.ActorEvents;
 using WFDS.Common.Extensions;
 using WFDS.Common.Types;
@@ -45,7 +46,7 @@ public class ActorActionHandler(ILogger<ActorActionHandler> logger, IActorManage
     private void QueueFree(IGameSession sender, ActorActionPacket packet)
     {
         if (packet.Action != "queue_free") return;
-        
+
         if (packet.Params.Count != 0)
         {
             logger.LogError("invalid queue_free packet from {Member} : {Data}", sender.Friend, JsonSerializer.Serialize(packet.Params));
@@ -64,14 +65,14 @@ public class ActorActionHandler(ILogger<ActorActionHandler> logger, IActorManage
             logger.LogError("actor {ActorId} not owned by {Member}", packet.ActorId, sender.Friend);
             return;
         }
-        
+
         actorManager.TryRemoveActor(packet.ActorId, ActorRemoveTypes.QueueFree, out _);
     }
 
     private void WipeActor(IGameSession sender, ActorActionPacket packet)
     {
         if (packet.Action != "_wipe_actor") return;
-        
+
         if (packet.Params.Count != 1)
         {
             logger.LogError("invalid _wipe_actor packet from {Member} : {Data}", sender.Friend, JsonSerializer.Serialize(packet.Params));
@@ -81,33 +82,19 @@ public class ActorActionHandler(ILogger<ActorActionHandler> logger, IActorManage
         var param = packet.Params[0];
         var actorId = param.GetNumber();
 
-        {
-            var actor = actorManager.GetActor(actorId);
-            if (actor != null)
-            {
-                if (actor.CreatorId == sender.SteamId)
-                {
-                    actorManager.TryRemoveActor(actorId, ActorRemoveTypes.WipeActor, out _);
-                }
-            }
-        }
+        var actor = actorManager.GetActor(actorId);
+        if (actor == null) return;
         
+        if (actor.CreatorId == SteamClient.SteamId && actor.IsCanWipe)
         {
-            var actor = actorManager.GetActor(packet.ActorId);
-            if (actor != null)
-            {
-                if (actor.CreatorId != sender.SteamId)
-                {
-                    actorManager.TryRemoveActor(packet.ActorId, ActorRemoveTypes.WipeActor, out _);
-                }
-            }
+            actorManager.TryRemoveActor(actorId, ActorRemoveTypes.WipeActor, out _);
         }
     }
 
     private async Task SetZone(IGameSession sender, ActorActionPacket packet)
     {
         if (packet.Action != "_set_zone") return;
-        
+
         if (packet.Params.Count != 2)
         {
             logger.LogError("invalid _set_zone packet from {Member} : {Data}", sender.Friend, JsonSerializer.Serialize(packet.Params));
@@ -138,7 +125,7 @@ public class ActorActionHandler(ILogger<ActorActionHandler> logger, IActorManage
     private async Task UpdateCosmetics(IGameSession sender, ActorActionPacket packet)
     {
         if (packet.Action != "_update_cosmetics") return;
-        
+
         if (packet.Params.Count != 1)
         {
             logger.LogError("invalid _update_cosmetics packet from {Member} : {Data}", sender.Friend, JsonSerializer.Serialize(packet.Params));
@@ -151,7 +138,7 @@ public class ActorActionHandler(ILogger<ActorActionHandler> logger, IActorManage
             logger.LogError("player actor not found for {Member}", sender.Friend);
             return;
         }
-        
+
         var dic = packet.Params[0].GetObjectDictionary();
         var cosmetics = new Cosmetics();
         cosmetics.Deserialize(dic);
@@ -163,13 +150,13 @@ public class ActorActionHandler(ILogger<ActorActionHandler> logger, IActorManage
     private async Task UpdateHeldItem(IGameSession sender, ActorActionPacket packet)
     {
         if (packet.Action != "_update_held_item") return;
-        
+
         if (packet.Params.Count != 1)
         {
             logger.LogError("invalid _update_held_item packet from {Member} : {Data}", sender.Friend, JsonSerializer.Serialize(packet.Params));
             return;
         }
-        
+
         var player = actorManager.GetPlayerActor(sender.SteamId);
         if (player == null)
         {
@@ -200,11 +187,11 @@ public class ActorActionHandler(ILogger<ActorActionHandler> logger, IActorManage
             logger.LogError("player actor not found for {Member}", sender.Friend);
             return;
         }
-        
+
         var text = packet.Params[0].GetString();
         await ActorEventChannel.PublishAsync(new PlayerChatMessageEvent(player.ActorId, text));
     }
-    
+
     private async Task SyncLevelBubble(IGameSession sender, ActorActionPacket packet)
     {
         if (packet.Action != "_sync_level_bubble") return;
@@ -213,14 +200,14 @@ public class ActorActionHandler(ILogger<ActorActionHandler> logger, IActorManage
             logger.LogError("invalid _sync_level_bubble packet from {Member} : {Data}", sender.Friend, JsonSerializer.Serialize(packet.Params));
             return;
         }
-        
+
         var player = actorManager.GetPlayerActor(sender.SteamId);
         if (player == null)
         {
             logger.LogError("player actor not found for {Member}", sender.Friend);
             return;
         }
-        
+
         ActorEventChannel.PublishAsync(new PlayerLevelUpEvent(player.ActorId)).Wait();
     }
 }

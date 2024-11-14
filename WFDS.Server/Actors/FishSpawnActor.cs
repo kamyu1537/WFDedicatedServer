@@ -18,6 +18,7 @@ public sealed class FishSpawnActor : IActor
     public long DecayTimer { get; set; } = 4800;
     public DateTimeOffset CreateTime { get; set; } = DateTimeOffset.UtcNow;
 
+    public bool IsCanWipe => true;
     public bool IsDeadActor { get; set; }
     public long NetworkShareDefaultCooldown => 32;
     public long NetworkShareCooldown { get; set; }

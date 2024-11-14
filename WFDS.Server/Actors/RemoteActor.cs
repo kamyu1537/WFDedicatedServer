@@ -18,31 +18,8 @@ public sealed class RemoteActor : IActor
     public long DecayTimer { get; set; } = 600;
     public DateTimeOffset CreateTime { get; set; } = DateTimeOffset.UtcNow;
 
+    public bool IsCanWipe => false;
     public bool IsDeadActor { get; set; } = true;
     public long NetworkShareDefaultCooldown => 0;
     public long NetworkShareCooldown { get; set; }
-    
-    public void OnCreated()
-    {
-    }
-    
-    public void OnRemoved(ActorRemoveTypes type)
-    {
-    }
-
-    public void OnUpdate(double delta)
-    {
-    }
-
-    public void OnZoneUpdated(string zone, long zoneOwner)
-    {
-        Zone = zone;
-        ZoneOwner = zoneOwner;
-    }
-
-    public void OnActorUpdated(Vector3 position, Vector3 rotation)
-    {
-        Position = position;
-        Rotation = rotation;
-    }
 }

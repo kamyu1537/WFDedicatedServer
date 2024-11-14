@@ -333,9 +333,10 @@ public sealed class ActorManager(
     public IActor? SpawnAmbientBirdActor(Vector3 position)
     {
         var actorCount = GetActorCountByType("ambient_bird");
-        if (actorCount >= 12)
+        if (actorCount >= 7)
         {
-            TryRemoveActorFirstByType("ambient_bird", ActorRemoveTypes.ActorCountOver, out _);
+            logger.LogError("raincloud limit reached (7)");
+            return null;
         }
 
         return TryCreateHostActor<AmbientBirdActor>(position, out var fish) ? fish : null;
@@ -344,7 +345,7 @@ public sealed class ActorManager(
     public IActor? SpawnFishSpawnActor(Vector3 position)
     {
         var actorCount = GetActorCountByType("fish_spawn");
-        if (actorCount >= 8)
+        if (actorCount >= 5)
         {
             TryRemoveActorFirstByType("fish_spawn", ActorRemoveTypes.ActorCountOver, out _);
         }
@@ -355,7 +356,7 @@ public sealed class ActorManager(
     public IActor? SpawnFishSpawnAlienActor(Vector3 position)
     {
         var actorCount = GetActorCountByType("fish_spawn_alien");
-        if (actorCount >= 2)
+        if (actorCount >= 1)
         {
             TryRemoveActorFirstByType("fish_spawn_alien", ActorRemoveTypes.ActorCountOver, out _);
         }
@@ -368,7 +369,7 @@ public sealed class ActorManager(
         var actorCount = GetActorCountByType("raincloud");
         if (actorCount >= 1)
         {
-            logger.LogError("raincloud limit reached (2)");
+            logger.LogError("raincloud limit reached (1)");
             return null;
         }
 
