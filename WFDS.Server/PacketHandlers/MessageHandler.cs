@@ -1,10 +1,9 @@
-﻿using WFDS.Common.ActorEvents;
+﻿using WFDS.Common.ChannelEvents;
 using WFDS.Common.Types;
-using WFDS.Common.Types.Manager;
 using WFDS.Server.Network;
 using WFDS.Server.Packets;
 
-namespace WFDS.Server.Handlers;
+namespace WFDS.Server.PacketHandlers;
 
 [PacketType("message")]
 public class MessageHandler(ILogger<MessageHandler> logger) : PacketHandler<MessagePacket>
@@ -19,6 +18,6 @@ public class MessageHandler(ILogger<MessageHandler> logger) : PacketHandler<Mess
             return;
         }
         
-        await ActorEventChannel.PublishAsync(new PlayerMessageEvent(sender.Actor.ActorId, packet.Message, packet.Color, packet.Local, packet.Position, packet.Zone, packet.ZoneOwner));
+        await ChannelEvent.PublishAsync(new PlayerMessageEvent(sender.SteamId, packet.Message, packet.Color, packet.Local, packet.Position, packet.Zone, packet.ZoneOwner));
     }
 }

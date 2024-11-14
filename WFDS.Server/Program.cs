@@ -1,5 +1,6 @@
 using System.Text.Json;
 using Serilog;
+using WFDS.Common.ChannelEvents;
 using WFDS.Common.Types.Manager;
 using WFDS.Server;
 using WFDS.Server.Managers;
@@ -65,8 +66,8 @@ try
     // actor
     builder.Services.AddHostedService<ActorUpdateService>();
     builder.Services.AddHostedService<ActorNetworkShareService>();
-    builder.Services.AddActorEventHandlers();
-    builder.Services.AddHostedService<ActorEventService>();
+    builder.Services.AddChannelEventHandlers();
+    builder.Services.AddHostedService<ChannelEventService>();
     /////////////////////////////////////////////////////////////////
 
     builder.Services.AddSerilog(Log.Logger);

@@ -7,5 +7,6 @@ public enum ActorRemoveTypes
     Decay,
     OwnerNotFound,
     WipeActor,
-    ActorCountOver
+    ActorCountOver,
+    Disconnect,
 }

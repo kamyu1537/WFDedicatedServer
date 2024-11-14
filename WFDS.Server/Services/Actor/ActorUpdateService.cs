@@ -1,5 +1,5 @@
 ﻿using Steamworks;
-using WFDS.Common.ActorEvents;
+using WFDS.Common.ChannelEvents;
 using WFDS.Common.Types;
 using WFDS.Common.Types.Manager;
 
@@ -17,7 +17,7 @@ public class ActorUpdateService(ILogger<ActorUpdateService> logger, IActorManage
             prev = now;
 
             await UpdateAsync(delta);
-            await ActorEventChannel.WaitAsync();
+            await ChannelEvent.WaitAsync();
             await Task.Delay(1000 / 60, stoppingToken); // godot physics fps is 60
         }
     }
@@ -30,7 +30,7 @@ public class ActorUpdateService(ILogger<ActorUpdateService> logger, IActorManage
             if (Decay(actor)) return;
             if (actor.IsDeadActor) return;
             
-            await ActorEventChannel.PublishAsync(new ActorTickEvent(actor.ActorId, delta));
+            await ChannelEvent.PublishAsync(new ActorTickEvent(actor.ActorId, delta));
         }
     }
 

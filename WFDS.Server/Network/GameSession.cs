@@ -1,6 +1,7 @@
 ﻿using System.Collections.Concurrent;
 using System.Numerics;
 using Steamworks;
+using WFDS.Common.ChannelEvents;
 using WFDS.Common.Extensions;
 using WFDS.Common.Types;
 using WFDS.Common.Types.Manager;

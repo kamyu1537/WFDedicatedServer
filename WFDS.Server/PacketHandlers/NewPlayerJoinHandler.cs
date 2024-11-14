@@ -1,10 +1,9 @@
 ﻿using Steamworks;
 using WFDS.Common.Types;
-using WFDS.Common.Types.Manager;
 using WFDS.Server.Network;
 using WFDS.Server.Packets;
 
-namespace WFDS.Server.Handlers;
+namespace WFDS.Server.PacketHandlers;
 
 [PacketType("new_player_join")]
 public class NewPlayerJoinHandler(ILogger<NewPlayerJoinHandler> logger) : PacketHandler<NewPlayerJoinPacket>

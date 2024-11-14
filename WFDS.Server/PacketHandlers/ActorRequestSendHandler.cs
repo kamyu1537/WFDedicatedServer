@@ -3,7 +3,7 @@ using WFDS.Common.Types.Manager;
 using WFDS.Server.Network;
 using WFDS.Server.Packets;
 
-namespace WFDS.Server.Handlers;
+namespace WFDS.Server.PacketHandlers;
 
 [PacketType("actor_request_send")]
 public class ActorRequestSendHandler(ILogger<ActorRequestSendHandler> logger, IActorManager actorManager) : PacketHandler<ActorRequestSendPacket>

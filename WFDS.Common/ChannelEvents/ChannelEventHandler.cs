@@ -3,43 +3,25 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using WFDS.Common.Types;
-using WFDS.Common.Types.Manager;
 
-public interface IActorEvent
+namespace WFDS.Common.ChannelEvents;
+
+public interface IChannelEvent
 {
-    public long ActorId { get; }
 }
 
-internal interface IInitializer<in T>
-{
-    bool IsInitialized { get; }
-    void Initialize(T t);
-}
-
-internal interface IActorEventHandler : IInitializer<IActor>
+internal interface IChannelEventHandler
 {
     Type EventType { get; }
-    IActor Actor { get; }
-    Task HandleAsync(IActorEvent e);
+    Task HandleAsync(IChannelEvent e);
 }
 
-public abstract class ActorEventHandler<T> : IActorEventHandler where T : IActorEvent
+public abstract class ChannelEventHandler<T> : IChannelEventHandler where T : IChannelEvent
 {
     public Type EventType { get; } = typeof(T);
-    public IActor Actor { get; private set; } = null!;
-    public bool IsInitialized { get; private set; }
 
-    public void Initialize(IActor actor)
+    public async Task HandleAsync(IChannelEvent e)
     {
-        Actor = actor;
-        IsInitialized = true;
-    }
-
-    public async Task HandleAsync(IActorEvent e)
-    {
-        if (!IsInitialized) return;
-
         if (e is T t)
         {
             await HandleAsync(t);
@@ -51,10 +33,10 @@ public abstract class ActorEventHandler<T> : IActorEventHandler where T : IActor
 
 public static class ServiceCollectionExtensions
 {
-    public static void AddActorEventHandlers(this IServiceCollection services)
+    public static void AddChannelEventHandlers(this IServiceCollection services)
     {
         var allAssemblies = AppDomain.CurrentDomain.GetAssemblies();
-        var actorEventHandlerType = typeof(IActorEventHandler);
+        var actorEventHandlerType = typeof(IChannelEventHandler);
 
         var actorEventHandlerTypes = allAssemblies
             .SelectMany(assembly => assembly.GetTypes())
@@ -66,13 +48,13 @@ public static class ServiceCollectionExtensions
 
     private static ServiceDescriptor CreateServiceDescriptor(Type type)
     {
-        return new ServiceDescriptor(typeof(IActorEventHandler), type, ServiceLifetime.Transient);
+        return new ServiceDescriptor(typeof(IChannelEventHandler), type, ServiceLifetime.Transient);
     }
 }
 
-public static class ActorEventChannel
+public static class ChannelEvent
 {
-    internal static readonly Channel<IActorEvent> Channel = System.Threading.Channels.Channel.CreateBounded<IActorEvent>(new BoundedChannelOptions(1000)
+    internal static readonly Channel<IChannelEvent> Channel = System.Threading.Channels.Channel.CreateBounded<IChannelEvent>(new BoundedChannelOptions(1000)
     {
         FullMode = BoundedChannelFullMode.Wait,
         SingleReader = true,
@@ -80,7 +62,7 @@ public static class ActorEventChannel
     });
     internal static readonly SemaphoreSlim Semaphore = new(0);
 
-    public static async Task PublishAsync(IActorEvent e)
+    public static async Task PublishAsync(IChannelEvent e)
     {
         try
         {
@@ -104,35 +86,29 @@ public static class ActorEventChannel
     }
 }
 
-public class ActorEventService(IServiceProvider provider, ILogger<ActorEventService> logger, IActorManager actorManager) : BackgroundService
+public class ChannelEventService(IServiceProvider provider, ILogger<ChannelEventService> logger) : BackgroundService
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        await foreach (var e in ActorEventChannel.Channel.Reader.ReadAllAsync(stoppingToken))
+        await foreach (var e in ChannelEvent.Channel.Reader.ReadAllAsync(stoppingToken))
         {
             await HandleEventAsync(e);
-            await ActorEventChannel.WaitAsync();
+            await ChannelEvent.WaitAsync();
         }
 
-        ActorEventChannel.Channel.Writer.Complete();
+        ChannelEvent.Channel.Writer.Complete();
         logger.LogInformation("actor event service stopped");
     }
 
-    private async Task HandleEventAsync(IActorEvent e)
+    private async Task HandleEventAsync(IChannelEvent e)
     {
         try
         {
             await using var scope = provider.CreateAsyncScope();
-            var handlers = provider.GetServices<IActorEventHandler>();
+            var handlers = provider.GetServices<IChannelEventHandler>();
             await Task.WhenAll(handlers
                 .Where(x => x.EventType == e.GetType())
-                .Select(x => (actorManager.GetActor(e.ActorId), x))
-                .Where(x => x.Item1 != null)
-                .Select(x =>
-                {
-                    x.Item2.Initialize(x.Item1!);
-                    return x.Item2.HandleAsync(e);
-                }));
+                .Select(x => x.HandleAsync(e)));
         }
         catch (Exception ex)
         {

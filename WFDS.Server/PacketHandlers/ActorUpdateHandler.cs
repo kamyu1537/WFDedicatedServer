@@ -1,10 +1,10 @@
-﻿using WFDS.Common.ActorEvents;
+﻿using WFDS.Common.ChannelEvents;
 using WFDS.Common.Types;
 using WFDS.Common.Types.Manager;
 using WFDS.Server.Network;
 using WFDS.Server.Packets;
 
-namespace WFDS.Server.Handlers;
+namespace WFDS.Server.PacketHandlers;
 
 [PacketType("actor_update")]
 public class ActorUpdateHandler(IActorManager actorManager) : PacketHandler<ActorUpdatePacket>
@@ -22,6 +22,6 @@ public class ActorUpdateHandler(IActorManager actorManager) : PacketHandler<Acto
         actor.Position = packet.Position;
         actor.Rotation = packet.Rotation;
         
-        await ActorEventChannel.PublishAsync(new ActorUpdateEvent(actor.ActorId, packet.Position, packet.Rotation));
+        await ChannelEvent.PublishAsync(new ActorUpdateEvent(actor.ActorId, packet.Position, packet.Rotation));
     }
 }

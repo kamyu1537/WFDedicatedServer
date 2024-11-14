@@ -1,7 +1,7 @@
 ﻿using System.Collections.Concurrent;
 using System.Numerics;
 using Steamworks;
-using WFDS.Common.ActorEvents;
+using WFDS.Common.ChannelEvents;
 using WFDS.Common.Types;
 using WFDS.Common.Types.Manager;
 using WFDS.Server.Actors;
@@ -153,7 +153,7 @@ public sealed class ActorManager(
             return false;
         }
 
-        ActorEventChannel.PublishAsync(new ActorCreateEvent(actor.ActorId)).Wait();
+        ChannelEvent.PublishAsync(new ActorCreateEvent(actor.ActorId)).Wait();
         if (actor is IPlayerActor player)
         {
             if (!_players.TryAdd(player.CreatorId, player))
@@ -245,35 +245,35 @@ public sealed class ActorManager(
             return false;
         }
 
-        var success = false;
-        SelectPlayerActor(steamId, player =>
+        var player = GetPlayerActor(steamId);
+        if (player == null)
         {
-            var ownedActors = GetActorsByCreatorId(steamId);
-            if (ownedActors.Count() >= MaxOwnedActorCount)
-            {
-                logger.LogError("owned actor limit reached ({MaxCount})", MaxOwnedActorCount);
-                sessionManager.KickPlayer(steamId);
-                return;
-            }
+            return false;
+        }
+        
+        var ownedActors = GetActorsByCreatorId(steamId);
+        if (ownedActors.Count() >= MaxOwnedActorCount)
+        {
+            logger.LogError("owned actor limit reached ({MaxCount})", MaxOwnedActorCount);
+            sessionManager.KickPlayer(steamId);
+            return false;
+        }
 
-            var actor = new RemoteActor
-            {
-                ActorType = actorType,
-                ActorId = actorId,
-                CreatorId = steamId,
-                Zone = player.Zone,
-                ZoneOwner = player.ZoneOwner,
-                Position = Vector3.Zero,
-                Rotation = Vector3.Zero,
-                IsDeadActor = true,
-                Decay = false
-            };
+        actor = new RemoteActor
+        {
+            ActorType = actorType,
+            ActorId = actorId,
+            CreatorId = steamId,
+            Zone = player.Zone,
+            ZoneOwner = player.ZoneOwner,
+            Position = Vector3.Zero,
+            Rotation = Vector3.Zero,
+            IsDeadActor = true,
+            Decay = false
+        };
 
-            SetActorDefaultValues(actor);
-            success = TryAddActorAndPropagate(actor);
-        });
-
-        return success;
+        SetActorDefaultValues(actor);
+        return TryAddActorAndPropagate(actor);;
     }
 
     public void SelectPlayerActor(SteamId steamId, Action<IPlayerActor> action)
@@ -298,7 +298,7 @@ public sealed class ActorManager(
             logger.LogError("player not found {SteamId}", actor.CreatorId);
         }
 
-        ActorEventChannel.PublishAsync(new ActorRemoveEvent(actorId)).Wait();
+        ChannelEvent.PublishAsync(new ActorRemoveEvent(actorId)).Wait();
         idManager.Return(actorId);
 
         var queue = ActorActionPacket.CreateQueueFreePacket(actor.ActorId);
@@ -306,7 +306,7 @@ public sealed class ActorManager(
 
         if (actor.CreatorId.Value != SteamClient.SteamId.Value)
         {
-            return false;
+            return true;
         }
 
         if (!_owned.TryRemove(actorId, out _))

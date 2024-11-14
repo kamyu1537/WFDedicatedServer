@@ -1,6 +1,7 @@
 ﻿using System.Collections.Concurrent;
 using Steamworks;
 using Steamworks.Data;
+using WFDS.Common.ChannelEvents;
 using WFDS.Common.Helpers;
 using WFDS.Common.Network;
 using WFDS.Common.Types;
@@ -251,6 +252,7 @@ public sealed class SessionManager : IGameSessionManager
             return;
         }
 
+        ChannelEvent.PublishAsync(new PlayerLeaveEvent(member.Id)).Wait();
         session.Dispose();
         UpdateConsoleTitle();
     }

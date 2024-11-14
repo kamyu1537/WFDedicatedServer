@@ -1,30 +1,33 @@
 ﻿using System.Numerics;
-using WFDS.Common.ActorEvents;
+using WFDS.Common.ChannelEvents;
 using WFDS.Common.Extensions;
+using WFDS.Common.Types.Manager;
 using WFDS.Server.Actors;
 
 namespace WFDS.Server.EventHandlers;
 
-public class RainCloudUpdateHandler : ActorEventHandler<ActorTickEvent>
+public class RainCloudUpdateHandler(IActorManager actorManager) : ChannelEventHandler<ActorTickEvent>
 {
     protected override async Task HandleAsync(ActorTickEvent e)
     {
         var delta = e.DeltaTime;
 
-        if (Actor.IsDeadActor) return;
-        if (Actor is not RainCloudActor rainCloud) return;
+        var actor = actorManager.GetActor(e.ActorId);
+        if (actor is not RainCloudActor rainCloud) return;
+        if (rainCloud.IsDeadActor) return;
         
         var vel = new Vector2(1, 0).Rotated(rainCloud.Direction) * rainCloud.Speed;
-        Actor.Position += new Vector3(vel.X, 0f, vel.X) * (float)delta;
+        rainCloud.Position += new Vector3(vel.X, 0f, vel.X) * (float)delta;
         await Task.Yield();
     }
 }
 
-public class RainCloudCreatedHandler : ActorEventHandler<ActorCreateEvent>
+public class RainCloudCreatedHandler(IActorManager actorManager) : ChannelEventHandler<ActorCreateEvent>
 {
     protected override async Task HandleAsync(ActorCreateEvent e)
     {
-        if (Actor is not RainCloudActor rainCloud) return;
+        var actor = actorManager.GetActor(e.ActorId);
+        if (actor is not RainCloudActor rainCloud) return;
         
         var center = Vector3.Normalize(rainCloud.Position - new Vector3(30, 40, -50));
         rainCloud.Direction = new Vector2(center.X, center.Z).Angle();
