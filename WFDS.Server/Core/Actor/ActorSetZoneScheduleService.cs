@@ -25,7 +25,7 @@ internal class ActorSetZoneScheduleService(IActorManager actorManager, ISessionM
 
     private void DoWork(object? state)
     {
-        foreach (var actor in actorManager.GetActors())
+        foreach (var actor in actorManager.GetOwnedActors())
         {
             sessionManager.BroadcastP2PPacket(NetChannel.GameState, ActorActionPacket.CreateSetZonePacket(actor.ActorId, actor.Zone, actor.ZoneOwner));
         }
