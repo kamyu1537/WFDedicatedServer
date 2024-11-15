@@ -4,19 +4,20 @@ namespace WFDS.Server.Core.ChannelEvent;
 
 internal static class ChannelEventBus
 {
-    internal static readonly Channel<WFDS.Common.ChannelEvents.ChannelEvent> Channel = System.Threading.Channels.Channel.CreateBounded<WFDS.Common.ChannelEvents.ChannelEvent>(new BoundedChannelOptions(1000)
+    internal static readonly Channel<WFDS.Common.ChannelEvents.ChannelEvent> Channel = System.Threading.Channels.Channel.CreateUnbounded<WFDS.Common.ChannelEvents.ChannelEvent>(new UnboundedChannelOptions
     {
-        FullMode = BoundedChannelFullMode.Wait,
         SingleReader = true,
         SingleWriter = false
     });
 
     private static readonly SemaphoreSlim Semaphore = new(0);
+    private static readonly ReaderWriterLockSlim Lock = new();
 
     public static async Task PublishAsync(WFDS.Common.ChannelEvents.ChannelEvent e)
     {
         try
         {
+            Lock.EnterReadLock();
             Semaphore.Release();
             await Channel.Writer.WriteAsync(e);
         }
@@ -28,11 +29,27 @@ internal static class ChannelEventBus
         {
             Console.WriteLine(ex);
         }
+        finally
+        {
+            Lock.ExitReadLock();
+        }
     }
 
     public static async Task WaitAsync()
     {
-        Semaphore.Release();
-        await Semaphore.WaitAsync();
+        try
+        {
+            Lock.EnterWriteLock();
+            Semaphore.Release();
+            await Semaphore.WaitAsync();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+        }
+        finally
+        {
+            Lock.ExitWriteLock();
+        }
     }
 }
