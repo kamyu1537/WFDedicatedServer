@@ -17,10 +17,10 @@ internal class AmbientBirdTickEventHandler(ILogger<AmbientBirdTickEventHandler> 
         foreach (var player in players)
         {
             var distance = Vector3.Distance(bird.Position, player.Position);
-            if (distance < 10)
+            if (distance <= 10)
             {
-                logger?.LogInformation("bird {ActorId} is near player {PlayerId}", actor.ActorId, player.ActorId);
-                bird.DecayTimer = 0;
+                logger.LogInformation("bird {ActorId} is near player {PlayerId}", actor.ActorId, player.ActorId);
+                actorManager.TryRemoveActor(actor.ActorId, ActorRemoveTypes.QueueFree, out _);
                 break;
             }
         }

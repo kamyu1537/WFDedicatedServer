@@ -1,40 +1,5 @@
 ﻿namespace WFDS.Common.Actor;
 
-/*
-const ACTOR_BANK = {
-    "player": [preload("res://Scenes/Entities/Player/player.tscn"), false, 1],
-    "fish_spawn": [preload("res://Scenes/Entities/FishSpawn/fish_spawn.tscn"), true, 16],
-    "fish_spawn_alien": [preload("res://Scenes/Entities/MeteorSpawn/meteor_spawn.tscn"), true, 4],
-    "raincloud": [preload("res://Scenes/Entities/RainCloud/raincloud.tscn"), true, 2],
-    "raincloud_tiny": [preload("res://Scenes/Entities/RainCloud/raincloud_tiny.tscn"), false, 1],
-    "aqua_fish": [preload("res://Scenes/Entities/AquaFish/aqua_fish.tscn"), false, 1],
-    "metal_spawn": [preload("res://Scenes/Entities/MetalSpawn/metal_spawn.tscn"), true, 10],
-    "ambient_bird": [preload("res://Scenes/Entities/AmbientEnts/bird.tscn"), true, 24],
-    "void_portal": [preload("res://Scenes/Entities/VoidPortal/void_portal.tscn"), true, 2],
-
-
-    "picnic": [preload("res://Scenes/Entities/Props/prop_picnic.tscn"), false, 1],
-    "canvas": [preload("res://Scenes/Entities/Props/prop_canvas.tscn"), false, 1],
-    "bush": [preload("res://Scenes/Entities/Props/prop_bush.tscn"), false, 1],
-    "rock": [preload("res://Scenes/Entities/Props/prop_rock.tscn"), false, 1],
-    "fish_trap": [preload("res://Scenes/Entities/Props/prop_fish_trap.tscn"), false, 1],
-    "fish_trap_ocean": [preload("res://Scenes/Entities/Props/prop_fish_trap_ocean.tscn"), false, 1],
-    "island_tiny": [preload("res://Scenes/Entities/Props/prop_island_tiny_spawn.tscn"), false, 1],
-    "island_med": [preload("res://Scenes/Entities/Props/prop_island_med_spawn.tscn"), false, 1],
-    "island_big": [preload("res://Scenes/Entities/Props/prop_island_big_spawn.tscn"), false, 1],
-    "boombox": [preload("res://Scenes/Entities/Props/prop_boombox.tscn"), false, 1],
-    "well": [preload("res://Scenes/Entities/Props/prop_well.tscn"), false, 1],
-    "campfire": [preload("res://Scenes/Entities/Props/prop_campfire.tscn"), false, 1],
-    "chair": [preload("res://Scenes/Entities/Props/prop_chair.tscn"), false, 4],
-    "table": [preload("res://Scenes/Entities/Props/prop_table.tscn"), false, 1],
-    "therapist_chair": [preload("res://Scenes/Entities/Props/prop_therapist_chair.tscn"), false, 1],
-    "toilet": [preload("res://Scenes/Entities/Props/prop_toilet.tscn"), false, 1],
-    "whoopie": [preload("res://Scenes/Entities/Props/prop_whoopie.tscn"), false, 1],
-    "beer": [preload("res://Scenes/Entities/Props/prop_beer.tscn"), false, 1],
-    "greenscreen": [preload("res://Scenes/Entities/Props/prop_greenscreen.tscn"), false, 1],
-    "portable_bait": [preload("res://Scenes/Entities/Props/prop_portable_bait.tscn"), false, 1],
-}
- */
 public sealed class ActorType
 {
     public string Name { get; }
