@@ -7,7 +7,7 @@ public sealed class ActorIdManager : IActorIdManager
 {
     private readonly HashSet<long> _ids = [];
     private readonly Random _random = new();
-    private readonly object _lock = new();
+    private readonly Lock _lock = new();
 
     public bool Add(long id)
     {
