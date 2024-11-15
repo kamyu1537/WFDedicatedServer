@@ -1,5 +1,4 @@
 ﻿using Steamworks;
-using WFDS.Common.Actor;
 using WFDS.Common.ChannelEvents;
 using WFDS.Common.ChannelEvents.Events;
 using WFDS.Common.Network.Packets;

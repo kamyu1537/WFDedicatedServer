@@ -4,7 +4,7 @@ namespace WFDS.Server.Core.ChannelEvent;
 
 internal static class ChannelEventBus
 {
-    internal static readonly Channel<WFDS.Common.ChannelEvents.ChannelEvent> Channel = System.Threading.Channels.Channel.CreateUnbounded<WFDS.Common.ChannelEvents.ChannelEvent>(new UnboundedChannelOptions
+    internal static readonly Channel<Common.ChannelEvents.ChannelEvent> Channel = System.Threading.Channels.Channel.CreateUnbounded<Common.ChannelEvents.ChannelEvent>(new UnboundedChannelOptions
     {
         SingleReader = true,
         SingleWriter = false
@@ -13,7 +13,7 @@ internal static class ChannelEventBus
     private static readonly SemaphoreSlim Semaphore = new(0);
     private static readonly ReaderWriterLockSlim Lock = new();
 
-    public static async Task PublishAsync(WFDS.Common.ChannelEvents.ChannelEvent e)
+    public static async Task PublishAsync(Common.ChannelEvents.ChannelEvent e)
     {
         try
         {

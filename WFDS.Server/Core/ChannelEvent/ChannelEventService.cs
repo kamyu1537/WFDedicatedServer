@@ -16,7 +16,7 @@ internal sealed class ChannelEventService(IServiceProvider provider, ILogger<Cha
         logger.LogInformation("actor event service stopped");
     }
 
-    private async Task HandleEventAsync(WFDS.Common.ChannelEvents.ChannelEvent e)
+    private async Task HandleEventAsync(Common.ChannelEvents.ChannelEvent e)
     {
         try
         {
