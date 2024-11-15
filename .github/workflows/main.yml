@@ -1,0 +1,44 @@
+# This workflow will build a .NET project
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net
+
+name: .NET
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+
+    runs-on: windows-latest
+    
+    permissions:
+      contents: write
+
+    steps:
+    - uses: actions/checkout@v4
+      
+    - name: setup dotnet
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 9.0.x
+        
+    - name: dotnet restore
+      run: dotnet restore
+      
+    - name: dotnet build
+      run: dotnet build --configuration Release --no-restore
+      
+    - name: dotnet publish
+      run: dotnet publish --configuration Release --no-build --output ./publish
+      
+    - name: archive publish directory
+      run: Compress-Archive -Path ./publish/* -DestinationPath ./publish.zip
+    
+    - name: upload artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: publish
+        path: ./publish.zip
+        
