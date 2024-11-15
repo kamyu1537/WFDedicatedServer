@@ -24,4 +24,6 @@ public sealed class PlayerActor : IPlayerActor
 
     public GameItem HeldItem { get; set; } = GameItem.Default;
     public Cosmetics Cosmetics { get; set; } = Cosmetics.Default;
+    
+    public bool ReceiveReplication { get; set; }
 }

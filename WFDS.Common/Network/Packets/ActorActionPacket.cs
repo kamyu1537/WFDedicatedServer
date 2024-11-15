@@ -46,4 +46,14 @@ public class ActorActionPacket : Packet
             Params = []
         };
     }
+    
+    public static ActorActionPacket CreateSetZonePacket(long actorId, string zone, long zoneOwner)
+    {
+        return new ActorActionPacket
+        {
+            ActorId = actorId,
+            Action = "_set_zone",
+            Params = [zone, zoneOwner]
+        };
+    }
 }

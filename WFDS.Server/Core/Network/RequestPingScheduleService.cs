@@ -1,11 +1,12 @@
 ﻿using Steamworks;
+using WFDS.Common.Actor;
 using WFDS.Common.Network.Packets;
 using WFDS.Common.Types;
 using WFDS.Common.Types.Manager;
 
 namespace WFDS.Server.Core.Network;
 
-internal class RequestPingScheduleService(ISessionManager sessionManager) : IHostedService
+internal class RequestPingScheduleService(ISessionManager sessionManager, IActorManager actorManager) : IHostedService
 {
     private static readonly TimeSpan RequestPingTimeoutPeriod = TimeSpan.FromSeconds(8);
     private Timer? _timer;
@@ -29,5 +30,18 @@ internal class RequestPingScheduleService(ISessionManager sessionManager) : IHos
         {
             Sender = SteamClient.SteamId
         });
+        
+        foreach (var player in actorManager.GetPlayerActors())
+        {
+            if (player.ReceiveReplication)
+            {
+                continue;
+            }
+
+            sessionManager.SendP2PPacket(player.CreatorId, NetChannel.GameState, new RequestActorsPacket
+            {
+                UserId = SteamClient.SteamId.Value.ToString()
+            });
+        }
     }
 }

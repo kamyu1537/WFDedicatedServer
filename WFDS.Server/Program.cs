@@ -38,13 +38,13 @@ try
     var section = configuration.GetSection("Server");
     var setting = section.Get<ServerSetting>();
     ArgumentNullException.ThrowIfNull(setting, nameof(setting));
-    
+
     builder.Services.AddSerilog();
 
     builder.Services.Configure<ServerSetting>(section);
     builder.Services.AddSingleton<IServerSetting>(setting);
     builder.Services.AddSingleton<PacketHandleManager>();
-    
+
     builder.Services.AddSingleton<IMapManager, MapManager>();
     builder.Services.AddSingleton<IActorIdManager, ActorIdManager>();
     builder.Services.AddSingleton<IActorManager, ActorManager>();
@@ -52,29 +52,29 @@ try
     builder.Services.AddSingleton<ISessionManager, SessionManager>();
 
     /////////////////////////////////////////////////////////////////
-    // server
-    builder.Services.AddHostedService<WFServer>();
-    
-    // lobby
-    builder.Services.AddHostedService<ConfigurationChangeService>();
-    builder.Services.AddHostedService<LobbyUpdateScheduleService>();
-    
-    // packet
+
     builder.Services.AddPacketHandlers();
+    builder.Services.AddChannelEventHandlers();
+
+    /////////////////////////////////////////////////////////////////
+
+    builder.Services.AddHostedService<WFServer>();
+    builder.Services.AddHostedService<ConfigurationChangeService>();
+
     builder.Services.AddHostedService<PacketProcessService>();
     builder.Services.AddHostedService<PacketSendService>();
-    
-    // spawn
-    builder.Services.AddHostedService<HostSpawnScheduleService>();
-    builder.Services.AddHostedService<AmbientSpawnScheduleService>();
-    builder.Services.AddHostedService<RequestPingScheduleService>();
-    builder.Services.AddHostedService<MetalSpawnScheduleService>();
-    
-    // actor
     builder.Services.AddHostedService<ActorTickService>();
     builder.Services.AddHostedService<ActorNetworkShareService>();
-    builder.Services.AddChannelEventHandlers();
     builder.Services.AddHostedService<ChannelEventService>();
+
+    builder.Services.AddHostedService<LobbyUpdateScheduleService>();
+    builder.Services.AddHostedService<RequestPingScheduleService>();
+    builder.Services.AddHostedService<ActorSetZoneScheduleService>();
+
+    builder.Services.AddHostedService<HostSpawnScheduleService>();
+    builder.Services.AddHostedService<AmbientSpawnScheduleService>();
+    builder.Services.AddHostedService<MetalSpawnScheduleService>();
+
     /////////////////////////////////////////////////////////////////
     // plugin
     foreach (var plugin in plugins)
@@ -103,16 +103,16 @@ try
     // server start
     var app = builder.Build();
     app.MapControllers();
-    
+
     app.UseSwagger();
     app.UseSwaggerUI(options =>
     {
         options.SwaggerEndpoint("/swagger/v1/swagger.json", "WFDS.Server");
         options.RoutePrefix = "";
     });
-    
+
     app.Urls.Add($"http://*:{setting.AdminPort}/");
-    
+
     await app.RunAsync();
 }
 catch (Exception ex)

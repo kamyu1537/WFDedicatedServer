@@ -17,7 +17,6 @@ internal class RequestActorsHandler(ILogger<RequestActorsHandler> logger, IActor
         var packet = new ActorRequestSendPacket();
         var owned = actorManager.GetOwnedActors().Select(ActorReplicationData.FromActor);
         packet.Actors.AddRange(owned);
-        
         sessionManager.SendP2PPacket(sender.SteamId, NetChannel.GameState, packet);
         await Task.Yield();
     }

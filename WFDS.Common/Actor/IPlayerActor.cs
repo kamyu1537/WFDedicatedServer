@@ -6,4 +6,6 @@ public interface IPlayerActor : IActor
 {
     GameItem HeldItem { get; set; }
     Cosmetics Cosmetics { get; set; }
+    
+    bool ReceiveReplication { get; set; }
 }

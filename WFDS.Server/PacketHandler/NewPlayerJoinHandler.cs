@@ -14,18 +14,6 @@ internal class NewPlayerJoinHandler(ILogger<NewPlayerJoinHandler> logger, IActor
     protected override async Task HandlePacketAsync(Session sender, NetChannel channel, NewPlayerJoinPacket packet)
     {
         logger.LogDebug("received new_player_join from {Sender} on channel {Channel}", sender.SteamId, channel);
-        
-        // send request_actors
-        sessionManager.SendP2PPacket(sender.SteamId, NetChannel.GameState, new RequestActorsPacket {
-            UserId = SteamClient.SteamId.Value.ToString()
-        });
-        
-        // send all owned actors
-        foreach (var instancePacket in actorManager.GetOwnedActors().Select(InstanceActorPacket.Create))
-        {
-            sessionManager.SendP2PPacket(sender.SteamId, NetChannel.GameState, instancePacket);   
-        }
-        
         await Task.Yield();
     }
 }

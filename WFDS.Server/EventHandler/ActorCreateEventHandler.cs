@@ -17,8 +17,9 @@ internal class ActorCreateEventHandler(IActorManager actorManager, ISessionManag
        
         if (actor.CreatorId == SteamClient.SteamId)
         {
-            sessionManager.BroadcastP2PPacket(NetChannel.ActorAction, InstanceActorPacket.Create(actor));
-            sessionManager.BroadcastP2PPacket(NetChannel.ActorAction, ActorUpdatePacket.Create(actor));
+            sessionManager.BroadcastP2PPacket(NetChannel.GameState, InstanceActorPacket.Create(actor));
+            sessionManager.BroadcastP2PPacket(NetChannel.ActorAction, ActorActionPacket.CreateSetZonePacket(actor.ActorId, actor.Zone, actor.ZoneOwner));
+            sessionManager.BroadcastP2PPacket(NetChannel.ActorUpdate, ActorUpdatePacket.Create(actor));
         }
         
         await Task.Yield();
