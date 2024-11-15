@@ -2,7 +2,7 @@
 
 namespace WFDS.Server.Core.Actor;
 
-public sealed class ActorIdManager : IActorIdManager
+internal sealed class ActorIdManager : IActorIdManager
 {
     private readonly HashSet<long> _ids = [];
     private readonly Random _random = new();

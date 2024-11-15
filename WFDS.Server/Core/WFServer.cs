@@ -22,6 +22,7 @@ internal class WFServer(
 
         map.LoadSpawnPoints();
 
+        session.BanPlayers(settings.Value.BannedPlayers);
         session.CreateLobby(
             settings.Value.ServerName,
             settings.Value.RoomCode,

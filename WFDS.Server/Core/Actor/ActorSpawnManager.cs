@@ -5,17 +5,7 @@ using WFDS.Common.Types.Manager;
 
 namespace WFDS.Server.Core.Actor;
 
-internal interface IActorSpawnManager
-{
-    void SpawnAmbientBirdActor();
-    IActor? SpawnFishSpawnActor();
-    IActor? SpawnFishSpawnAlienActor();
-    IActor? SpawnRainCloudActor();
-    IActor? SpawnVoidPortalActor();
-    IActor? SpawnMetalActor();
-}
-
-internal class ActorSpawnManager(ILogger<ActorSpawnManager> logger, IMapManager map, IActorManager actor) : IActorSpawnManager
+internal sealed class ActorSpawnManager(ILogger<ActorSpawnManager> logger, IMapManager map, IActorManager actor) : IActorSpawnManager
 {
     private readonly Random _random = new();
     

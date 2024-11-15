@@ -1,8 +1,9 @@
-﻿using WFDS.Common.Types.Manager;
+﻿using WFDS.Common.Actor;
+using WFDS.Common.Types.Manager;
 
 namespace WFDS.Server.Core.Actor;
 
-internal class MetalSpawnScheduleService(ILogger<MetalSpawnScheduleService> logger, IActorSpawnManager spawn, ISessionManager session) : IHostedService
+internal sealed class MetalSpawnScheduleService(ILogger<MetalSpawnScheduleService> logger, IActorSpawnManager spawn, ISessionManager session) : IHostedService
 {
     private static readonly TimeSpan MetalSpawnTimeoutPeriod = TimeSpan.FromSeconds(20);
     private Timer? _timer;

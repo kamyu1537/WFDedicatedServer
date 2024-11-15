@@ -1,8 +1,9 @@
-﻿using WFDS.Common.Types.Manager;
+﻿using WFDS.Common.Actor;
+using WFDS.Common.Types.Manager;
 
 namespace WFDS.Server.Core.Actor;
 
-internal class AmbientSpawnScheduleService(ISessionManager session, IActorSpawnManager spawn) : IHostedService
+internal sealed class AmbientSpawnScheduleService(ISessionManager session, IActorSpawnManager spawn) : IHostedService
 {
     private static readonly TimeSpan AmbientSpawnTimeoutPeriod = TimeSpan.FromSeconds(10);
     private readonly Random _random = new();

@@ -2,7 +2,7 @@ using WFDS.Common.ChannelEvents;
 
 namespace WFDS.Server.Core.ChannelEvent;
 
-internal class ChannelEventService(IServiceProvider provider, ILogger<ChannelEventService> logger) : BackgroundService
+internal sealed class ChannelEventService(IServiceProvider provider, ILogger<ChannelEventService> logger) : BackgroundService
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {

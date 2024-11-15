@@ -6,7 +6,7 @@ using WFDS.Server.Core.ChannelEvent;
 
 namespace WFDS.Server.Core.Actor;
 
-internal class ActorTickService(ILogger<ActorTickService> logger, IActorManager manager, ISessionManager session) : BackgroundService
+internal sealed class ActorTickService(ILogger<ActorTickService> logger, IActorManager manager, ISessionManager session) : BackgroundService
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {

@@ -6,7 +6,7 @@ using WFDS.Common.Types.Manager;
 
 namespace WFDS.Server.Core.Actor;
 
-internal class ActorNetworkShareService(IActorManager actorManager, ISessionManager sessionManager) : BackgroundService
+internal sealed class ActorNetworkShareService(IActorManager actorManager, ISessionManager sessionManager) : BackgroundService
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {

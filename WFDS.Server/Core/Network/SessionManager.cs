@@ -12,7 +12,7 @@ using WFDS.Server.Core.ChannelEvent;
 
 namespace WFDS.Server.Core.Network;
 
-public sealed class SessionManager : ISessionManager
+internal sealed class SessionManager : ISessionManager
 {
     private const int MaxPlayers = 16;
     private const int RoomCodeLength = 6;

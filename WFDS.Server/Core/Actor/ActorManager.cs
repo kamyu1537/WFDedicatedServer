@@ -8,7 +8,7 @@ using WFDS.Server.Core.ChannelEvent;
 
 namespace WFDS.Server.Core.Actor;
 
-public sealed class ActorManager(ILogger<ActorManager> logger, IActorIdManager idManager) : IActorManager
+internal sealed class ActorManager(ILogger<ActorManager> logger, IActorIdManager idManager) : IActorManager
 {
     private const string MainZone = "main_zone";
     private const int MaxOwnedActorCount = 32;
