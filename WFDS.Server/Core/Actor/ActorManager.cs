@@ -293,7 +293,7 @@ internal sealed class ActorManager(ILogger<ActorManager> logger, IActorIdManager
         }
         
         idManager.Return(actorId);
-        ChannelEventBus.PublishAsync(new ActorRemoveEvent(actorId)).Wait();
+        ChannelEventBus.PublishAsync(new ActorRemoveEvent(actorId, actor.Type, actor.CreatorId, type)).Wait();
         return true;
     }
 
