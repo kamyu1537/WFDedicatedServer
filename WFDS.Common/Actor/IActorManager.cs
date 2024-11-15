@@ -28,7 +28,7 @@ public interface IActorManager
     
     bool TryCreateHostActor<T>(Vector3 position, out T actor) where T : IActor, new();
     bool TryCreatePlayerActor(SteamId steamId, long actorId, out IPlayerActor actor);
-    bool TryCreateRemoteActor(SteamId steamId, long actorId, string actorType, out IActor actor);
+    bool TryCreateRemoteActor(SteamId steamId, long actorId, string actorType, Vector3 position, Vector3 rotation, out IActor actor);
     bool TryRemoveActor(long actorId, ActorRemoveTypes type, out IActor actor);
     bool TryRemoveActorFirstByType(string actorType, ActorRemoveTypes type, out IActor actor);
     

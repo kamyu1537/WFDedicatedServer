@@ -225,7 +225,7 @@ public sealed class ActorManager(ILogger<ActorManager> logger, IActorIdManager i
         return TryAddActorAndPropagate(actor);
     }
 
-    public bool TryCreateRemoteActor(SteamId steamId, long actorId, string actorType, out IActor actor)
+    public bool TryCreateRemoteActor(SteamId steamId, long actorId, string actorType, Vector3 position, Vector3 rotation, out IActor actor)
     {
         actor = null!;
         if (!idManager.Add(actorId))
@@ -254,8 +254,8 @@ public sealed class ActorManager(ILogger<ActorManager> logger, IActorIdManager i
             CreatorId = steamId,
             Zone = player.Zone,
             ZoneOwner = player.ZoneOwner,
-            Position = Vector3.Zero,
-            Rotation = Vector3.Zero,
+            Position = position,
+            Rotation = rotation,
             IsDeadActor = true,
             Decay = false
         };

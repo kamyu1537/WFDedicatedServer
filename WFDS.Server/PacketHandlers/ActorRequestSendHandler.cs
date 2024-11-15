@@ -1,4 +1,5 @@
-﻿using WFDS.Common.Actor;
+﻿using System.Numerics;
+using WFDS.Common.Actor;
 using WFDS.Common.Network;
 using WFDS.Common.Types;
 using WFDS.Common.Network.Packets;
@@ -15,7 +16,7 @@ public class ActorRequestSendHandler(ILogger<ActorRequestSendHandler> logger, IA
         {
             if (actor.ActorType == "player") continue; // 여기에서 플레이어는 생성하면 안됨!!
             logger.LogDebug("received actor_request_send from {Member} : {Actor} {ActorType}", sender.Friend, actor.ActorId, actor.ActorType);
-            actorManager.TryCreateRemoteActor(sender.SteamId, actor.ActorId, actor.ActorType, out _);
+            actorManager.TryCreateRemoteActor(sender.SteamId, actor.ActorId, actor.ActorType, Vector3.Zero, Vector3.Zero, out _);
         }
 
         await Task.Yield();

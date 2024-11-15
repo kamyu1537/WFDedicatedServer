@@ -42,7 +42,7 @@ public class InstanceActorHandler(ILogger<InstanceActorHandler> logger, IActorMa
             return;
         }
 
-        var created = actorManager.TryCreateRemoteActor(sender.SteamId, packet.Param.ActorId, packet.Param.ActorType, out _);
+        var created = actorManager.TryCreateRemoteActor(sender.SteamId, packet.Param.ActorId, packet.Param.ActorType, packet.Param.Position, packet.Param.Rotation, out _);
         if (!created)
         {
             logger.LogError("failed to create remote actor {ActorId} {ActorType}", packet.Param.ActorId, packet.Param.ActorType);
