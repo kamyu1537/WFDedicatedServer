@@ -305,8 +305,7 @@ internal sealed class ActorManager(ILogger<ActorManager> logger, IActorIdManager
         var actorCount = GetActorCountByType("ambient_bird");
         if (actorCount >= 7)
         {
-            logger.LogError("ambient_bird limit reached (7)");
-            return null;
+            TryRemoveActorFirstByType("ambient_bird", ActorRemoveTypes.ActorCountOver, out _);
         }
 
         return TryCreateHostActor<AmbientBirdActor>(position, out var fish) ? fish : null;
@@ -339,8 +338,7 @@ internal sealed class ActorManager(ILogger<ActorManager> logger, IActorIdManager
         var actorCount = GetActorCountByType("raincloud");
         if (actorCount >= 1)
         {
-            logger.LogError("raincloud limit reached (1)");
-            return null;
+            TryRemoveActorFirstByType("raincloud", ActorRemoveTypes.ActorCountOver, out _);
         }
 
         return TryCreateHostActor<RainCloudActor>(position, out var cloud) ? cloud : null;
@@ -351,8 +349,7 @@ internal sealed class ActorManager(ILogger<ActorManager> logger, IActorIdManager
         var actorCount = GetActorCountByType("void_portal");
         if (actorCount >= 1)
         {
-            logger.LogError("void_portal limit reached (1)");
-            return null;
+            TryRemoveActorFirstByType("void_portal", ActorRemoveTypes.ActorCountOver, out _);
         }
 
         return TryCreateHostActor<VoidPortalActor>(position, out var portal) ? portal : null;
@@ -363,8 +360,7 @@ internal sealed class ActorManager(ILogger<ActorManager> logger, IActorIdManager
         var actorCount = GetActorCountByType("metal_spawn");
         if (actorCount >= 8)
         {
-            logger.LogError("metal_spawn limit reached (8)");
-            return null;
+            TryRemoveActorFirstByType("metal_spawn", ActorRemoveTypes.ActorCountOver, out _);
         }
 
         return TryCreateHostActor<MetalSpawnActor>(position, out var metal) ? metal : null;
