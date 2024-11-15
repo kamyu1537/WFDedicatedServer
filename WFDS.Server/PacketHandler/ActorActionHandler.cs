@@ -36,6 +36,7 @@ internal class ActorActionHandler(ILogger<ActorActionHandler> logger, IActorMana
 
         QueueFree(sender, packet);
         WipeActor(sender, packet);
+
         await SetZone(sender, packet);
         await UpdateCosmetics(sender, packet);
         await UpdateHeldItem(sender, packet);
@@ -84,12 +85,24 @@ internal class ActorActionHandler(ILogger<ActorActionHandler> logger, IActorMana
         var param = packet.Params[0];
         var actorId = param.GetNumber();
 
-        var actor = actorManager.GetActor(actorId);
-        if (actor == null) return;
-        
-        if (actor.CreatorId == SteamClient.SteamId && actor.IsCanWipe)
         {
-            actorManager.TryRemoveActor(actorId, ActorRemoveTypes.WipeActor, out _);
+            var actor = actorManager.GetActor(actorId);
+            if (actor == null) return;
+
+            if (actor.CreatorId == SteamClient.SteamId && actor.IsCanWipe)
+            {
+                actorManager.TryRemoveActor(actorId, ActorRemoveTypes.WipeActor, out _);
+            }    
+        }
+        
+        {
+            var actor = actorManager.GetActor(packet.ActorId);
+            if (actor == null) return;
+
+            if (actor.CreatorId == SteamClient.SteamId && actor.IsCanWipe)
+            {
+                actorManager.TryRemoveActor(packet.ActorId, ActorRemoveTypes.WipeActor, out _);
+            }    
         }
     }
 
