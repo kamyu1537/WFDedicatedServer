@@ -1,9 +1,11 @@
 ﻿using Steamworks;
 using WFDS.Common.Actor;
+using WFDS.Common.ChannelEvents.Events;
 using WFDS.Common.Network;
 using WFDS.Common.Network.Packets;
 using WFDS.Common.Types;
 using WFDS.Common.Types.Manager;
+using WFDS.Server.Core.ChannelEvent;
 using Session = WFDS.Common.Network.Session;
 
 namespace WFDS.Server.PacketHandler;
@@ -14,6 +16,6 @@ internal class NewPlayerJoinHandler(ILogger<NewPlayerJoinHandler> logger, IActor
     protected override async Task HandlePacketAsync(Session sender, NetChannel channel, NewPlayerJoinPacket packet)
     {
         logger.LogDebug("received new_player_join from {Sender} on channel {Channel}", sender.SteamId, channel);
-        await Task.Yield();
+        await ChannelEventBus.PublishAsync(new NewPlayerJoinEvent(sender.SteamId));
     }
 }
