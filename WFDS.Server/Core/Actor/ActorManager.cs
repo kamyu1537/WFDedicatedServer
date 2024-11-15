@@ -179,15 +179,44 @@ internal sealed class ActorManager(ILogger<ActorManager> logger, IActorIdManager
         actor.CreateTime = DateTimeOffset.UtcNow;
     }
 
-    public bool TryCreateHostActor<T>(Vector3 position, out T actor) where T : IActor, new()
+    private bool CheckAndRemoveActor(ActorType actorType)
     {
-        actor = default!;
-        if (_owned.Count >= MaxOwnedActorCount)
+        if (actorType.MaxCount < 0)
         {
-            logger.LogError("owned actor limit reached ({MaxCount})", MaxOwnedActorCount);
+            logger.LogWarning("{Type} actor spawn disallow", actorType);
             return false;
         }
 
+        // unlimited
+        if (actorType.MaxCount == 0)
+        {
+            return true;
+        }
+
+        var actorCount = GetActorCountByType(actorType);
+        if (actorType.MaxCount <= actorCount)
+        {
+            if (actorType.DeleteOver)
+            {
+                return TryRemoveActorFirstByType(actorType, ActorRemoveTypes.ActorCountOver, out _);
+            }
+
+            logger.LogWarning("{Type} actor limit reached ({MaxCount})", ActorType.RainCloud, ActorType.RainCloud.MaxCount);
+            return false;
+        }
+
+        return true;
+    }
+
+    public bool TryCreateHostActor<T>(Vector3 position, out T actor) where T : IActor, new()
+    {
+        actor = default!;
+        if (MaxOwnedActorCount <= _owned.Count)
+        {
+            logger.LogError("owned actor limit reached ({Count}/{MaxCount})", _owned.Count, MaxOwnedActorCount);
+            return false;
+        }
+        
         actor = new T
         {
             ActorId = idManager.Next(),
@@ -283,15 +312,15 @@ internal sealed class ActorManager(ILogger<ActorManager> logger, IActorIdManager
         {
             if (!_players.TryRemove(actor.CreatorId, out _))
             {
-                logger.LogError("player not found {SteamId}", actor.CreatorId);   
+                logger.LogError("player not found {SteamId}", actor.CreatorId);
             }
         }
-        
+
         if (actor.CreatorId == SteamClient.SteamId.Value)
         {
             _owned.TryRemove(actorId, out _);
         }
-        
+
         idManager.Return(actorId);
         ChannelEventBus.PublishAsync(new ActorRemoveEvent(actorId, actor.Type, actor.CreatorId, type)).Wait();
         return true;
@@ -310,67 +339,61 @@ internal sealed class ActorManager(ILogger<ActorManager> logger, IActorIdManager
 
     public IActor? SpawnAmbientBirdActor(Vector3 position)
     {
-        var actorCount = GetActorCountByType(ActorType.AmbientBird);
-        if (actorCount >= 7)
+        if (!CheckAndRemoveActor(ActorType.AmbientBird))
         {
-            TryRemoveActorFirstByType(ActorType.AmbientBird, ActorRemoveTypes.ActorCountOver, out _);
+            return null;
         }
-
+        
         return TryCreateHostActor<AmbientBirdActor>(position, out var fish) ? fish : null;
     }
 
     public IActor? SpawnFishSpawnActor(Vector3 position)
     {
-        var actorCount = GetActorCountByType(ActorType.FishSpawn);
-        if (actorCount >= 5)
+        if (!CheckAndRemoveActor(ActorType.FishSpawn))
         {
-            TryRemoveActorFirstByType(ActorType.FishSpawn, ActorRemoveTypes.ActorCountOver, out _);
+            return null;
         }
-
+        
         return TryCreateHostActor<FishSpawnActor>(position, out var fish) ? fish : null;
     }
 
     public IActor? SpawnFishSpawnAlienActor(Vector3 position)
     {
-        var actorCount = GetActorCountByType(ActorType.FishSpawnAlien);
-        if (actorCount >= 1)
+        if (!CheckAndRemoveActor(ActorType.FishSpawnAlien))
         {
-            TryRemoveActorFirstByType(ActorType.FishSpawnAlien, ActorRemoveTypes.ActorCountOver, out _);
+            return null;
         }
-
+        
         return TryCreateHostActor<FishSpawnAlienActor>(position, out var fish) ? fish : null;
     }
 
     public IActor? SpawnRainCloudActor(Vector3 position)
     {
-        var actorCount = GetActorCountByType(ActorType.RainCloud);
-        if (actorCount >= 1)
+        if (!CheckAndRemoveActor(ActorType.RainCloud))
         {
-            TryRemoveActorFirstByType(ActorType.RainCloud, ActorRemoveTypes.ActorCountOver, out _);
+            return null;
         }
-
+        
         return TryCreateHostActor<RainCloudActor>(position, out var cloud) ? cloud : null;
     }
 
     public IActor? SpawnVoidPortalActor(Vector3 position)
     {
-        var actorCount = GetActorCountByType(ActorType.VoidPortal);
-        if (actorCount >= 1)
+        if (!CheckAndRemoveActor(ActorType.VoidPortal))
         {
-            TryRemoveActorFirstByType(ActorType.VoidPortal, ActorRemoveTypes.ActorCountOver, out _);
+            return null;
         }
-
+        
         return TryCreateHostActor<VoidPortalActor>(position, out var portal) ? portal : null;
     }
 
     public IActor? SpawnMetalActor(Vector3 position)
     {
-        var actorCount = GetActorCountByType(ActorType.MetalSpawn);
-        if (actorCount >= 8)
+        if (!CheckAndRemoveActor(ActorType.MetalSpawn))
         {
-            TryRemoveActorFirstByType(ActorType.MetalSpawn, ActorRemoveTypes.ActorCountOver, out _);
+            return null;
         }
-
+        
         return TryCreateHostActor<MetalSpawnActor>(position, out var metal) ? metal : null;
     }
 

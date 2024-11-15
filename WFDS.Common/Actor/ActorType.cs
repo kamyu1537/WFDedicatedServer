@@ -4,11 +4,16 @@ public sealed class ActorType
 {
     public string Name { get; }
     public bool HostOnly { get; }
+    public int MaxCount { get; }
+    public bool DeleteOver { get; }
 
-    private ActorType(string name, bool host)
+    private ActorType(string name, bool host, int maxCount = -1, bool deleteOver = false)
     {
         Name = name;
         HostOnly = host;
+        MaxCount = maxCount;
+        DeleteOver = deleteOver;
+        
         ActorTypes.TryAdd(name, this);
     }
     
@@ -17,17 +22,17 @@ public sealed class ActorType
     private static readonly Dictionary<string, ActorType> ActorTypes = [];
     public static ActorType? GetActorType(string name) => ActorTypes.GetValueOrDefault(name);
     
-    public static ActorType None { get; } = new("none", true);
+    public static ActorType None { get; } = new("none", true, 0);
+    public static ActorType FishSpawn { get; } = new("fish_spawn", true, 5, true);
+    public static ActorType FishSpawnAlien { get; } = new("fish_spawn_alien", true, 1, true);
+    public static ActorType RainCloud { get; } = new("raincloud", true, 2);
+    public static ActorType MetalSpawn { get; } = new("metal_spawn", true, 8);
+    public static ActorType AmbientBird { get; } = new("ambient_bird", true, 5, true);
+    public static ActorType VoidPortal { get; } = new("void_portal", true, 1, true);
+    
     public static ActorType Player { get; } = new("player", false);
-    public static ActorType FishSpawn { get; } = new("fish_spawn", true);
-    public static ActorType FishSpawnAlien { get; } = new("fish_spawn_alien", true);
-    public static ActorType RainCloud { get; } = new("raincloud", true);
     public static ActorType RainCloudTiny { get; } = new("raincloud_tiny", false);
     public static ActorType AquaFish { get; } = new("aqua_fish", false);
-    public static ActorType MetalSpawn { get; } = new("metal_spawn", true);
-    public static ActorType AmbientBird { get; } = new("ambient_bird", true);
-    public static ActorType VoidPortal { get; } = new("void_portal", true);
-    
     public static ActorType Picnic { get; } = new("picnic", false);
     public static ActorType Canvas { get; } = new("canvas", false);
     public static ActorType Bush { get; } = new("bush", false);
