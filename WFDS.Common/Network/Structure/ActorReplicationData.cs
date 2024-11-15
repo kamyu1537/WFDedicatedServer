@@ -23,13 +23,13 @@ public class ActorReplicationData : Packet
     {
         ActorType = data.GetString("type");
         ActorId = data.GetInt("id");
-        OwnerId = data.GetInt("owner_id");
+        OwnerId = data.GetInt("owner");
     }
 
     public override void Serialize(Dictionary<object, object> data)
     {
         data.TryAdd("type", ActorType);
         data.TryAdd("id", ActorId);
-        data.TryAdd("owner_id", OwnerId);
+        data.TryAdd("owner", OwnerId);
     }
 }
