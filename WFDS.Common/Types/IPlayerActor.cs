@@ -1,4 +1,5 @@
 ﻿using System.Numerics;
+using WFDS.Common.Actor;
 
 namespace WFDS.Common.Types;
 

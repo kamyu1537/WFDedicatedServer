@@ -1,15 +1,17 @@
-﻿using WFDS.Common.ChannelEvents;
+﻿using WFDS.Common.Actor;
+using WFDS.Common.ChannelEvents;
+using WFDS.Common.ChannelEvents.Events;
+using WFDS.Common.Network;
 using WFDS.Common.Types;
-using WFDS.Common.Types.Manager;
-using WFDS.Network;
-using WFDS.Network.Packets;
+using WFDS.Common.Network.Packets;
+using ISession = WFDS.Common.Types.ISession;
 
 namespace WFDS.Server.PacketHandlers;
 
 [PacketType("actor_update")]
 public class ActorUpdateHandler(IActorManager actorManager) : PacketHandler<ActorUpdatePacket>
 {
-    protected override async Task HandlePacketAsync(IGameSession sender, NetChannel channel, ActorUpdatePacket packet)
+    protected override async Task HandlePacketAsync(ISession sender, NetChannel channel, ActorUpdatePacket packet)
     {
         var actor = actorManager.GetActor(packet.ActorId);
         if (actor == null) return;
@@ -19,6 +21,6 @@ public class ActorUpdateHandler(IActorManager actorManager) : PacketHandler<Acto
             return;
         }
         
-        await ChannelEvent.PublishAsync(new ActorUpdateEvent(actor.ActorId, packet.Position, packet.Rotation));
+        await ChannelEventBus.PublishAsync(new ActorTransformUpdateEvent(actor.ActorId, packet.Position, packet.Rotation));
     }
 }

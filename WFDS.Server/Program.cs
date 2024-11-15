@@ -1,8 +1,9 @@
 using System.Text.Json;
 using Serilog;
+using WFDS.Common.Actor;
 using WFDS.Common.ChannelEvents;
+using WFDS.Common.Plugin;
 using WFDS.Common.Types.Manager;
-using WFDS.Plugin;
 using WFDS.Server;
 using WFDS.Server.Managers;
 using WFDS.Server.Services;
@@ -66,7 +67,7 @@ try
     builder.Services.AddHostedService<MetalSpawnScheduleService>();
     
     // actor
-    builder.Services.AddHostedService<ActorUpdateService>();
+    builder.Services.AddHostedService<ActorTickService>();
     builder.Services.AddHostedService<ActorNetworkShareService>();
     builder.Services.AddChannelEventHandlers();
     builder.Services.AddHostedService<ChannelEventService>();

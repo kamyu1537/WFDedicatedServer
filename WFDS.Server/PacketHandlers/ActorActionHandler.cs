@@ -1,11 +1,13 @@
 ﻿using System.Text.Json;
 using Steamworks;
+using WFDS.Common.Actor;
 using WFDS.Common.ChannelEvents;
+using WFDS.Common.ChannelEvents.Events;
 using WFDS.Common.Extensions;
+using WFDS.Common.Network;
 using WFDS.Common.Types;
-using WFDS.Common.Types.Manager;
-using WFDS.Network;
-using WFDS.Network.Packets;
+using WFDS.Common.Network.Packets;
+using ISession = WFDS.Common.Types.ISession;
 
 namespace WFDS.Server.PacketHandlers;
 
@@ -23,7 +25,7 @@ public class ActorActionHandler(ILogger<ActorActionHandler> logger, IActorManage
         "_sync_level_bubble"
     ];
 
-    protected override async Task HandlePacketAsync(IGameSession sender, NetChannel channel, ActorActionPacket packet)
+    protected override async Task HandlePacketAsync(ISession sender, NetChannel channel, ActorActionPacket packet)
     {
         if (!AllowedActions.Contains(packet.Action))
         {
@@ -43,7 +45,7 @@ public class ActorActionHandler(ILogger<ActorActionHandler> logger, IActorManage
         await Task.Yield();
     }
 
-    private void QueueFree(IGameSession sender, ActorActionPacket packet)
+    private void QueueFree(ISession sender, ActorActionPacket packet)
     {
         if (packet.Action != "queue_free") return;
 
@@ -69,7 +71,7 @@ public class ActorActionHandler(ILogger<ActorActionHandler> logger, IActorManage
         actorManager.TryRemoveActor(packet.ActorId, ActorRemoveTypes.QueueFree, out _);
     }
 
-    private void WipeActor(IGameSession sender, ActorActionPacket packet)
+    private void WipeActor(ISession sender, ActorActionPacket packet)
     {
         if (packet.Action != "_wipe_actor") return;
 
@@ -91,7 +93,7 @@ public class ActorActionHandler(ILogger<ActorActionHandler> logger, IActorManage
         }
     }
 
-    private async Task SetZone(IGameSession sender, ActorActionPacket packet)
+    private async Task SetZone(ISession sender, ActorActionPacket packet)
     {
         if (packet.Action != "_set_zone") return;
 
@@ -109,11 +111,11 @@ public class ActorActionHandler(ILogger<ActorActionHandler> logger, IActorManage
 
             var zone = packet.Params[0].GetString();
             var zoneOwner = packet.Params[1].GetNumber();
-            await ChannelEvent.PublishAsync(new ActorZoneUpdateEvent(actor.ActorId, zone, zoneOwner));
+            await ChannelEventBus.PublishAsync(new ActorZoneUpdateEvent(actor.ActorId, zone, zoneOwner));
         }
     }
 
-    private async Task UpdateCosmetics(IGameSession sender, ActorActionPacket packet)
+    private async Task UpdateCosmetics(ISession sender, ActorActionPacket packet)
     {
         if (packet.Action != "_update_cosmetics") return;
 
@@ -133,10 +135,10 @@ public class ActorActionHandler(ILogger<ActorActionHandler> logger, IActorManage
         var dic = packet.Params[0].GetObjectDictionary();
         var cosmetics = new Cosmetics();
         cosmetics.Deserialize(dic);
-        await ChannelEvent.PublishAsync(new PlayerCosmeticsUpdateEvent(sender.SteamId, cosmetics));
+        await ChannelEventBus.PublishAsync(new PlayerCosmeticsUpdateEvent(sender.SteamId, cosmetics));
     }
 
-    private async Task UpdateHeldItem(IGameSession sender, ActorActionPacket packet)
+    private async Task UpdateHeldItem(ISession sender, ActorActionPacket packet)
     {
         if (packet.Action != "_update_held_item") return;
 
@@ -156,10 +158,10 @@ public class ActorActionHandler(ILogger<ActorActionHandler> logger, IActorManage
         var dic = packet.Params[0].GetObjectDictionary();
         var item = new GameItem();
         item.Deserialize(dic);
-        await ChannelEvent.PublishAsync(new PlayerHeldItemUpdateEvent(sender.SteamId, item));
+        await ChannelEventBus.PublishAsync(new PlayerHeldItemUpdateEvent(sender.SteamId, item));
     }
 
-    private async Task SyncCreateBubble(IGameSession sender, ActorActionPacket packet)
+    private async Task SyncCreateBubble(ISession sender, ActorActionPacket packet)
     {
         if (packet.Action != "_sync_create_bubble") return;
         if (packet.Params.Count != 1)
@@ -176,10 +178,10 @@ public class ActorActionHandler(ILogger<ActorActionHandler> logger, IActorManage
         }
 
         var text = packet.Params[0].GetString();
-        await ChannelEvent.PublishAsync(new PlayerChatMessageEvent(sender.SteamId, text));
+        await ChannelEventBus.PublishAsync(new PlayerChatMessageEvent(sender.SteamId, text));
     }
 
-    private async Task SyncLevelBubble(IGameSession sender, ActorActionPacket packet)
+    private async Task SyncLevelBubble(ISession sender, ActorActionPacket packet)
     {
         if (packet.Action != "_sync_level_bubble") return;
         if (packet.Params.Count != 0)
@@ -195,7 +197,7 @@ public class ActorActionHandler(ILogger<ActorActionHandler> logger, IActorManage
             return;
         }
 
-        ChannelEvent.PublishAsync(new PlayerLevelUpEvent(sender.SteamId)).Wait();
+        ChannelEventBus.PublishAsync(new PlayerLevelUpEvent(sender.SteamId)).Wait();
         await Task.Yield();
     }
 }

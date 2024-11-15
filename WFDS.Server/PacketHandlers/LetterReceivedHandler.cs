@@ -1,15 +1,16 @@
 ﻿using Steamworks;
+using WFDS.Common.Network;
 using WFDS.Common.Types;
 using WFDS.Common.Types.Manager;
-using WFDS.Network;
-using WFDS.Network.Packets;
+using WFDS.Common.Network.Packets;
+using ISession = WFDS.Common.Types.ISession;
 
 namespace WFDS.Server.Handlers;
 
 [PacketType("letter_recieved")]
 public class LetterReceivedHandler(ILogger<LetterReceivedHandler> logger, ISessionManager sessionManager) : PacketHandler<LetterReceivedPacket>
 {
-    protected override async Task HandlePacketAsync(IGameSession sender, NetChannel channel, LetterReceivedPacket packet)
+    protected override async Task HandlePacketAsync(ISession sender, NetChannel channel, LetterReceivedPacket packet)
     {
         if (packet.To != SteamClient.SteamId.Value.ToString())
             return;

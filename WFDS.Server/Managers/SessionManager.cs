@@ -2,13 +2,15 @@
 using Steamworks;
 using Steamworks.Data;
 using WFDS.Common.ChannelEvents;
+using WFDS.Common.ChannelEvents.Events;
 using WFDS.Common.Helpers;
 using WFDS.Common.Network;
 using WFDS.Common.Types;
 using WFDS.Common.Types.Manager;
 using WFDS.Godot.Binary;
-using WFDS.Network;
-using WFDS.Network.Packets;
+using WFDS.Common.Network;
+using WFDS.Common.Network.Packets;
+using ISession = WFDS.Common.Types.ISession;
 
 namespace WFDS.Server.Managers;
 
@@ -23,7 +25,7 @@ public sealed class SessionManager : ISessionManager
     private readonly ILogger<SessionManager> _logger;
 
     private readonly HashSet<ulong> _banned = [];
-    private readonly ConcurrentDictionary<ulong, GameSession> _sessions = [];
+    private readonly ConcurrentDictionary<ulong, Session> _sessions = [];
 
     private bool _created;
     private string _name = string.Empty;
@@ -222,7 +224,7 @@ public sealed class SessionManager : ISessionManager
             return;
         }
 
-        ChannelEvent.PublishAsync(new PlayerLeaveEvent(member.Id)).Wait();
+        ChannelEventBus.PublishAsync(new PlayerLeaveEvent(member.Id)).Wait();
         UpdateConsoleTitle();
     }
 
@@ -276,12 +278,12 @@ public sealed class SessionManager : ISessionManager
         return _sessions.Count;
     }
 
-    public IGameSession? GetSession(SteamId steamId)
+    public ISession? GetSession(SteamId steamId)
     {
         return _sessions.TryGetValue(steamId.Value, out var session) ? session : null;
     }
 
-    public IEnumerable<IGameSession> GetSessions()
+    public IEnumerable<ISession> GetSessions()
     {
         return _sessions.Values;
     }
@@ -291,7 +293,7 @@ public sealed class SessionManager : ISessionManager
         return _sessions.ContainsKey(steamId.Value);
     }
 
-    public void SelectSessions(Action<IGameSession> action)
+    public void SelectSessions(Action<ISession> action)
     {
         foreach (var session in _sessions.Values)
         {
@@ -299,7 +301,7 @@ public sealed class SessionManager : ISessionManager
         }
     }
 
-    public void SelectSession(SteamId target, Action<IGameSession> action)
+    public void SelectSession(SteamId target, Action<ISession> action)
     {
         if (!_sessions.TryGetValue(target.Value, out var session))
         {
@@ -467,7 +469,7 @@ public sealed class SessionManager : ISessionManager
     {
         _logger.LogInformation("lobby member joined: {Member}", member);
 
-        var session = new GameSession
+        var session = new Session
         {
             Friend = member,
             SteamId = member.Id,
@@ -481,7 +483,7 @@ public sealed class SessionManager : ISessionManager
             return;
         }
 
-        ChannelEvent.PublishAsync(new PlayerJoinedEvent(member.Id)).Wait();
+        ChannelEventBus.PublishAsync(new PlayerJoinedEvent(member.Id)).Wait();
         UpdateConsoleTitle();
     }
 

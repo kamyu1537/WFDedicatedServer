@@ -1,10 +1,12 @@
 ﻿using System.Collections.Concurrent;
 using System.Numerics;
 using Steamworks;
+using WFDS.Common.Actor;
+using WFDS.Common.Actor.Actors;
 using WFDS.Common.ChannelEvents;
+using WFDS.Common.ChannelEvents.Events;
 using WFDS.Common.Types;
 using WFDS.Common.Types.Manager;
-using WFDS.Server.Actors;
 
 namespace WFDS.Server.Managers;
 
@@ -168,7 +170,7 @@ public sealed class ActorManager(ILogger<ActorManager> logger, IActorIdManager i
             return false;
         }
 
-        ChannelEvent.PublishAsync(new ActorCreateEvent(actor.ActorId)).Wait();
+        ChannelEventBus.PublishAsync(new ActorCreateEvent(actor.ActorId)).Wait();
         return true;
     }
 
@@ -284,7 +286,7 @@ public sealed class ActorManager(ILogger<ActorManager> logger, IActorIdManager i
             logger.LogError("player not found {SteamId}", actor.CreatorId);
         }
 
-        ChannelEvent.PublishAsync(new ActorRemoveEvent(actorId)).Wait();
+        ChannelEventBus.PublishAsync(new ActorRemoveEvent(actorId)).Wait();
         idManager.Return(actorId);
         return true;
     }

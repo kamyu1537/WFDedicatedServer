@@ -1,8 +1,10 @@
 ﻿using Steamworks;
+using WFDS.Common.Actor;
 using WFDS.Common.ChannelEvents;
+using WFDS.Common.ChannelEvents.Events;
 using WFDS.Common.Types;
 using WFDS.Common.Types.Manager;
-using WFDS.Network.Packets;
+using WFDS.Common.Network.Packets;
 
 namespace WFDS.Server.EventHandlers;
 
@@ -36,9 +38,9 @@ public class ActorZoneUpdateHandler(IActorManager actorManager) : ChannelEventHa
     }
 }
 
-public class ActorUpdateEventHandler(IActorManager actorManager) : ChannelEventHandler<ActorUpdateEvent>
+public class ActorUpdateEventHandler(IActorManager actorManager) : ChannelEventHandler<ActorTransformUpdateEvent>
 {
-    protected override async Task HandleAsync(ActorUpdateEvent e)
+    protected override async Task HandleAsync(ActorTransformUpdateEvent e)
     {
         var actor = actorManager.GetActor(e.ActorId);
         if (actor is null) return;

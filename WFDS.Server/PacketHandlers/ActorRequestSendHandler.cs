@@ -1,14 +1,15 @@
-﻿using WFDS.Common.Types;
-using WFDS.Common.Types.Manager;
-using WFDS.Network;
-using WFDS.Network.Packets;
+﻿using WFDS.Common.Actor;
+using WFDS.Common.Network;
+using WFDS.Common.Types;
+using WFDS.Common.Network.Packets;
+using ISession = WFDS.Common.Types.ISession;
 
 namespace WFDS.Server.PacketHandlers;
 
 [PacketType("actor_request_send")]
 public class ActorRequestSendHandler(ILogger<ActorRequestSendHandler> logger, IActorManager actorManager) : PacketHandler<ActorRequestSendPacket>
 {
-    protected override async Task HandlePacketAsync(IGameSession sender, NetChannel channel, ActorRequestSendPacket packet)
+    protected override async Task HandlePacketAsync(ISession sender, NetChannel channel, ActorRequestSendPacket packet)
     { 
         foreach (var actor in packet.Actors)
         {

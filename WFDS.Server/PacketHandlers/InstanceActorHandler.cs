@@ -1,14 +1,15 @@
-﻿using WFDS.Common.Types;
-using WFDS.Common.Types.Manager;
-using WFDS.Network;
-using WFDS.Network.Packets;
+﻿using WFDS.Common.Actor;
+using WFDS.Common.Network;
+using WFDS.Common.Types;
+using WFDS.Common.Network.Packets;
+using ISession = WFDS.Common.Types.ISession;
 
 namespace WFDS.Server.PacketHandlers;
 
 [PacketType("instance_actor")]
 public class InstanceActorHandler(ILogger<InstanceActorHandler> logger, IActorManager actorManager) : PacketHandler<InstanceActorPacket>
 {
-    protected override async Task HandlePacketAsync(IGameSession sender, NetChannel channel, InstanceActorPacket packet)
+    protected override async Task HandlePacketAsync(ISession sender, NetChannel channel, InstanceActorPacket packet)
     {
         logger.LogDebug("received instance_actor from {Sender} on channel {Channel} / {ActorId} {ActorType} ", sender.SteamId, channel, packet.Param.ActorId, packet.Param.ActorType);
         
@@ -32,7 +33,7 @@ public class InstanceActorHandler(ILogger<InstanceActorHandler> logger, IActorMa
         return OnlyHostActors.Contains(packet.Param.ActorType);
     }
 
-    private void CreateRemoteActor(IGameSession sender, InstanceActorPacket packet)
+    private void CreateRemoteActor(ISession sender, InstanceActorPacket packet)
     {
         if (IsHostActor(packet))
         {
@@ -48,7 +49,7 @@ public class InstanceActorHandler(ILogger<InstanceActorHandler> logger, IActorMa
         }
     }
 
-    private void CreatePlayerActor(IGameSession sender, InstanceActorPacket packet)
+    private void CreatePlayerActor(ISession sender, InstanceActorPacket packet)
     {
         if (actorManager.GetPlayerActor(sender.SteamId) != null)
         {

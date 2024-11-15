@@ -1,15 +1,16 @@
 ﻿using Steamworks;
+using WFDS.Common.Network;
 using WFDS.Common.Types;
 using WFDS.Common.Types.Manager;
-using WFDS.Network;
-using WFDS.Network.Packets;
+using WFDS.Common.Network.Packets;
+using ISession = WFDS.Common.Types.ISession;
 
 namespace WFDS.Server.PacketHandlers;
 
 [PacketType("request_ping")]
 public class RequestPingHandler(ISessionManager sessionManager) : PacketHandler<RequestPingPacket>
 {
-    protected override async Task HandlePacketAsync(IGameSession sender, NetChannel channel, RequestPingPacket packet)
+    protected override async Task HandlePacketAsync(ISession sender, NetChannel channel, RequestPingPacket packet)
     {
         sender.PingReceiveTime = DateTimeOffset.UtcNow;
         

@@ -1,9 +1,10 @@
 ﻿using System.Reflection;
 using System.Text.Json;
 using Steamworks;
+using WFDS.Common.Network;
 using WFDS.Common.Types;
 using WFDS.Common.Types.Manager;
-using WFDS.Network;
+using WFDS.Common.Network;
 
 namespace WFDS.Server.Managers;
 
@@ -11,7 +12,7 @@ public static class PacketHandlerExtensions
 {
     public static IServiceCollection AddPacketHandlers(this IServiceCollection service)
     {
-        var packetHandlerType = typeof(IPacketHandler);
+        var packetHandlerType = typeof(PacketHandler);
         var types = AppDomain.CurrentDomain.GetAssemblies().SelectMany(x => x.GetTypes()).Distinct();
         _ = types
             .Where(t => t.IsClass && !t.IsAbstract && packetHandlerType.IsAssignableFrom(t))
@@ -38,7 +39,7 @@ public class PacketHandleManager : IPacketHandleManager
         _provider = provider;
         _sessionManager = sessionManager;
 
-        var packetHandlerType = typeof(IPacketHandler);
+        var packetHandlerType = typeof(PacketHandler);
         var types = AppDomain.CurrentDomain.GetAssemblies().SelectMany(x => x.GetTypes()).Distinct();
         _handlerTypes = types
             .Where(t => t.IsClass && !t.IsAbstract && packetHandlerType.IsAssignableFrom(t))
@@ -77,7 +78,7 @@ public class PacketHandleManager : IPacketHandleManager
             if (!_handlerTypes.TryGetValue(typeName, out var handlerTypes)) return;
 
             Task.WhenAll(handlerTypes
-                .Select(handlerType => _provider.GetRequiredService(handlerType) as IPacketHandler)
+                .Select(handlerType => _provider.GetRequiredService(handlerType) as PacketHandler)
                 .Where(x => x != null)
                 .Select(x =>
                 {

@@ -1,4 +1,6 @@
-﻿using WFDS.Common.ChannelEvents;
+﻿using WFDS.Common.Actor;
+using WFDS.Common.ChannelEvents;
+using WFDS.Common.ChannelEvents.Events;
 using WFDS.Common.Types;
 using WFDS.Common.Types.Manager;
 

@@ -1,4 +1,5 @@
-﻿using WFDS.Common.Types.Manager;
+﻿using WFDS.Common.Actor;
+using WFDS.Common.Types.Manager;
 
 namespace WFDS.Server.Managers;
 

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
+using WFDS.Common.Actor;
 using WFDS.Common.Types;
 using WFDS.Common.Types.Manager;
 
