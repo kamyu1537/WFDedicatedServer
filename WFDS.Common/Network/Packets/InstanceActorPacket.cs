@@ -1,13 +1,10 @@
 ﻿using System.Numerics;
 using WFDS.Common.Actor;
 using WFDS.Common.Extensions;
-using WFDS.Common.Network;
-using WFDS.Common.Types;
-using WFDS.Common.Types.Manager;
 
 namespace WFDS.Common.Network.Packets;
 
-public class ActorParamData : IPacket
+public class ActorParamData : Packet
 {
     public static readonly ActorParamData Default = new();
     
@@ -21,7 +18,7 @@ public class ActorParamData : IPacket
     public Vector3 Position { get; set; } = Vector3.Zero;
     public Vector3 Rotation { get; set; } = Vector3.Zero;
     
-    public void Deserialize(Dictionary<object, object> data)
+    public override void Deserialize(Dictionary<object, object> data)
     {
         ActorType = data.GetString("actor_type");
         ActorId = data.GetInt("actor_id");
@@ -34,7 +31,7 @@ public class ActorParamData : IPacket
         Rotation = data.GetVector3("rot");
     }
     
-    public void Serialize(Dictionary<object, object> data)
+    public override void Serialize(Dictionary<object, object> data)
     {
         data.TryAdd("actor_type", ActorType);
         data.TryAdd("actor_id", ActorId);
@@ -46,16 +43,16 @@ public class ActorParamData : IPacket
     }
 }
 
-public class InstanceActorPacket : IPacket
+public class InstanceActorPacket : Packet
 {
     public ActorParamData Param { get; set; } = ActorParamData.Default;
 
-    public void Deserialize(Dictionary<object, object> data)
+    public override void Deserialize(Dictionary<object, object> data)
     {
         Param = PacketHelper.FromDictionary<ActorParamData>(data.GetObjectDictionary("params"));
     }
 
-    public void Serialize(Dictionary<object, object> data)
+    public override void Serialize(Dictionary<object, object> data)
     {
         data.TryAdd("type", "instance_actor");
         data.TryAdd("params", Param.ToDictionary());

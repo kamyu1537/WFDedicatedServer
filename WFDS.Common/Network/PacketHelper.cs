@@ -1,10 +1,8 @@
-﻿using WFDS.Common.Types;
-
-namespace WFDS.Common.Network;
+﻿namespace WFDS.Common.Network;
 
 public static class PacketHelper
 {
-    public static T FromDictionary<T>(Dictionary<object, object> data) where T : IPacket, new()
+    public static T FromDictionary<T>(Dictionary<object, object> data) where T : Packet, new()
     {
         var packet = new T();
         packet.Deserialize(data);
@@ -12,7 +10,7 @@ public static class PacketHelper
         return packet;
     }
     
-    public static Dictionary<object, object> ToDictionary<T>(T packet) where T : IPacket
+    public static Dictionary<object, object> ToDictionary<T>(T packet) where T : Packet
     {
         var data = new Dictionary<object, object>();
         packet.Serialize(data);

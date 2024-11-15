@@ -1,14 +1,12 @@
-﻿using WFDS.Common.Types;
+﻿namespace WFDS.Common.Network.Packets;
 
-namespace WFDS.Common.Network.Packets;
-
-public class ServerClosePacket : IPacket
+public class ServerClosePacket : Packet
 {
-    public void Deserialize(Dictionary<object, object> data)
+    public override void Deserialize(Dictionary<object, object> data)
     {
     }
 
-    public void Serialize(Dictionary<object, object> data)
+    public override void Serialize(Dictionary<object, object> data)
     {
         data.TryAdd("type", "server_close");
     }

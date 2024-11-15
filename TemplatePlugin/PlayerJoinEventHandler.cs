@@ -1,9 +1,9 @@
 ﻿using System.Drawing;
 using WFDS.Common.ChannelEvents;
 using WFDS.Common.ChannelEvents.Events;
+using WFDS.Common.Network.Packets;
 using WFDS.Common.Types;
 using WFDS.Common.Types.Manager;
-using WFDS.Common.Network.Packets;
 
 namespace TemplatePlugin;
 

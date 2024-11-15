@@ -1,9 +1,10 @@
 ﻿using WFDS.Common.Extensions;
+using WFDS.Common.Network;
 
 namespace WFDS.Common.Types;
 
 // {"id": "empty_hand", "ref": 0, "size": 1.0, "quality": ITEM_QUALITIES.NORMAL, "tags": []}
-public class GameItem : IPacket
+public class GameItem : Packet
 {
     public string Id { get; set; } = string.Empty;
     public float Size { get; set; }
@@ -11,7 +12,7 @@ public class GameItem : IPacket
     public QualityType Quality { get; set; } = QualityType.Normal;
     public List<object> Tags { get; set; } = [];
     
-    public void Deserialize(Dictionary<object, object> data)
+    public override void Deserialize(Dictionary<object, object> data)
     {
         Id = data.GetString("id");
         Size = (float)data.GetFloat("size");
@@ -22,7 +23,7 @@ public class GameItem : IPacket
         Quality = QualityType.Types.TryGetValue(qualityValue, out var quality) ? quality : QualityType.Normal;
     }
 
-    public void Serialize(Dictionary<object, object> data)
+    public override void Serialize(Dictionary<object, object> data)
     {
         data.TryAdd("id", Id);
         data.TryAdd("size", Size);

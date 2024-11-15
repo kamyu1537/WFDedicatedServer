@@ -4,7 +4,7 @@ using WFDS.Common.Types;
 
 namespace WFDS.Common.Network;
 
-public sealed class Session : ISession
+public sealed class Session
 {
     public Friend Friend { get; set; }
     public SteamId SteamId { get; set; }

@@ -8,7 +8,7 @@ namespace WFDS.Server.Controllers;
 [Tags("session")]
 [Route("api/v1/session")]
 
-public class SessionController(ISessionManager manager) : Controller
+internal class SessionController(ISessionManager manager) : Controller
 {
     [HttpGet("info")]
     [SwaggerOperation("get lobby info")]

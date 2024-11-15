@@ -1,5 +1,4 @@
 ﻿using WFDS.Common.Extensions;
-using WFDS.Common.Types;
 
 namespace WFDS.Common.Network.Packets;
 
@@ -7,20 +6,20 @@ namespace WFDS.Common.Network.Packets;
  * queue_free : 프롭 삭제
  */
 
-public class ActorActionPacket : IPacket
+public class ActorActionPacket : Packet
 {
     public long ActorId { get; private set; }
     public string Action { get; private set; } = string.Empty;
     public List<object> Params { get; private set; } = [];
 
-    public void Deserialize(Dictionary<object, object> data)
+    public override void Deserialize(Dictionary<object, object> data)
     {
         ActorId = data.GetInt("actor_id");
         Action = data.GetString("action");
         Params = data.GetObjectList("params");
     }
 
-    public void Serialize(Dictionary<object, object> data)
+    public override void Serialize(Dictionary<object, object> data)
     {
         data.TryAdd("type", "actor_action");
         data.TryAdd("actor_id", ActorId);

@@ -1,9 +1,10 @@
 ﻿using WFDS.Common.Extensions;
+using WFDS.Common.Network;
 
 namespace WFDS.Common.Types;
 
 // {"species": "species_cat", "pattern": "pattern_none", "primary_color": "pcolor_white", "secondary_color": "scolor_tan", "hat": "hat_none", "undershirt": "shirt_none", "overshirt": "overshirt_none", "title": "title_rank_1", "bobber": "bobber_default", "eye": "eye_halfclosed", "nose": "nose_cat", "mouth": "mouth_default", "accessory": [], "tail": "tail_cat", "legs": "legs_none"}
-public class Cosmetics : IPacket
+public class Cosmetics : Packet
 {
     public string Species { get; set; } = string.Empty;
     public string Pattern { get; set; } = string.Empty;
@@ -21,7 +22,7 @@ public class Cosmetics : IPacket
     public string Tail { get; set; } = string.Empty;
     public string Legs { get; set; } = string.Empty;
     
-    public void Deserialize(Dictionary<object, object> data)
+    public override void Deserialize(Dictionary<object, object> data)
     {
         Species = data.GetString("species");
         Pattern = data.GetString("pattern");
@@ -40,7 +41,7 @@ public class Cosmetics : IPacket
         Legs = data.GetString("legs");
     }
 
-    public void Serialize(Dictionary<object, object> data)
+    public override void Serialize(Dictionary<object, object> data)
     {
         data.TryAdd("species",Species);
         data.TryAdd("pattern",Pattern);

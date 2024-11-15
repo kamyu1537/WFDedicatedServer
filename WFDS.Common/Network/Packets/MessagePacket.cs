@@ -1,11 +1,10 @@
 ﻿using System.Drawing;
 using System.Numerics;
 using WFDS.Common.Extensions;
-using WFDS.Common.Types;
 
 namespace WFDS.Common.Network.Packets;
 
-public class MessagePacket : IPacket
+public class MessagePacket : Packet
 {
     public string Message { get; set; } = string.Empty;
     public string Color { get; set; } = string.Empty;
@@ -14,7 +13,7 @@ public class MessagePacket : IPacket
     public string Zone { get; set; } = string.Empty;
     public long ZoneOwner { get; set; }
 
-    public void Deserialize(Dictionary<object, object> data)
+    public override void Deserialize(Dictionary<object, object> data)
     {
         Message = data.GetString("message");
         Color = data.GetString("color");
@@ -24,7 +23,7 @@ public class MessagePacket : IPacket
         ZoneOwner = data.GetInt("zone_owner");
     }
 
-    public void Serialize(Dictionary<object, object> data)
+    public override void Serialize(Dictionary<object, object> data)
     {
         data.TryAdd("type", "message");
         data.TryAdd("message", Message);

@@ -1,13 +1,13 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
-using WFDS.Server.Managers;
+using WFDS.Server.Core.Actor;
 
 namespace WFDS.Server.Controllers;
 
 [ApiController]
 [Tags("event")]
 [Route("api/v1/event")]
-public class EventController(IActorSpawnManager manager) : Controller
+internal class EventController(IActorSpawnManager manager) : Controller
 {
     [HttpPost("bird")]
     [SwaggerOperation("spawn ambient bird actor")]

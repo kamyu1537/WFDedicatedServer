@@ -1,19 +1,18 @@
 ﻿using Steamworks;
 using WFDS.Common.Extensions;
-using WFDS.Common.Types;
 
 namespace WFDS.Common.Network.Packets;
 
-public class ForceDisconnectPlayerPacket : IPacket
+public class ForceDisconnectPlayerPacket : Packet
 {
     public SteamId UserId { get; set; }
     
-    public void Deserialize(Dictionary<object, object> data)
+    public override void Deserialize(Dictionary<object, object> data)
     {
         UserId = data.GetParseULong("user_id");
     }
 
-    public void Serialize(Dictionary<object, object> data)
+    public override void Serialize(Dictionary<object, object> data)
     {
         data.TryAdd("type", "force_disconnect_player");
         data.TryAdd("user_id", UserId.Value.ToString());

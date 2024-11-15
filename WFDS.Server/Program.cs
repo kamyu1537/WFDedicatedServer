@@ -1,12 +1,15 @@
 using System.Text.Json;
 using Serilog;
 using WFDS.Common.Actor;
-using WFDS.Common.ChannelEvents;
 using WFDS.Common.Plugin;
+using WFDS.Common.Types;
 using WFDS.Common.Types.Manager;
-using WFDS.Server;
-using WFDS.Server.Managers;
-using WFDS.Server.Services;
+using WFDS.Server.Core;
+using WFDS.Server.Core.Actor;
+using WFDS.Server.Core.ChannelEvent;
+using WFDS.Server.Core.Configuration;
+using WFDS.Server.Core.Network;
+using WFDS.Server.Core.Resource;
 
 Log.Logger = new LoggerConfiguration()
     .Enrich.FromLogContext()
@@ -34,14 +37,15 @@ try
 
     var section = configuration.GetSection("Server");
     var setting = section.Get<ServerSetting>();
-    
     ArgumentNullException.ThrowIfNull(setting, nameof(setting));
     
-    builder.Services.Configure<ServerSetting>(section);
     builder.Services.AddSerilog();
 
+    builder.Services.Configure<ServerSetting>(section);
+    builder.Services.AddSingleton<IServerSetting>(setting);
+    builder.Services.AddSingleton<PacketHandleManager>();
+    
     builder.Services.AddSingleton<IMapManager, MapManager>();
-    builder.Services.AddSingleton<IPacketHandleManager, PacketHandleManager>();
     builder.Services.AddSingleton<IActorIdManager, ActorIdManager>();
     builder.Services.AddSingleton<IActorManager, ActorManager>();
     builder.Services.AddSingleton<IActorSpawnManager, ActorSpawnManager>();

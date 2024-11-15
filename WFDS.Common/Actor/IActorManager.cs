@@ -1,6 +1,5 @@
 ﻿using System.Numerics;
 using Steamworks;
-using WFDS.Common.Types;
 
 namespace WFDS.Common.Actor;
 

@@ -1,14 +1,12 @@
-﻿using WFDS.Common.Types;
+﻿namespace WFDS.Common.Network.Packets;
 
-namespace WFDS.Common.Network.Packets;
-
-public record BanPacket : IPacket
+public class BanPacket : Packet
 {
-    public void Deserialize(Dictionary<object, object> data)
+    public override void Deserialize(Dictionary<object, object> data)
     {
     }
 
-    public void Serialize(Dictionary<object, object> data)
+    public override void Serialize(Dictionary<object, object> data)
     {
         data.TryAdd("type", "ban");
     }

@@ -1,4 +1,5 @@
 ﻿using Steamworks;
+using WFDS.Common.Network;
 
 namespace WFDS.Common.Types.Manager;
 
@@ -23,8 +24,8 @@ public interface ISessionManager
     void KickNoHandshakePlayers();
     
     int GetSessionCount();
-    ISession? GetSession(SteamId steamId);
-    IEnumerable<ISession> GetSessions();
+    Session? GetSession(SteamId steamId);
+    IEnumerable<Session> GetSessions();
     bool IsSessionValid(SteamId steamId);
     
     void ServerClose(SteamId steamId);
@@ -33,6 +34,6 @@ public interface ISessionManager
     void BanPlayers(string[] steamId);
     void RemoveBanPlayer(SteamId steamId);
     
-    void SendP2PPacket(SteamId steamId, NetChannel channel, IPacket packet, bool useSession = true);
-    void BroadcastP2PPacket(NetChannel channel, IPacket packet, bool useSession = true);
+    void SendP2PPacket(SteamId steamId, NetChannel channel, Packet packet, bool useSession = true);
+    void BroadcastP2PPacket(NetChannel channel, Packet packet, bool useSession = true);
 }

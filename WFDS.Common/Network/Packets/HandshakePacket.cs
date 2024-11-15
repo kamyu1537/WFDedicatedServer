@@ -1,18 +1,17 @@
 ﻿using WFDS.Common.Extensions;
-using WFDS.Common.Types;
 
 namespace WFDS.Common.Network.Packets;
 
-public class HandshakePacket : IPacket
+public class HandshakePacket : Packet
 {
     public string UserId { get; set; } = string.Empty;
 
-    public void Deserialize(Dictionary<object, object> data)
+    public override void Deserialize(Dictionary<object, object> data)
     {
         UserId = data.GetString("user_id");
     }
 
-    public void Serialize(Dictionary<object, object> data)
+    public override void Serialize(Dictionary<object, object> data)
     {
         data.TryAdd("type", "handshake");
         data.TryAdd("user_id", UserId);

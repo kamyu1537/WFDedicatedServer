@@ -1,11 +1,10 @@
 ﻿using Steamworks;
 using WFDS.Common.Extensions;
-using WFDS.Common.Network;
 using WFDS.Common.Types;
 
 namespace WFDS.Common.Network.Packets;
 
-public class LetterData : IPacket
+public class LetterData : Packet
 {
     public static readonly LetterData Default = new();
     
@@ -18,7 +17,7 @@ public class LetterData : IPacket
     public string User { get; set; } = string.Empty;
     public List<object> Items { get; set; } = [];
     
-    public void Deserialize(Dictionary<object, object> data)
+    public override void Deserialize(Dictionary<object, object> data)
     {
         LetterId = data.GetInt("letter_id");
         To = data.GetString("to");
@@ -30,7 +29,7 @@ public class LetterData : IPacket
         Items = data.GetObjectList("items");
     }
 
-    public void Serialize(Dictionary<object, object> data)
+    public override void Serialize(Dictionary<object, object> data)
     {
         data.TryAdd("letter_id", LetterId);
         data.TryAdd("to", To);
@@ -43,18 +42,18 @@ public class LetterData : IPacket
     }
 }
 
-public class LetterReceivedPacket : IPacket
+public class LetterReceivedPacket : Packet
 {
     public string To { get; set; } = string.Empty;
     public LetterData Data { get; set; } = LetterData.Default;
 
-    public void Deserialize(Dictionary<object, object> data)
+    public override void Deserialize(Dictionary<object, object> data)
     {
         To = data.GetString("to");
         Data = PacketHelper.FromDictionary<LetterData>(data.GetObjectDictionary("data"));
     }
 
-    public void Serialize(Dictionary<object, object> data)
+    public override void Serialize(Dictionary<object, object> data)
     {
         data.TryAdd("type", "letter_recieved");
         data.TryAdd("to", To);

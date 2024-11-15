@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using Serilog;
 
 namespace WFDS.Common.Plugin;
 
@@ -47,7 +48,7 @@ public static class PluginManager
         var instance = Activator.CreateInstance(type);
         if (instance is not Plugin plugin) return null;
         
-        Serilog.Log.Logger.Information("loading plugin {Name} {Version} by {Author}", plugin.Name, plugin.Version, plugin.Author);
+        Log.Logger.Information("loading plugin {Name} {Version} by {Author}", plugin.Name, plugin.Version, plugin.Author);
         plugin.Load();
 
         return plugin;
