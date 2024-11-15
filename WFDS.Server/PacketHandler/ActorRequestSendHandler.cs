@@ -42,6 +42,12 @@ internal class ActorRequestSendHandler(ILogger<ActorRequestSendHandler> logger, 
             actorManager.TryCreateRemoteActor(sender.SteamId, actor.ActorId, actorType, Vector3.Zero, Vector3.Zero, out _);
         }
 
+        var player = actorManager.GetPlayerActor(sender.SteamId);
+        if (player != null)
+        {
+            player.ReceiveReplication = true;
+        }
+        
         await Task.Yield();
     }
 }
