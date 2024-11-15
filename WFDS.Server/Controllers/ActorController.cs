@@ -17,20 +17,26 @@ public class ActorController(IActorManager manager) : Controller
         return Json(new
         {
             Count = actors.Length,
-            Actors = actors.Select(x => $"{x.ActorType} ({x.ActorId})").ToArray()
+            Actors = actors.Select(x => $"{x.Type} ({x.ActorId})").ToArray()
         });
     }
     
-    [HttpGet("type/{actorType}")]
+    [HttpGet("type/{type}")]
     [SwaggerOperation("get actors by type")]
-    public IActionResult GetActorsByType(string actorType)
+    public IActionResult GetActorsByType(string type)
     {
+        var actorType = ActorType.GetActorType(type);
+        if (actorType == null)
+        {
+            return BadRequest();
+        }
+        
         var actors = manager.GetActorsByType(actorType).ToArray();
         
         return Json(new
         {
             Count = actors.Length,
-            Actors = actors.Select(x => $"{x.ActorType} ({x.ActorId})")
+            Actors = actors.Select(x => $"{x.Type} ({x.ActorId})")
         });
     }
     
@@ -43,7 +49,7 @@ public class ActorController(IActorManager manager) : Controller
         return Json(new
         {
             Count = actors.Length,
-            Actors = actors.Select(x => $"{x.ActorType} ({x.ActorId})")
+            Actors = actors.Select(x => $"{x.Type} ({x.ActorId})")
         });
     }
     
@@ -56,7 +62,7 @@ public class ActorController(IActorManager manager) : Controller
         return Json(new
         {
             Count = actors.Length,
-            Actors = actors.Select(x => $"{x.ActorType} ({x.ActorId})")
+            Actors = actors.Select(x => $"{x.Type} ({x.ActorId})")
         });
     }
     
@@ -73,7 +79,7 @@ public class ActorController(IActorManager manager) : Controller
         return Json(new
         {
             actor.ActorId,
-            actor.ActorType,
+            actor.Type,
             actor.CreatorId,
             actor.Zone,
             actor.ZoneOwner,

@@ -42,7 +42,7 @@ internal sealed class ActorTickService(ILogger<ActorTickService> logger, IActorM
             if (!session.IsSessionValid(actor.CreatorId))
             {
                 actor.IsDeadActor = true;
-                logger.LogInformation("remove actor {ActorId} {ActorType} (owner not found)", actor.ActorId, actor.ActorType);
+                logger.LogInformation("remove actor {ActorId} {ActorType} (owner not found)", actor.ActorId, actor.Type);
                 manager.TryRemoveActor(actor.ActorId, ActorRemoveTypes.OwnerNotFound, out _);
             }
 
@@ -55,7 +55,7 @@ internal sealed class ActorTickService(ILogger<ActorTickService> logger, IActorM
         if (actor.DecayTimer < 1)
         {
             actor.IsDeadActor = true;
-            logger.LogInformation("decay actor {ActorId} {ActorType}", actor.ActorId, actor.ActorType);
+            logger.LogInformation("decay actor {ActorId} {ActorType}", actor.ActorId, actor.Type);
             manager.TryRemoveActor(actor.ActorId, ActorRemoveTypes.Decay, out _);
             return true;
         }

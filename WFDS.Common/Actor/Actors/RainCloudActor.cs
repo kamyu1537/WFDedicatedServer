@@ -5,7 +5,7 @@ namespace WFDS.Common.Actor.Actors;
 
 public sealed class RainCloudActor : IActor
 {
-    public string ActorType => "raincloud";
+    public ActorType Type => ActorType.RainCloud;
     public long ActorId { get; init; }
     public SteamId CreatorId { get; init; }
     public string Zone { get; set; } = "main_zone";

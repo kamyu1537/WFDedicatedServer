@@ -13,7 +13,7 @@ public class ActorReplicationData : Packet
     {
         return new ActorReplicationData
         {
-            ActorType = actor.ActorType,
+            ActorType = actor.Type.Name,
             ActorId = actor.ActorId,
             OwnerId = (long)actor.CreatorId.Value
         };

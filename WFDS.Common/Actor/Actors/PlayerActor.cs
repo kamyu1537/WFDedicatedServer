@@ -6,7 +6,7 @@ namespace WFDS.Common.Actor.Actors;
 
 public sealed class PlayerActor : IPlayerActor
 {
-    public string ActorType => "player";
+    public ActorType Type => ActorType.Player;
     public long ActorId { get; init; }
     public SteamId CreatorId { get; init; }
     public string Zone { get; set; } = "main_zone";

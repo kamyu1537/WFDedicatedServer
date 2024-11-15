@@ -66,7 +66,7 @@ internal sealed class HostSpawnScheduleService(ILogger<HostSpawnScheduleService>
             return;
         }
 
-        logger.LogInformation("spawn {ActorType} ({ActorId}) at {Pos}", spawnedActor.ActorType, spawnedActor.ActorId, spawnedActor.Position);
+        logger.LogInformation("spawn {ActorType} ({ActorId}) at {Pos}", spawnedActor.Type, spawnedActor.ActorId, spawnedActor.Position);
     }
 
     private HostSpawnTypes RandomPickSpawnType()

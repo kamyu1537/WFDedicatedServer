@@ -27,9 +27,9 @@ internal sealed class ActorManager(ILogger<ActorManager> logger, IActorIdManager
         return _actors.Values;
     }
 
-    public IEnumerable<IActor> GetActorsByType(string actorType)
+    public IEnumerable<IActor> GetActorsByType(ActorType actorType)
     {
-        return _actors.Values.Where(actor => actor.ActorType == actorType);
+        return _actors.Values.Where(actor => actor.Type == actorType);
     }
 
     public IEnumerable<IActor> GetOwnedActors()
@@ -78,9 +78,9 @@ internal sealed class ActorManager(ILogger<ActorManager> logger, IActorIdManager
         }
     }
 
-    public IEnumerable<IActor> GetOwnedActorsByType(string actorType)
+    public IEnumerable<IActor> GetOwnedActorsByType(ActorType actorType)
     {
-        return _owned.Values.Where(actor => actor.ActorType == actorType);
+        return _owned.Values.Where(actor => actor.Type == actorType);
     }
 
     public int GetActorCountByCreatorId(SteamId creatorId)
@@ -88,9 +88,9 @@ internal sealed class ActorManager(ILogger<ActorManager> logger, IActorIdManager
         return _actors.Values.Count(actor => actor.CreatorId == creatorId);
     }
 
-    public int GetActorCountByCreatorIdAndType(SteamId creatorId, string actorType)
+    public int GetActorCountByCreatorIdAndType(SteamId creatorId, ActorType actorType)
     {
-        return _actors.Values.Count(actor => actor.CreatorId == creatorId && actor.ActorType == actorType);
+        return _actors.Values.Count(actor => actor.CreatorId == creatorId && actor.Type == actorType);
     }
 
     public void SelectActorsByCreatorId(SteamId creatorId, Action<IActor> action)
@@ -125,14 +125,14 @@ internal sealed class ActorManager(ILogger<ActorManager> logger, IActorIdManager
         return _owned.Count;
     }
 
-    public int GetOwnedActorCountByType(string actorType)
+    public int GetOwnedActorCountByType(ActorType actorType)
     {
-        return _owned.Values.Count(actor => actor.ActorType == actorType);
+        return _owned.Values.Count(actor => actor.Type == actorType);
     }
 
-    public List<string> GetOwnedActorTypes()
+    public List<ActorType> GetOwnedActorTypes()
     {
-        return _owned.Values.Select(actor => actor.ActorType).ToList();
+        return _owned.Values.Select(actor => actor.Type).ToList();
     }
 
     public IEnumerable<IActor> GetActorsByCreatorId(SteamId creatorId)
@@ -142,8 +142,8 @@ internal sealed class ActorManager(ILogger<ActorManager> logger, IActorIdManager
 
     private bool TryAddActorAndPropagate(IActor actor)
     {
-        logger.LogInformation("try add actor {ActorId} {ActorType} - {Position}", actor.ActorId, actor.ActorType, actor.Position);
-        
+        logger.LogInformation("try add actor {ActorId} {ActorType} - {Position}", actor.ActorId, actor.Type, actor.Position);
+
         if (actor is IPlayerActor player)
         {
             if (!_players.TryAdd(player.CreatorId, player))
@@ -161,7 +161,7 @@ internal sealed class ActorManager(ILogger<ActorManager> logger, IActorIdManager
                 return false;
             }
         }
-        
+
         if (!_actors.TryAdd(actor.ActorId, actor))
         {
             logger.LogError("actor already exists");
@@ -223,7 +223,7 @@ internal sealed class ActorManager(ILogger<ActorManager> logger, IActorIdManager
         return TryAddActorAndPropagate(actor);
     }
 
-    public bool TryCreateRemoteActor(SteamId steamId, long actorId, string actorType, Vector3 position, Vector3 rotation, out IActor actor)
+    public bool TryCreateRemoteActor(SteamId steamId, long actorId, ActorType actorType, Vector3 position, Vector3 rotation, out IActor actor)
     {
         actor = null!;
         if (!idManager.Add(actorId))
@@ -247,7 +247,7 @@ internal sealed class ActorManager(ILogger<ActorManager> logger, IActorIdManager
 
         actor = new RemoteActor
         {
-            ActorType = actorType,
+            Type = actorType,
             ActorId = actorId,
             CreatorId = steamId,
             Zone = player.Zone,
@@ -279,7 +279,7 @@ internal sealed class ActorManager(ILogger<ActorManager> logger, IActorIdManager
             return false;
         }
 
-        if (actor.ActorType == "player" && !_players.TryRemove(actor.CreatorId, out _))
+        if (actor.Type == ActorType.Player && !_players.TryRemove(actor.CreatorId, out _))
         {
             logger.LogError("player not found {SteamId}", actor.CreatorId);
         }
@@ -291,21 +291,21 @@ internal sealed class ActorManager(ILogger<ActorManager> logger, IActorIdManager
 
     public int GetActorCount() => _actors.Count;
 
-    public int GetActorCountByType(string actorType) => _owned.Values.Count(actor => actor.ActorType == actorType);
+    public int GetActorCountByType(ActorType actorType) => _owned.Values.Count(actor => actor.Type == actorType);
 
-    public bool TryRemoveActorFirstByType(string actorType, ActorRemoveTypes type, out IActor actor)
+    public bool TryRemoveActorFirstByType(ActorType actorType, ActorRemoveTypes type, out IActor actor)
     {
         actor = null!;
-        var find = _owned.Values.FirstOrDefault(a => a.ActorType == actorType);
+        var find = _owned.Values.FirstOrDefault(a => a.Type == actorType);
         return find != null && TryRemoveActor(find.ActorId, type, out actor);
     }
 
     public IActor? SpawnAmbientBirdActor(Vector3 position)
     {
-        var actorCount = GetActorCountByType("ambient_bird");
+        var actorCount = GetActorCountByType(ActorType.AmbientBird);
         if (actorCount >= 7)
         {
-            TryRemoveActorFirstByType("ambient_bird", ActorRemoveTypes.ActorCountOver, out _);
+            TryRemoveActorFirstByType(ActorType.AmbientBird, ActorRemoveTypes.ActorCountOver, out _);
         }
 
         return TryCreateHostActor<AmbientBirdActor>(position, out var fish) ? fish : null;
@@ -313,10 +313,10 @@ internal sealed class ActorManager(ILogger<ActorManager> logger, IActorIdManager
 
     public IActor? SpawnFishSpawnActor(Vector3 position)
     {
-        var actorCount = GetActorCountByType("fish_spawn");
+        var actorCount = GetActorCountByType(ActorType.FishSpawn);
         if (actorCount >= 5)
         {
-            TryRemoveActorFirstByType("fish_spawn", ActorRemoveTypes.ActorCountOver, out _);
+            TryRemoveActorFirstByType(ActorType.FishSpawn, ActorRemoveTypes.ActorCountOver, out _);
         }
 
         return TryCreateHostActor<FishSpawnActor>(position, out var fish) ? fish : null;
@@ -324,10 +324,10 @@ internal sealed class ActorManager(ILogger<ActorManager> logger, IActorIdManager
 
     public IActor? SpawnFishSpawnAlienActor(Vector3 position)
     {
-        var actorCount = GetActorCountByType("fish_spawn_alien");
+        var actorCount = GetActorCountByType(ActorType.FishSpawnAlien);
         if (actorCount >= 1)
         {
-            TryRemoveActorFirstByType("fish_spawn_alien", ActorRemoveTypes.ActorCountOver, out _);
+            TryRemoveActorFirstByType(ActorType.FishSpawnAlien, ActorRemoveTypes.ActorCountOver, out _);
         }
 
         return TryCreateHostActor<FishSpawnAlienActor>(position, out var fish) ? fish : null;
@@ -335,10 +335,10 @@ internal sealed class ActorManager(ILogger<ActorManager> logger, IActorIdManager
 
     public IActor? SpawnRainCloudActor(Vector3 position)
     {
-        var actorCount = GetActorCountByType("raincloud");
+        var actorCount = GetActorCountByType(ActorType.RainCloud);
         if (actorCount >= 1)
         {
-            TryRemoveActorFirstByType("raincloud", ActorRemoveTypes.ActorCountOver, out _);
+            TryRemoveActorFirstByType(ActorType.RainCloud, ActorRemoveTypes.ActorCountOver, out _);
         }
 
         return TryCreateHostActor<RainCloudActor>(position, out var cloud) ? cloud : null;
@@ -346,10 +346,10 @@ internal sealed class ActorManager(ILogger<ActorManager> logger, IActorIdManager
 
     public IActor? SpawnVoidPortalActor(Vector3 position)
     {
-        var actorCount = GetActorCountByType("void_portal");
+        var actorCount = GetActorCountByType(ActorType.VoidPortal);
         if (actorCount >= 1)
         {
-            TryRemoveActorFirstByType("void_portal", ActorRemoveTypes.ActorCountOver, out _);
+            TryRemoveActorFirstByType(ActorType.VoidPortal, ActorRemoveTypes.ActorCountOver, out _);
         }
 
         return TryCreateHostActor<VoidPortalActor>(position, out var portal) ? portal : null;
@@ -357,12 +357,25 @@ internal sealed class ActorManager(ILogger<ActorManager> logger, IActorIdManager
 
     public IActor? SpawnMetalActor(Vector3 position)
     {
-        var actorCount = GetActorCountByType("metal_spawn");
+        var actorCount = GetActorCountByType(ActorType.MetalSpawn);
         if (actorCount >= 8)
         {
-            TryRemoveActorFirstByType("metal_spawn", ActorRemoveTypes.ActorCountOver, out _);
+            TryRemoveActorFirstByType(ActorType.MetalSpawn, ActorRemoveTypes.ActorCountOver, out _);
         }
 
         return TryCreateHostActor<MetalSpawnActor>(position, out var metal) ? metal : null;
+    }
+
+    public bool IsInSphereActor(ActorType actorType, in Vector3 position, float radius)
+    {
+        foreach (var actor in _actors.Values.Where(actor => actor.Type == actorType))
+        {
+            if (Vector3.Distance(actor.Position, position) <= radius)
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

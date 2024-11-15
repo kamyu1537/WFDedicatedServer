@@ -2,12 +2,13 @@
 using WFDS.Common.Network;
 using WFDS.Common.Network.Packets;
 using WFDS.Common.Types;
+using WFDS.Common.Types.Manager;
 using Session = WFDS.Common.Network.Session;
 
 namespace WFDS.Server.PacketHandler;
 
 [PacketType("instance_actor")]
-internal class InstanceActorHandler(ILogger<InstanceActorHandler> logger, IActorManager actorManager) : PacketHandler<InstanceActorPacket>
+internal class InstanceActorHandler(ILogger<InstanceActorHandler> logger, IActorManager actorManager, ISessionManager sessionManager) : PacketHandler<InstanceActorPacket>
 {
     protected override async Task HandlePacketAsync(Session sender, NetChannel channel, InstanceActorPacket packet)
     {
@@ -17,32 +18,24 @@ internal class InstanceActorHandler(ILogger<InstanceActorHandler> logger, IActor
         else CreateRemoteActor(sender, packet);
         await Task.Yield();
     }
-    
-    private static readonly string[] OnlyHostActors =
-    [
-        "fish_spawn",
-        "fish_spawn_alien",
-        "void_portal",
-        "raincloud",
-        "ambient_bird",
-        "metal_spawn"
-    ];
-
-    private static bool IsHostActor(InstanceActorPacket packet)
-    {
-        return OnlyHostActors.Contains(packet.Param.ActorType);
-    }
 
     private void CreateRemoteActor(Session sender, InstanceActorPacket packet)
     {
-        if (IsHostActor(packet))
+        var actorType = ActorType.GetActorType(packet.Param.ActorType);
+        if (actorType == null)
         {
-            logger.LogError("player request host actor {Member} - {ActorId} {ActorType}", sender.Friend, packet.Param.ActorId, packet.Param.ActorType);
-            
+            logger.LogError("actor type not found {ActorType} : {Member}", packet.Param.ActorType, sender.Friend);
             return;
         }
 
-        var created = actorManager.TryCreateRemoteActor(sender.SteamId, packet.Param.ActorId, packet.Param.ActorType, packet.Param.Position, packet.Param.Rotation, out _);
+        if (actorType.HostOnly)
+        {
+            logger.LogWarning("actor type {ActorType} is host only : {Member}", actorType.Name, sender.Friend);
+            sessionManager.KickPlayer(sender.SteamId);
+            return;
+        }
+
+        var created = actorManager.TryCreateRemoteActor(sender.SteamId, packet.Param.ActorId, actorType, packet.Param.Position, packet.Param.Rotation, out _);
         if (!created)
         {
             logger.LogError("failed to create remote actor {ActorId} {ActorType}", packet.Param.ActorId, packet.Param.ActorType);

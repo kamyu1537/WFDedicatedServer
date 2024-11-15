@@ -29,7 +29,7 @@ internal sealed class MetalSpawnScheduleService(ILogger<MetalSpawnScheduleServic
         var metal = spawn.SpawnMetalActor();
         if (metal != null)
         {
-            logger.LogInformation("spawn {ActorType} ({ActorId}) at {Pos}", metal.ActorType, metal.ActorId, metal.Position);
+            logger.LogInformation("spawn {ActorType} ({ActorId}) at {Pos}", metal.Type, metal.ActorId, metal.Position);
         }
     }
 

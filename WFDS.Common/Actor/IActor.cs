@@ -5,7 +5,7 @@ namespace WFDS.Common.Actor;
 
 public interface IActor
 {
-    string ActorType { get; }
+    ActorType Type { get; }
     long ActorId { get; init; }
     SteamId CreatorId { get; init; }
     string Zone { get; set; }

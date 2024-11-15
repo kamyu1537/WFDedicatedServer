@@ -5,7 +5,7 @@ namespace WFDS.Common.Actor.Actors;
 
 public sealed class VoidPortalActor : IActor
 {
-    public string ActorType => "void_portal";
+    public ActorType Type => ActorType.VoidPortal;
     public long ActorId { get; init; }
     public SteamId CreatorId { get; init; }
     public string Zone { get; set; } = "main_zone";

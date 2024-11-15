@@ -5,7 +5,7 @@ namespace WFDS.Common.Actor.Actors;
 
 public sealed class AmbientBirdActor : IActor
 {
-    public string ActorType => "ambient_bird";
+    public ActorType Type => ActorType.AmbientBird;
     public long ActorId { get; init; }
     public SteamId CreatorId { get; init; }
     public string Zone { get; set; } = "main_zone";

@@ -64,7 +64,7 @@ public class InstanceActorPacket : Packet
         {
             Param = new ActorParamData
             {
-                ActorType = actor.ActorType,
+                ActorType = actor.Type.Name,
                 ActorId = actor.ActorId,
                 CreatorId = (long)actor.CreatorId.Value,
                 Zone = actor.Zone,

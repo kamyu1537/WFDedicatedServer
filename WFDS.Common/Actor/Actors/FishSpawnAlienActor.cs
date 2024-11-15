@@ -5,7 +5,7 @@ namespace WFDS.Common.Actor.Actors;
 
 public sealed class FishSpawnAlienActor : IActor
 {
-    public string ActorType => "fish_spawn_alien";
+    public ActorType Type => ActorType.FishSpawnAlien;
     public long ActorId { get; init; }
     public SteamId CreatorId { get; init; }
     public string Zone { get; set; } = "main_zone";

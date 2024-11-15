@@ -5,7 +5,7 @@ namespace WFDS.Common.Actor.Actors;
 
 public sealed class MetalSpawnActor : IActor
 {
-    public string ActorType => "metal_spawn";
+    public ActorType Type => ActorType.MetalSpawn;
     public long ActorId { get; init; }
     public SteamId CreatorId { get; init; }
     public string Zone { get; set; } = "main_zone";

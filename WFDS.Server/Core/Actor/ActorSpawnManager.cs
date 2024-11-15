@@ -8,12 +8,18 @@ namespace WFDS.Server.Core.Actor;
 internal sealed class ActorSpawnManager(ILogger<ActorSpawnManager> logger, IMapManager map, IActorManager actor) : IActorSpawnManager
 {
     private readonly Random _random = new();
-    
+
     public void SpawnAmbientBirdActor()
     {
-        var count = _random.Next() % 3 + 1;
-        var point = map.TrashPoints[_random.Next() % map.TrashPoints.Count];
+        PositionNode point;
+        bool found;
+        do
+        {
+            point = map.TrashPoints[_random.Next() % map.TrashPoints.Count];
+            found = actor.IsInSphereActor(ActorType.AmbientBird, point.Transform.Origin, 5f);
+        } while (found); // prevent spawn on top of each other
 
+        var count = _random.Next() % 3 + 1;
         for (var i = 0; i < count; i++)
         {
             var x = _random.NextSingle() * 5f - 2.5f;
@@ -23,16 +29,30 @@ internal sealed class ActorSpawnManager(ILogger<ActorSpawnManager> logger, IMapM
             actor.SpawnAmbientBirdActor(pos);
         }
     }
-    
+
     public IActor? SpawnFishSpawnActor()
     {
-        var point = map.FishSpawnPoints[_random.Next() % map.FishSpawnPoints.Count];
+        PositionNode point;
+        bool found;
+        do
+        {
+            point = map.FishSpawnPoints[_random.Next() % map.FishSpawnPoints.Count];
+            found = actor.IsInSphereActor(ActorType.FishSpawn, point.Transform.Origin, 1f);
+        } while (found); // prevent spawn on top of each other
+
         return actor.SpawnFishSpawnActor(point.Transform.Origin);
     }
 
     public IActor? SpawnFishSpawnAlienActor()
     {
-        var point = map.FishSpawnPoints[_random.Next() % map.FishSpawnPoints.Count];
+        PositionNode point;
+        bool found;
+        do
+        {
+            point = map.FishSpawnPoints[_random.Next() % map.FishSpawnPoints.Count];
+            found = actor.IsInSphereActor(ActorType.FishSpawnAlien, point.Transform.Origin, 1f);
+        } while (found); // prevent spawn on top of each other
+
         return actor.SpawnFishSpawnAlienActor(point.Transform.Origin);
     }
 
@@ -53,14 +73,21 @@ internal sealed class ActorSpawnManager(ILogger<ActorSpawnManager> logger, IMapM
             return null;
         }
 
-        var point = map.HiddenSpots[_random.Next() % map.HiddenSpots.Count];
+        PositionNode point;
+        bool found;
+        do
+        {
+            point = map.HiddenSpots[_random.Next() % map.HiddenSpots.Count];
+            found = actor.IsInSphereActor(ActorType.VoidPortal, point.Transform.Origin, 1f);
+        } while (found); // prevent spawn on top of each other
+
         var x = _random.NextSingle() - 0.5f;
         var z = _random.NextSingle() - 0.5f;
         var pos = point.Transform.Origin + new Vector3(x, 0, z);
 
         return actor.SpawnVoidPortalActor(pos);
     }
-    
+
     public IActor? SpawnMetalActor()
     {
         var point = RandomPickMetalPoint();
@@ -73,11 +100,26 @@ internal sealed class ActorSpawnManager(ILogger<ActorSpawnManager> logger, IMapM
 
     private PositionNode RandomPickMetalPoint()
     {
+        PositionNode point;
+        bool found;
+
         if (_random.NextSingle() < 0.15)
         {
-            return map.ShorelinePoints[_random.Next() % map.ShorelinePoints.Count];
+            do
+            {
+                point = map.ShorelinePoints[_random.Next() % map.ShorelinePoints.Count];
+                found = actor.IsInSphereActor(ActorType.MetalSpawn, point.Transform.Origin, 1f);
+            } while (found); // prevent spawn on top of each other
+        }
+        else
+        {
+            do
+            {
+                point = map.TrashPoints[_random.Next() % map.TrashPoints.Count];
+                found = actor.IsInSphereActor(ActorType.MetalSpawn, point.Transform.Origin, 1f);
+            } while (found); // prevent spawn on top of each other
         }
 
-        return map.TrashPoints[_random.Next() % map.TrashPoints.Count];
+        return point;
     }
 }

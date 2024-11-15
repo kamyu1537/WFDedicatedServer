@@ -5,7 +5,7 @@ namespace WFDS.Common.Actor.Actors;
 
 public sealed class RemoteActor : IActor
 {
-    public string ActorType { get; init; } = string.Empty;
+    public ActorType Type { get; init; } = ActorType.None;
     public long ActorId { get; init; }
     public SteamId CreatorId { get; init; }
     public string Zone { get; set; } = string.Empty;
