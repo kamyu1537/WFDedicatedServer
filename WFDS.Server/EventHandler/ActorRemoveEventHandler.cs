@@ -8,7 +8,7 @@ using WFDS.Common.Types.Manager;
 
 namespace WFDS.Server.EventHandler;
 
-internal class ActorRemoveEventHandler(IActorManager actorManager, ISessionManager sessionManager) : ChannelEventHandler<ActorRemoveEvent>
+internal class ActorRemoveEventHandler(ISessionManager sessionManager) : ChannelEventHandler<ActorRemoveEvent>
 {
     protected override async Task HandleAsync(ActorRemoveEvent e)
     {
