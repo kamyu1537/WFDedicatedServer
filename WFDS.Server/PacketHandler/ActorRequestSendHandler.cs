@@ -12,10 +12,17 @@ namespace WFDS.Server.PacketHandler;
 internal class ActorRequestSendHandler(ILogger<ActorRequestSendHandler> logger, IActorManager actorManager, ISessionManager sessionManager) : PacketHandler<ActorRequestSendPacket>
 {
     protected override async Task HandlePacketAsync(Session sender, NetChannel channel, ActorRequestSendPacket packet)
-    { 
+    {
         foreach (var actor in packet.Actors)
         {
+            if (actorManager.GetActor(actor.ActorId) != null)
+            {
+                logger.LogWarning("actor {Actor} already exists : {Member}", actor.ActorId, sender.Friend);
+                continue;
+            }
+
             if (actor.ActorType == "player") continue; // 여기에서 플레이어는 생성하면 안됨!!
+
             logger.LogDebug("received actor_request_send from {Member} : {Actor} {ActorType}", sender.Friend, actor.ActorId, actor.ActorType);
 
             var actorType = ActorType.GetActorType(actor.ActorType);
@@ -31,7 +38,7 @@ internal class ActorRequestSendHandler(ILogger<ActorRequestSendHandler> logger, 
                 sessionManager.KickPlayer(sender.SteamId);
                 break;
             }
-            
+
             actorManager.TryCreateRemoteActor(sender.SteamId, actor.ActorId, actorType, Vector3.Zero, Vector3.Zero, out _);
         }
 
