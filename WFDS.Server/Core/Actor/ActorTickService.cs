@@ -30,7 +30,7 @@ internal sealed class ActorTickService(ILogger<ActorTickService> logger, IActorM
         {
             if (Decay(actor)) return;
             if (actor.IsDeadActor) return;
-            
+
             await ChannelEventBus.PublishAsync(new ActorTickEvent(actor.ActorId, delta));
         }
     }

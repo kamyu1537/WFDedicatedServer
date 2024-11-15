@@ -279,13 +279,21 @@ internal sealed class ActorManager(ILogger<ActorManager> logger, IActorIdManager
             return false;
         }
 
-        if (actor.Type == ActorType.Player && !_players.TryRemove(actor.CreatorId, out _))
+        if (actor.Type == ActorType.Player)
         {
-            logger.LogError("player not found {SteamId}", actor.CreatorId);
+            if (!_players.TryRemove(actor.CreatorId, out _))
+            {
+                logger.LogError("player not found {SteamId}", actor.CreatorId);   
+            }
         }
-
-        ChannelEventBus.PublishAsync(new ActorRemoveEvent(actorId)).Wait();
+        
+        if (actor.CreatorId == SteamClient.SteamId.Value)
+        {
+            _owned.TryRemove(actorId, out _);
+        }
+        
         idManager.Return(actorId);
+        ChannelEventBus.PublishAsync(new ActorRemoveEvent(actorId)).Wait();
         return true;
     }
 
