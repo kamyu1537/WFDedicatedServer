@@ -1,13 +1,13 @@
 ﻿using System.Drawing;
-using WFDS.Common.ChannelEvents;
-using WFDS.Common.ChannelEvents.Events;
+using WFDS.Common.GameEvents;
+using WFDS.Common.GameEvents.Events;
 using WFDS.Common.Network.Packets;
 using WFDS.Common.Types;
 using WFDS.Common.Types.Manager;
 
 namespace TemplatePlugin;
 
-public class PlayerJoinEventHandler(ISessionManager sessionManager) : ChannelEventHandler<PlayerJoinedEvent>
+public class PlayerJoinGameEventHandler(ISessionManager sessionManager) : GameEventHandler<PlayerJoinedEvent>
 {
     protected override async Task HandleAsync(PlayerJoinedEvent e)
     {

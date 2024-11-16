@@ -1,13 +1,13 @@
 ﻿using Steamworks;
-using WFDS.Common.ChannelEvents;
-using WFDS.Common.ChannelEvents.Events;
+using WFDS.Common.GameEvents;
+using WFDS.Common.GameEvents.Events;
 using WFDS.Common.Network.Packets;
 using WFDS.Common.Types;
 using WFDS.Common.Types.Manager;
 
 namespace WFDS.Server.EventHandler;
 
-internal class ActorRemoveEventHandler(ISessionManager sessionManager) : ChannelEventHandler<ActorRemoveEvent>
+internal class ActorRemoveGameEventHandler(ISessionManager sessionManager) : GameEventHandler<ActorRemoveEvent>
 {
     protected override async Task HandleAsync(ActorRemoveEvent e)
     {

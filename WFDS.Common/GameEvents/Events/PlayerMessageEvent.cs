@@ -1,9 +1,9 @@
 using System.Numerics;
 using Steamworks;
 
-namespace WFDS.Common.ChannelEvents.Events;
+namespace WFDS.Common.GameEvents.Events;
 
-public class PlayerMessageEvent(SteamId playerId, string message, string color, bool local, Vector3 position, string zone, long zoneOwner) : ChannelEvent
+public class PlayerMessageEvent(SteamId playerId, string message, string color, bool local, Vector3 position, string zone, long zoneOwner) : GameEvent
 {
     public SteamId PlayerId { get; init; } = playerId;
     public string Message { get; init; } = message;

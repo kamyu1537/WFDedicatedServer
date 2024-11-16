@@ -1,9 +1,9 @@
 using Steamworks;
 using WFDS.Common.Actor;
 
-namespace WFDS.Common.ChannelEvents.Events;
+namespace WFDS.Common.GameEvents.Events;
 
-public class ActorRemoveEvent(long actorId, ActorType actorType, SteamId ownerId, ActorRemoveTypes removeType) : ChannelEvent
+public class ActorRemoveEvent(long actorId, ActorType actorType, SteamId ownerId, ActorRemoveTypes removeType) : GameEvent
 {
     public long ActorId { get; init; } = actorId;
     public ActorType Type { get; init; } = actorType;

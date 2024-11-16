@@ -1,12 +1,12 @@
 ﻿using System.Text.Json;
 using Steamworks;
 using WFDS.Common.Actor;
-using WFDS.Common.ChannelEvents.Events;
+using WFDS.Common.GameEvents.Events;
 using WFDS.Common.Extensions;
 using WFDS.Common.Network;
 using WFDS.Common.Network.Packets;
 using WFDS.Common.Types;
-using WFDS.Server.Core.ChannelEvent;
+using WFDS.Server.Core.GameEvent;
 using Session = WFDS.Common.Network.Session;
 
 namespace WFDS.Server.PacketHandler;
@@ -124,8 +124,10 @@ internal class ActorActionHandler(ILogger<ActorActionHandler> logger, IActorMana
 
             var zone = packet.Params[0].GetString();
             var zoneOwner = packet.Params[1].GetNumber();
-            await ChannelEventBus.PublishAsync(new ActorZoneUpdateEvent(actor.ActorId, zone, zoneOwner));
+            GameEventBus.Publish(new ActorZoneUpdateEvent(actor.ActorId, zone, zoneOwner));
         }
+        
+        await Task.Yield();
     }
 
     private async Task UpdateCosmetics(Session sender, ActorActionPacket packet)
@@ -148,7 +150,8 @@ internal class ActorActionHandler(ILogger<ActorActionHandler> logger, IActorMana
         var dic = packet.Params[0].GetObjectDictionary();
         var cosmetics = new Cosmetics();
         cosmetics.Deserialize(dic);
-        await ChannelEventBus.PublishAsync(new PlayerCosmeticsUpdateEvent(sender.SteamId, cosmetics));
+        GameEventBus.Publish(new PlayerCosmeticsUpdateEvent(sender.SteamId, cosmetics));
+        await Task.Yield();
     }
 
     private async Task UpdateHeldItem(Session sender, ActorActionPacket packet)
@@ -171,7 +174,8 @@ internal class ActorActionHandler(ILogger<ActorActionHandler> logger, IActorMana
         var dic = packet.Params[0].GetObjectDictionary();
         var item = new GameItem();
         item.Deserialize(dic);
-        await ChannelEventBus.PublishAsync(new PlayerHeldItemUpdateEvent(sender.SteamId, item));
+        GameEventBus.Publish(new PlayerHeldItemUpdateEvent(sender.SteamId, item));
+        await Task.Yield();
     }
 
     private async Task SyncCreateBubble(Session sender, ActorActionPacket packet)
@@ -191,7 +195,8 @@ internal class ActorActionHandler(ILogger<ActorActionHandler> logger, IActorMana
         }
 
         var text = packet.Params[0].GetString();
-        await ChannelEventBus.PublishAsync(new PlayerChatMessageEvent(sender.SteamId, text));
+        GameEventBus.Publish(new PlayerChatMessageEvent(sender.SteamId, text));
+        await Task.Yield();
     }
 
     private async Task SyncLevelBubble(Session sender, ActorActionPacket packet)
@@ -210,7 +215,7 @@ internal class ActorActionHandler(ILogger<ActorActionHandler> logger, IActorMana
             return;
         }
 
-        ChannelEventBus.PublishAsync(new PlayerLevelUpEvent(sender.SteamId)).Wait();
+        GameEventBus.Publish(new PlayerLevelUpEvent(sender.SteamId));
         await Task.Yield();
     }
 }

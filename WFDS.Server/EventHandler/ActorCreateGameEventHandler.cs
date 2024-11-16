@@ -1,14 +1,14 @@
 ﻿using Steamworks;
 using WFDS.Common.Actor;
-using WFDS.Common.ChannelEvents;
-using WFDS.Common.ChannelEvents.Events;
+using WFDS.Common.GameEvents;
+using WFDS.Common.GameEvents.Events;
 using WFDS.Common.Network.Packets;
 using WFDS.Common.Types;
 using WFDS.Common.Types.Manager;
 
 namespace WFDS.Server.EventHandler;
 
-internal class ActorCreateEventHandler(IActorManager actorManager, ISessionManager sessionManager) : ChannelEventHandler<ActorCreateEvent>
+internal class ActorCreateGameEventHandler(IActorManager actorManager, ISessionManager sessionManager) : GameEventHandler<ActorCreateEvent>
 {
     protected override async Task HandleAsync(ActorCreateEvent e)
     {

@@ -1,9 +1,9 @@
 ﻿using WFDS.Common.Actor;
-using WFDS.Common.ChannelEvents.Events;
+using WFDS.Common.GameEvents.Events;
 using WFDS.Common.Network;
 using WFDS.Common.Network.Packets;
 using WFDS.Common.Types;
-using WFDS.Server.Core.ChannelEvent;
+using WFDS.Server.Core.GameEvent;
 using Session = WFDS.Common.Network.Session;
 
 namespace WFDS.Server.PacketHandler;
@@ -21,6 +21,7 @@ internal class ActorUpdateHandler(IActorManager actorManager) : PacketHandler<Ac
             return;
         }
         
-        await ChannelEventBus.PublishAsync(new ActorTransformUpdateEvent(actor.ActorId, packet.Position, packet.Rotation));
+        GameEventBus.Publish(new ActorTransformUpdateEvent(actor.ActorId, packet.Position, packet.Rotation));
+        await Task.Yield();
     }
 }

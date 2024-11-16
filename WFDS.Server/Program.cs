@@ -6,7 +6,7 @@ using WFDS.Common.Types;
 using WFDS.Common.Types.Manager;
 using WFDS.Server.Core;
 using WFDS.Server.Core.Actor;
-using WFDS.Server.Core.ChannelEvent;
+using WFDS.Server.Core.GameEvent;
 using WFDS.Server.Core.Configuration;
 using WFDS.Server.Core.Network;
 using WFDS.Server.Core.Resource;
@@ -54,7 +54,7 @@ try
     /////////////////////////////////////////////////////////////////
 
     builder.Services.AddPacketHandlers();
-    builder.Services.AddChannelEventHandlers();
+    builder.Services.AddGameEventHandlers();
 
     /////////////////////////////////////////////////////////////////
 
@@ -65,7 +65,7 @@ try
     builder.Services.AddHostedService<PacketSendService>();
     builder.Services.AddHostedService<ActorTickService>();
     builder.Services.AddHostedService<ActorNetworkShareService>();
-    builder.Services.AddHostedService<ChannelEventService>();
+    builder.Services.AddHostedService<GameEventService>();
 
     builder.Services.AddHostedService<LobbyUpdateScheduleService>();
     builder.Services.AddHostedService<RequestPingScheduleService>();

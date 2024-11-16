@@ -1,6 +1,6 @@
-namespace WFDS.Common.ChannelEvents.Events;
+namespace WFDS.Common.GameEvents.Events;
 
-public class ActorZoneUpdateEvent(long actorId, string zone, long zoneOwner) : ChannelEvent
+public class ActorZoneUpdateEvent(long actorId, string zone, long zoneOwner) : GameEvent
 {
     public long ActorId { get; init; } = actorId;
     public string Zone { get; init; } = zone;

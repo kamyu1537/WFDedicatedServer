@@ -1,8 +1,8 @@
-﻿using WFDS.Common.ChannelEvents.Events;
+﻿using WFDS.Common.GameEvents.Events;
 using WFDS.Common.Network;
 using WFDS.Common.Network.Packets;
 using WFDS.Common.Types;
-using WFDS.Server.Core.ChannelEvent;
+using WFDS.Server.Core.GameEvent;
 using Session = WFDS.Common.Network.Session;
 
 namespace WFDS.Server.PacketHandler;
@@ -13,6 +13,7 @@ internal class NewPlayerJoinHandler(ILogger<NewPlayerJoinHandler> logger) : Pack
     protected override async Task HandlePacketAsync(Session sender, NetChannel channel, NewPlayerJoinPacket packet)
     {
         logger.LogDebug("received new_player_join from {Sender} on channel {Channel}", sender.SteamId, channel);
-        await ChannelEventBus.PublishAsync(new NewPlayerJoinEvent(sender.SteamId));
+        GameEventBus.Publish(new NewPlayerJoinEvent(sender.SteamId));
+        await Task.Yield();
     }
 }

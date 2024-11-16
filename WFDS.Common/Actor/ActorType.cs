@@ -6,8 +6,9 @@ public sealed class ActorType
     public bool HostOnly { get; }
     public int MaxCount { get; }
     public bool DeleteOver { get; }
+    public bool ConnectionSync { get; }
 
-    private ActorType(string name, bool host, int maxCount = -1, bool deleteOver = false)
+    private ActorType(string name, bool host, int maxCount = -1, bool deleteOver = false, bool connectionSync = false)
     {
         Name = name;
         HostOnly = host;
@@ -26,7 +27,7 @@ public sealed class ActorType
     public static ActorType FishSpawn { get; } = new("fish_spawn", true, 12, true);
     public static ActorType FishSpawnAlien { get; } = new("fish_spawn_alien", true, 1, true);
     public static ActorType RainCloud { get; } = new("raincloud", true, 2);
-    public static ActorType MetalSpawn { get; } = new("metal_spawn", true, 8);
+    public static ActorType MetalSpawn { get; } = new("metal_spawn", true, 8, false, true);
     public static ActorType AmbientBird { get; } = new("ambient_bird", true, 8, true);
     public static ActorType VoidPortal { get; } = new("void_portal", true, 1, true);
     

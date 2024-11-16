@@ -1,10 +1,10 @@
 using WFDS.Common.Actor;
-using WFDS.Common.ChannelEvents;
-using WFDS.Common.ChannelEvents.Events;
+using WFDS.Common.GameEvents;
+using WFDS.Common.GameEvents.Events;
 
 namespace WFDS.Server.EventHandler;
 
-internal class ActorZoneUpdateEventHandler(IActorManager actorManager) : ChannelEventHandler<ActorZoneUpdateEvent>
+internal class ActorZoneUpdateGameEventHandler(IActorManager actorManager) : GameEventHandler<ActorZoneUpdateEvent>
 {
     protected override async Task HandleAsync(ActorZoneUpdateEvent e)
     {

@@ -1,12 +1,12 @@
 ﻿using System.Numerics;
 using WFDS.Common.Actor;
 using WFDS.Common.Actor.Actors;
-using WFDS.Common.ChannelEvents;
-using WFDS.Common.ChannelEvents.Events;
+using WFDS.Common.GameEvents;
+using WFDS.Common.GameEvents.Events;
 
 namespace WFDS.Server.EventHandler;
 
-internal class AmbientBirdTickEventHandler(ILogger<AmbientBirdTickEventHandler> logger, IActorManager actorManager) : ChannelEventHandler<ActorTickEvent>
+internal class AmbientBirdTickGameEventHandler(ILogger<AmbientBirdTickGameEventHandler> logger, IActorManager actorManager) : GameEventHandler<ActorTickEvent>
 {
     protected override async Task HandleAsync(ActorTickEvent e)
     {

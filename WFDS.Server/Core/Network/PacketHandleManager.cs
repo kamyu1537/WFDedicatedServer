@@ -62,7 +62,7 @@ internal class PacketHandleManager
             Task.WhenAll(handlerTypes
                 .Select(handlerType => _provider.GetRequiredService(handlerType) as Common.Network.PacketHandler)
                 .Where(x => x != null)
-                .Select(x => x!.HandlePacketAsync(session, channel, dic))).Wait();
+                .Select(x => x!.HandlePacketAsync(session, channel, dic)));
 
             dic.Clear();
         }

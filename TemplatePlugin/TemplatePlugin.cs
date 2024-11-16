@@ -10,6 +10,6 @@ public class TemplatePlugin : Plugin
     
     public override void Load()
     {
-        RegisterEventHandler<PlayerJoinEventHandler>();
+        RegisterEventHandler<PlayerJoinGameEventHandler>();
     }
 }

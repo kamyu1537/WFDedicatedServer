@@ -1,8 +1,8 @@
 ﻿using Steamworks;
 using WFDS.Common.Actor;
-using WFDS.Common.ChannelEvents.Events;
+using WFDS.Common.GameEvents.Events;
 using WFDS.Common.Types.Manager;
-using WFDS.Server.Core.ChannelEvent;
+using WFDS.Server.Core.GameEvent;
 
 namespace WFDS.Server.Core.Actor;
 
@@ -18,7 +18,7 @@ internal sealed class ActorTickService(ILogger<ActorTickService> logger, IActorM
             prev = now;
 
             await UpdateAsync(delta);
-            await ChannelEventBus.WaitAsync();
+            await GameEventBus.WaitAsync();
             await Task.Delay(1000 / 60, stoppingToken); // godot physics fps is 60
         }
     }
@@ -31,7 +31,7 @@ internal sealed class ActorTickService(ILogger<ActorTickService> logger, IActorM
             if (Decay(actor)) return;
             if (actor.IsRemoved) continue;
             
-            await ChannelEventBus.PublishAsync(new ActorTickEvent(actor.ActorId, delta));
+            GameEventBus.Publish(new ActorTickEvent(actor.ActorId, delta));
         }
     }
 

@@ -1,14 +1,14 @@
 ﻿using System.Collections.Concurrent;
 using Steamworks;
 using Steamworks.Data;
-using WFDS.Common.ChannelEvents.Events;
+using WFDS.Common.GameEvents.Events;
 using WFDS.Common.Helpers;
 using WFDS.Common.Network;
 using WFDS.Common.Network.Packets;
 using WFDS.Common.Types;
 using WFDS.Common.Types.Manager;
 using WFDS.Godot.Binary;
-using WFDS.Server.Core.ChannelEvent;
+using WFDS.Server.Core.GameEvent;
 
 namespace WFDS.Server.Core.Network;
 
@@ -223,7 +223,7 @@ internal sealed class SessionManager : ISessionManager
             return;
         }
 
-        ChannelEventBus.PublishAsync(new PlayerLeaveEvent(member.Id)).Wait();
+        GameEventBus.Publish(new PlayerLeaveEvent(member.Id));
         UpdateConsoleTitle();
     }
 
@@ -504,7 +504,7 @@ internal sealed class SessionManager : ISessionManager
             return;
         }
 
-        ChannelEventBus.PublishAsync(new PlayerJoinedEvent(member.Id)).Wait();
+        GameEventBus.Publish(new PlayerJoinedEvent(member.Id));
         UpdateConsoleTitle();
     }
 

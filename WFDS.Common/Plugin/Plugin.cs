@@ -1,5 +1,5 @@
 ﻿using System.Collections.Immutable;
-using WFDS.Common.ChannelEvents;
+using WFDS.Common.GameEvents;
 using WFDS.Common.Network;
 
 namespace WFDS.Common.Plugin;
@@ -11,7 +11,7 @@ internal interface IPlugin
     
     void Load();
     
-    void RegisterEventHandler<T>() where T : ChannelEventHandler;
+    void RegisterEventHandler<T>() where T : GameEventHandler;
     void RegisterPacketHandler<T>() where T : PacketHandler;
 }
 
@@ -29,7 +29,7 @@ public abstract class Plugin : IPlugin
     
     public abstract void Load();
     
-    public void RegisterEventHandler<T>() where T : ChannelEventHandler
+    public void RegisterEventHandler<T>() where T : GameEventHandler
     {
         _eventHandlers.Add(typeof(T));
     }

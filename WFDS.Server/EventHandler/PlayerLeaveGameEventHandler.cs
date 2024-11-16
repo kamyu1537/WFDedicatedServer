@@ -1,10 +1,10 @@
 ﻿using WFDS.Common.Actor;
-using WFDS.Common.ChannelEvents;
-using WFDS.Common.ChannelEvents.Events;
+using WFDS.Common.GameEvents;
+using WFDS.Common.GameEvents.Events;
 
 namespace WFDS.Server.EventHandler;
 
-internal class PlayerLeaveEventHandler(ILogger<PlayerLeaveEventHandler> logger, IActorManager actorManager) : ChannelEventHandler<PlayerLeaveEvent>
+internal class PlayerLeaveGameEventHandler(ILogger<PlayerLeaveGameEventHandler> logger, IActorManager actorManager) : GameEventHandler<PlayerLeaveEvent>
 {
     protected override async Task HandleAsync(PlayerLeaveEvent e)
     {

@@ -1,13 +1,13 @@
 using System.Numerics;
 using WFDS.Common.Actor;
 using WFDS.Common.Actor.Actors;
-using WFDS.Common.ChannelEvents;
-using WFDS.Common.ChannelEvents.Events;
+using WFDS.Common.GameEvents;
+using WFDS.Common.GameEvents.Events;
 using WFDS.Common.Extensions;
 
 namespace WFDS.Server.EventHandler;
 
-internal class RainCloudTickEventHandler(IActorManager actorManager) : ChannelEventHandler<ActorTickEvent>
+internal class RainCloudTickGameEventHandler(IActorManager actorManager) : GameEventHandler<ActorTickEvent>
 {
     protected override async Task HandleAsync(ActorTickEvent e)
     {

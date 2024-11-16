@@ -3,8 +3,8 @@ using System.Numerics;
 using Steamworks;
 using WFDS.Common.Actor;
 using WFDS.Common.Actor.Actors;
-using WFDS.Common.ChannelEvents.Events;
-using WFDS.Server.Core.ChannelEvent;
+using WFDS.Common.GameEvents.Events;
+using WFDS.Server.Core.GameEvent;
 
 namespace WFDS.Server.Core.Actor;
 
@@ -168,7 +168,7 @@ internal sealed class ActorManager(ILogger<ActorManager> logger, IActorIdManager
             return false;
         }
 
-        ChannelEventBus.PublishAsync(new ActorCreateEvent(actor.ActorId)).Wait();
+        GameEventBus.Publish(new ActorCreateEvent(actor.ActorId));
         return true;
     }
 
@@ -325,7 +325,7 @@ internal sealed class ActorManager(ILogger<ActorManager> logger, IActorIdManager
         }
 
         idManager.Return(actorId);
-        ChannelEventBus.PublishAsync(new ActorRemoveEvent(actorId, actor.Type, actor.CreatorId, type)).Wait();
+        GameEventBus.Publish(new ActorRemoveEvent(actorId, actor.Type, actor.CreatorId, type));
         return true;
     }
 
