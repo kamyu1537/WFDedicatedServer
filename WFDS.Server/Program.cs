@@ -9,7 +9,7 @@ using WFDS.Server.Core.Actor;
 using WFDS.Server.Core.GameEvent;
 using WFDS.Server.Core.Configuration;
 using WFDS.Server.Core.Network;
-using WFDS.Server.Core.Resource;
+using WFDS.Server.Core.Zone;
 
 Log.Logger = new LoggerConfiguration()
     .Enrich.FromLogContext()

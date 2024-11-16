@@ -1,7 +1,7 @@
 ﻿using WFDS.Common.Types;
 using WFDS.Common.Types.Manager;
 
-namespace WFDS.Server.Core.Resource;
+namespace WFDS.Server.Core.Zone;
 
 internal class ZoneManager(ILogger<ZoneManager> logger) : IZoneManager
 {
@@ -18,7 +18,7 @@ internal class ZoneManager(ILogger<ZoneManager> logger) : IZoneManager
         }
     }
 
-    private readonly ZoneData[] _zones = [];
+    private readonly Dictionary<string, ZoneData> _zones = [];
 
     public void LoadZones()
     {
@@ -30,11 +30,13 @@ internal class ZoneManager(ILogger<ZoneManager> logger) : IZoneManager
             var fileName = Path.GetFileName(filePath);
             var zone = new ZoneData(fileName, filePath);
             zone.LoadZoneData(logger);
+
+            _zones.Add(zone.FileName, zone);
         }
     }
 
     public IZoneData GetZone()
     {
-        return _zones.FirstOrDefault(x => x.FileName == ZoneFileName) ?? throw new InvalidOperationException("main_zone.tscn not found");
+        return _zones.TryGetValue(ZoneFileName, out var zone) ? zone : throw new InvalidOperationException("main_zone.tscn not found");
     }
 }

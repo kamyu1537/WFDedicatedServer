@@ -6,7 +6,7 @@ using WFDS.Common.Extensions;
 using WFDS.Common.Types;
 using WFDS.Godot.Types;
 
-namespace WFDS.Server.Core.Resource;
+namespace WFDS.Server.Core.Zone;
 
 internal sealed class ZoneData(string fileName, string filePath) : IZoneData
 {
