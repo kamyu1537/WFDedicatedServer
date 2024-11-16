@@ -286,6 +286,11 @@ internal sealed class SessionManager : ISessionManager
     {
         return _sessions.Values;
     }
+    
+    public IEnumerable<string> GetBannedPlayers()
+    {
+        return _banned.Select(x => x.ToString());
+    }
 
     public bool IsSessionValid(SteamId steamId)
     {

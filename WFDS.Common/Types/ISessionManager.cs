@@ -28,6 +28,7 @@ public interface ISessionManager
     Session? GetSession(SteamId steamId);
     IEnumerable<Session> GetSessions();
     bool IsSessionValid(SteamId steamId);
+    IEnumerable<string> GetBannedPlayers();
 
     void ServerClose();
     void ServerClose(SteamId steamId);

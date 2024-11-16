@@ -23,6 +23,7 @@ public class SessionController(ISessionManager manager) : Controller
             Adult = manager.IsAdult(),
             Capacity = manager.GetCapacity(),
             Current = manager.GetSessionCount(),
+            BannedPlayers = manager.GetBannedPlayers()
         });
     }
     
