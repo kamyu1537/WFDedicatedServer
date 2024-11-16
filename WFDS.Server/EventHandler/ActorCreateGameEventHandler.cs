@@ -10,18 +10,16 @@ namespace WFDS.Server.EventHandler;
 
 internal class ActorCreateGameEventHandler(IActorManager actorManager, ISessionManager sessionManager) : GameEventHandler<ActorCreateEvent>
 {
-    protected override async Task HandleAsync(ActorCreateEvent e)
+    protected override void Handle(ActorCreateEvent e)
     {
         var actor = actorManager.GetActor(e.ActorId);
         if (actor == null) return;
-       
+
         if (actor.CreatorId == SteamClient.SteamId)
         {
             sessionManager.BroadcastP2PPacket(NetChannel.GameState, InstanceActorPacket.Create(actor));
             sessionManager.BroadcastP2PPacket(NetChannel.ActorAction, ActorActionPacket.CreateSetZonePacket(actor.ActorId, actor.Zone, actor.ZoneOwner));
             sessionManager.BroadcastP2PPacket(NetChannel.ActorUpdate, ActorUpdatePacket.Create(actor));
         }
-        
-        await Task.CompletedTask;
     }
 }

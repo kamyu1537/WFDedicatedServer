@@ -410,7 +410,7 @@ internal sealed class SessionManager : ISessionManager
 
         _logger.LogInformation("try kick player: {SteamId}", target);
         SendP2PPacket(target, NetChannel.GameState, new ServerClosePacket(), false);
-        SteamNetworking.CloseP2PSessionWithUser(target);
+        // SteamNetworking.CloseP2PSessionWithUser(target);
     }
 
     public void KickPlayer(SteamId target)
@@ -428,7 +428,7 @@ internal sealed class SessionManager : ISessionManager
 
         _logger.LogInformation("try kick player: {Member}", target);
         SendP2PPacket(target, NetChannel.GameState, new KickPacket(), false);
-        SteamNetworking.CloseP2PSessionWithUser(target);
+        // SteamNetworking.CloseP2PSessionWithUser(target);
     }
 
     public void TempBanPlayer(SteamId target, bool update = true)
@@ -439,7 +439,7 @@ internal sealed class SessionManager : ISessionManager
         _logger.LogInformation("try ban player: {Member}", target);
         SendP2PPacket(target, NetChannel.GameState, new BanPacket(), false);
         BroadcastP2PPacket(NetChannel.GameState, new ForceDisconnectPlayerPacket { UserId = target }, false);
-        SteamNetworking.CloseP2PSessionWithUser(target);
+        // SteamNetworking.CloseP2PSessionWithUser(target);
         
         if (update) UpdateBannedPlayers();
     }

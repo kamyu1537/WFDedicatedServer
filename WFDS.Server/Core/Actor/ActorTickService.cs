@@ -1,4 +1,5 @@
-﻿using Steamworks;
+﻿using Cysharp.Threading;
+using Steamworks;
 using WFDS.Common.Actor;
 using WFDS.Common.GameEvents.Events;
 using WFDS.Common.Types.Manager;
@@ -8,33 +9,37 @@ namespace WFDS.Server.Core.Actor;
 
 internal sealed class ActorTickService(ILogger<ActorTickService> logger, IActorManager manager, ISessionManager session) : BackgroundService
 {
+    private readonly LogicLooper _looper = new(60);
+
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        var prev = DateTime.UtcNow.Ticks;
-        while (!stoppingToken.IsCancellationRequested)
-        {
-            var now = DateTime.UtcNow.Ticks;
-            var delta = (now - prev) / (double)TimeSpan.TicksPerSecond;
-            prev = now;
-
-            await UpdateAsync(delta);
-            await GameEventBus.WaitEmptyAsync();
-            await Task.Delay(1000 / 60, stoppingToken); // godot physics fps is 60
-        }
+        await _looper.RegisterActionAsync(Update).ConfigureAwait(false);
+        Console.WriteLine("ActorTickService stopped");
     }
 
-    private async Task UpdateAsync(double delta)
+    public override Task StopAsync(CancellationToken cancellationToken)
     {
+        _looper.Dispose();
+        return base.StopAsync(cancellationToken);
+    }
+
+    private bool Update(in LogicLooperActionContext ctx)
+    {
+        if (ctx.CancellationToken.IsCancellationRequested)
+        {
+            return false;
+        }
+
+        var delta = ctx.ElapsedTimeFromPreviousFrame.TotalMilliseconds / 1000d;
         var actors = manager.GetActors();
         foreach (var actor in actors)
         {
-            if (Decay(actor)) return;
+            if (Decay(actor)) continue;
             if (actor.IsRemoved) continue;
-
             GameEventBus.Publish(new ActorTickEvent(actor.ActorId, delta));
         }
 
-        await Task.CompletedTask;
+        return true;
     }
 
     private bool Decay(IActor actor)

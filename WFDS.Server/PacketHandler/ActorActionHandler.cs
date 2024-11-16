@@ -25,7 +25,7 @@ internal class ActorActionHandler(ILogger<ActorActionHandler> logger, IActorMana
         "_sync_level_bubble"
     ];
 
-    protected override async Task HandlePacketAsync(Session sender, NetChannel channel, ActorActionPacket packet)
+    protected override void Handle(Session sender, NetChannel channel, ActorActionPacket packet)
     {
         logger.LogDebug("received actor_action from {Member} for actor {ActorId} : {Action} / {Data}", sender.Friend, packet.ActorId, packet.Action, JsonSerializer.Serialize(packet.Params));
 
@@ -50,8 +50,6 @@ internal class ActorActionHandler(ILogger<ActorActionHandler> logger, IActorMana
         UpdateHeldItem(sender, packet);
         SyncCreateBubble(sender, packet);
         SyncLevelBubble(sender, packet);
-
-        await Task.CompletedTask;
     }
 
     private void QueueFree(Session sender, ActorActionPacket packet)
@@ -62,7 +60,7 @@ internal class ActorActionHandler(ILogger<ActorActionHandler> logger, IActorMana
             logger.LogError("invalid queue_free packet from {Member} : {Data}", sender.Friend, JsonSerializer.Serialize(packet.Params));
             return;
         }
-        
+
         actorManager.TryRemoveActor(packet.ActorId, ActorRemoveTypes.QueueFree, out _);
     }
 
@@ -82,10 +80,7 @@ internal class ActorActionHandler(ILogger<ActorActionHandler> logger, IActorMana
         var actor = actorManager.GetActor(actorId);
         if (actor == null) return;
 
-        if (actor.CreatorId == SteamClient.SteamId && actor.CanWipe)
-        {
-            actorManager.TryRemoveActor(actorId, ActorRemoveTypes.WipeActor, out _);
-        }
+        if (actor.CreatorId == SteamClient.SteamId && actor.CanWipe) actorManager.TryRemoveActor(actorId, ActorRemoveTypes.WipeActor, out _);
     }
 
     private void SetZone(Session sender, ActorActionPacket packet)

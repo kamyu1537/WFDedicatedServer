@@ -10,7 +10,7 @@ namespace WFDS.Server.Handlers;
 [PacketType("letter_recieved")]
 internal class LetterReceivedHandler(ILogger<LetterReceivedHandler> logger, ISessionManager sessionManager) : PacketHandler<LetterReceivedPacket>
 {
-    protected override async Task HandlePacketAsync(Session sender, NetChannel channel, LetterReceivedPacket packet)
+    protected override void Handle(Session sender, NetChannel channel, LetterReceivedPacket packet)
     {
         if (packet.To != SteamClient.SteamId.Value.ToString())
             return;
@@ -22,6 +22,5 @@ internal class LetterReceivedHandler(ILogger<LetterReceivedHandler> logger, ISes
         packet.To = packet.Data.To;
 
         sessionManager.SendP2PPacket(sender.SteamId, NetChannel.GameState, packet);
-        await Task.CompletedTask;
     }
 }

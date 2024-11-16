@@ -6,12 +6,11 @@ namespace WFDS.Server.EventHandler;
 
 internal class PlayerHeldItemUpdateHandler(IActorManager actorManager) : GameEventHandler<PlayerHeldItemUpdateEvent>
 {
-    protected override async Task HandleAsync(PlayerHeldItemUpdateEvent e)
+    protected override void Handle(PlayerHeldItemUpdateEvent e)
     {
         var actor = actorManager.GetPlayerActor(e.PlayerId);
         if (actor is null) return;
 
         actor.HeldItem = e.Item;
-        await Task.CompletedTask;
     }
 }

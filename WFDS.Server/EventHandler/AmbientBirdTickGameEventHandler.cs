@@ -8,7 +8,7 @@ namespace WFDS.Server.EventHandler;
 
 internal class AmbientBirdTickGameEventHandler(ILogger<AmbientBirdTickGameEventHandler> logger, IActorManager actorManager) : GameEventHandler<ActorTickEvent>
 {
-    protected override async Task HandleAsync(ActorTickEvent e)
+    protected override void Handle(ActorTickEvent e)
     {
         var actor = actorManager.GetActor(e.ActorId);
         if (actor is not AmbientBirdActor bird) return;
@@ -24,7 +24,5 @@ internal class AmbientBirdTickGameEventHandler(ILogger<AmbientBirdTickGameEventH
                 break;
             }
         }
-        
-        await Task.CompletedTask;
     }
 }

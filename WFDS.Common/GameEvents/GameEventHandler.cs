@@ -7,20 +7,18 @@ public abstract class GameEventHandler
     }
     
     public abstract Type EventType { get; }
-    public abstract Task HandleAsync(GameEvent e);
+    public abstract void Handle(GameEvent e);
 }
 
 public abstract class GameEventHandler<T> : GameEventHandler where T : GameEvent
 {
     public override Type EventType { get; } = typeof(T);
 
-    public override async Task HandleAsync(GameEvent e)
+    public override void Handle(GameEvent e)
     {
-        if (e is T t)
-        {
-            await HandleAsync(t);
-        }
+        if (e is not T t) return;
+        Handle(t);
     }
 
-    protected abstract Task HandleAsync(T e);
+    protected abstract void Handle(T e);
 }

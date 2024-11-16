@@ -10,14 +10,13 @@ namespace WFDS.Server.PacketHandler;
 [PacketType("request_ping")]
 internal class RequestPingHandler(ISessionManager sessionManager) : PacketHandler<RequestPingPacket>
 {
-    protected override async Task HandlePacketAsync(Session sender, NetChannel channel, RequestPingPacket packet)
+    protected override void Handle(Session sender, NetChannel channel, RequestPingPacket packet)
     {
         sender.PingReceiveTime = DateTimeOffset.UtcNow;
-        
+
         sessionManager.SendP2PPacket(sender.SteamId, NetChannel.GameState, new SendPingPacket
         {
             FromId = SteamClient.SteamId
         });
-        await Task.CompletedTask;
     }
 }

@@ -6,12 +6,11 @@ namespace WFDS.Server.EventHandler;
 
 internal class PlayerCosmeticsUpdateHandler(IActorManager actorManager) : GameEventHandler<PlayerCosmeticsUpdateEvent>
 {
-    protected override async Task HandleAsync(PlayerCosmeticsUpdateEvent e)
+    protected override void Handle(PlayerCosmeticsUpdateEvent e)
     {
         var actor = actorManager.GetPlayerActor(e.PlayerId);
         if (actor is null) return;
 
         actor.Cosmetics = e.Cosmetics;
-        await Task.CompletedTask;
     }
 }

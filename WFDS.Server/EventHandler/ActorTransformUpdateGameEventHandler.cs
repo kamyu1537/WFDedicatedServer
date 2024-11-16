@@ -6,13 +6,12 @@ namespace WFDS.Server.EventHandler;
 
 internal class ActorTransformUpdateGameEventHandler(IActorManager actorManager) : GameEventHandler<ActorTransformUpdateEvent>
 {
-    protected override async Task HandleAsync(ActorTransformUpdateEvent e)
+    protected override void Handle(ActorTransformUpdateEvent e)
     {
         var actor = actorManager.GetActor(e.ActorId);
         if (actor is null) return;
 
         actor.Position = e.Position;
         actor.Rotation = e.Rotation;
-        await Task.CompletedTask;
     }
 }

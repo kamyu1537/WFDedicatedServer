@@ -10,10 +10,9 @@ namespace WFDS.Server.PacketHandler;
 [PacketType("new_player_join")]
 internal class NewPlayerJoinHandler(ILogger<NewPlayerJoinHandler> logger) : PacketHandler<NewPlayerJoinPacket>
 {
-    protected override async Task HandlePacketAsync(Session sender, NetChannel channel, NewPlayerJoinPacket packet)
+    protected override void Handle(Session sender, NetChannel channel, NewPlayerJoinPacket packet)
     {
         logger.LogDebug("received new_player_join from {Sender} on channel {Channel}", sender.SteamId, channel);
         GameEventBus.Publish(new NewPlayerJoinEvent(sender.SteamId));
-        await Task.CompletedTask;
     }
 }

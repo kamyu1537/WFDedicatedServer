@@ -9,16 +9,15 @@ namespace WFDS.Server.EventHandler;
 
 internal class RainCloudTickGameEventHandler(IActorManager actorManager) : GameEventHandler<ActorTickEvent>
 {
-    protected override async Task HandleAsync(ActorTickEvent e)
+    protected override void Handle(ActorTickEvent e)
     {
         var delta = e.DeltaTime;
 
         var actor = actorManager.GetActor(e.ActorId);
         if (actor is not RainCloudActor rainCloud) return;
         if (rainCloud.IsDead || rainCloud.IsRemoved) return;
-        
+
         var vel = new Vector2(1, 0).Rotated(rainCloud.Direction) * RainCloudActor.Speed;
         rainCloud.Position += new Vector3(vel.X, 0f, vel.X) * (float)delta;
-        await Task.CompletedTask;
     }
 }

@@ -8,16 +8,16 @@ public abstract class PacketHandler
     {
     }
     
-    public abstract Task HandlePacketAsync(Session sender, NetChannel channel, Dictionary<object, object> data);
+    public abstract void Handle(Session sender, NetChannel channel, Dictionary<object, object> data);
 }
 
 public abstract class PacketHandler<T> : PacketHandler where T : Packet, new()
 {
-    protected abstract Task HandlePacketAsync(Session sender, NetChannel channel, T packet);
+    protected abstract void Handle(Session sender, NetChannel channel, T packet);
 
-    public override async Task HandlePacketAsync(Session sender, NetChannel channel, Dictionary<object, object> data)
+    public override void Handle(Session sender, NetChannel channel, Dictionary<object, object> data)
     {
         var packet = PacketHelper.FromDictionary<T>(data);
-        await HandlePacketAsync(sender, channel, packet);
+        Handle(sender, channel, packet);
     }
 }

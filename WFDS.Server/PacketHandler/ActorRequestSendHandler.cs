@@ -11,7 +11,7 @@ namespace WFDS.Server.PacketHandler;
 [PacketType("actor_request_send")]
 internal class ActorRequestSendHandler(ILogger<ActorRequestSendHandler> logger, IActorManager actorManager, ISessionManager sessionManager) : PacketHandler<ActorRequestSendPacket>
 {
-    protected override async Task HandlePacketAsync(Session sender, NetChannel channel, ActorRequestSendPacket packet)
+    protected override void Handle(Session sender, NetChannel channel, ActorRequestSendPacket packet)
     {
         foreach (var actor in packet.Actors)
         {
@@ -43,11 +43,6 @@ internal class ActorRequestSendHandler(ILogger<ActorRequestSendHandler> logger, 
         }
 
         var player = actorManager.GetPlayerActor(sender.SteamId);
-        if (player != null)
-        {
-            player.ReceiveReplication = true;
-        }
-        
-        await Task.CompletedTask;
+        if (player != null) player.ReceiveReplication = true;
     }
 }

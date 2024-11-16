@@ -13,6 +13,10 @@ internal sealed class GameEventService(IServiceProvider provider, ILogger<GameEv
                 await GameEventBus.ProcessQueueAsync(HandleEventAsync);
                 await Task.Delay(10, stoppingToken);
             }
+            catch (TaskCanceledException)
+            {
+                logger.LogInformation("task canceled");
+            }
             catch (Exception ex)
             {
                 logger.LogError(ex, "failed to receive event");
@@ -28,9 +32,10 @@ internal sealed class GameEventService(IServiceProvider provider, ILogger<GameEv
         {
             await using var scope = provider.CreateAsyncScope();
             var handlers = provider.GetServices<GameEventHandler>();
-            await Task.WhenAll(handlers
-                .Where(x => x.EventType == e.GetType())
-                .Select(x => x.HandleAsync(e)));
+            foreach (var handler in handlers.Where(x => x.EventType == e.GetType()))
+            {
+                handler.Handle(e);
+            }
         }
         catch (Exception ex)
         {
