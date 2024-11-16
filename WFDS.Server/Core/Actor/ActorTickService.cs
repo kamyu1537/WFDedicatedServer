@@ -7,20 +7,21 @@ using WFDS.Server.Core.GameEvent;
 
 namespace WFDS.Server.Core.Actor;
 
-internal sealed class ActorTickService(ILogger<ActorTickService> logger, IActorManager manager, ISessionManager session) : BackgroundService
+internal sealed class ActorTickService(ILogger<ActorTickService> logger, IActorManager manager, ISessionManager session) : IHostedService
 {
     private readonly LogicLooper _looper = new(60);
 
-    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    public Task StartAsync(CancellationToken cancellationToken)
     {
-        await _looper.RegisterActionAsync(Update).ConfigureAwait(false);
-        Console.WriteLine("ActorTickService stopped");
+        _ = _looper.RegisterActionAsync(Update).ConfigureAwait(false);
+        return Task.CompletedTask;
     }
 
-    public override Task StopAsync(CancellationToken cancellationToken)
+    public async Task StopAsync(CancellationToken cancellationToken)
     {
+        await _looper.ShutdownAsync(TimeSpan.Zero);
         _looper.Dispose();
-        return base.StopAsync(cancellationToken);
+        logger.LogInformation("ActorTickService stopped");
     }
 
     private bool Update(in LogicLooperActionContext ctx)
