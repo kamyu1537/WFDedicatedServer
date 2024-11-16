@@ -554,7 +554,7 @@ internal sealed class SessionManager : ISessionManager
     {
         _logger.LogWarning("p2p session request: {SteamId}", requester);
 
-        if (!_banned.Contains(requester))
+        if (_banned.Contains(requester))
         {
             _logger.LogWarning("banned player request: {SteamId}", requester);
             SteamNetworking.CloseP2PSessionWithUser(requester);
