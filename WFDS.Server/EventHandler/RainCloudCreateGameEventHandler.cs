@@ -16,6 +16,6 @@ internal class RainCloudCreateGameEventHandler(IActorManager actorManager) : Gam
         
         var center = Vector3.Normalize(rainCloud.Position - new Vector3(30, 40, -50));
         rainCloud.Direction = new Vector2(center.X, center.Z).Angle();
-        await Task.Yield();
+        await Task.CompletedTask;
     }
 }

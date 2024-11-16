@@ -12,6 +12,6 @@ internal class PlayerHeldItemUpdateHandler(IActorManager actorManager) : GameEve
         if (actor is null) return;
 
         actor.HeldItem = e.Item;
-        await Task.Yield();
+        await Task.CompletedTask;
     }
 }

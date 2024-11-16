@@ -17,6 +17,6 @@ internal class HandshakeHandler(ILogger<HandshakeHandler> logger) : PacketHandle
 
         sender.HandshakeReceived = true;
         sender.HandshakeReceiveTime = DateTimeOffset.UtcNow;
-        await Task.Yield();
+        await Task.CompletedTask;
     }
 }

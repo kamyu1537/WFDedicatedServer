@@ -22,6 +22,6 @@ internal class ActorCreateGameEventHandler(IActorManager actorManager, ISessionM
             sessionManager.BroadcastP2PPacket(NetChannel.ActorUpdate, ActorUpdatePacket.Create(actor));
         }
         
-        await Task.Yield();
+        await Task.CompletedTask;
     }
 }

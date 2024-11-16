@@ -13,15 +13,12 @@ internal class RequestActorsHandler(ILogger<RequestActorsHandler> logger, IActor
     protected override async Task HandlePacketAsync(Session sender, NetChannel channel, RequestActorsPacket _)
     {
         logger.LogDebug("received request_actors from {Sender} on channel {Channel}", sender.SteamId, channel);
-        sessionManager.SendP2PPacket(sender.SteamId, NetChannel.GameState, new ActorRequestSendPacket());
 
-        // actor data update
-        var owned = actorManager.GetOwnedActors().Where(x => !x.IsRemoved).Where(x => !x.IsDead);
-        foreach (var actor in owned)
-        {
-            sessionManager.SendP2PPacket(sender.SteamId, NetChannel.GameState, InstanceActorPacket.Create(actor));
-        }
+        var send = new ActorRequestSendPacket();
+        var actors = actorManager.GetActors().Where(x => !x.IsRemoved).Where(x => !x.IsDead).Select(ActorReplicationData.FromActor);
+        send.Actors.AddRange(actors);
+        sessionManager.SendP2PPacket(sender.SteamId, NetChannel.GameState, send);
 
-        await Task.Yield();
+        await Task.CompletedTask;
     }
 }

@@ -12,6 +12,6 @@ internal class PlayerCosmeticsUpdateHandler(IActorManager actorManager) : GameEv
         if (actor is null) return;
 
         actor.Cosmetics = e.Cosmetics;
-        await Task.Yield();
+        await Task.CompletedTask;
     }
 }

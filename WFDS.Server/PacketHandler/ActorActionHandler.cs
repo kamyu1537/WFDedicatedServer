@@ -27,48 +27,42 @@ internal class ActorActionHandler(ILogger<ActorActionHandler> logger, IActorMana
 
     protected override async Task HandlePacketAsync(Session sender, NetChannel channel, ActorActionPacket packet)
     {
-        if (!AllowedActions.Contains(packet.Action))
-        {
-            return;
-        }
-
         logger.LogDebug("received actor_action from {Member} for actor {ActorId} : {Action} / {Data}", sender.Friend, packet.ActorId, packet.Action, JsonSerializer.Serialize(packet.Params));
 
-        QueueFree(sender, packet);
-        WipeActor(sender, packet);
-
-        await SetZone(sender, packet);
-        await UpdateCosmetics(sender, packet);
-        await UpdateHeldItem(sender, packet);
-        await SyncCreateBubble(sender, packet);
-        await SyncLevelBubble(sender, packet);
-
-        await Task.Yield();
-    }
-
-    private void QueueFree(Session sender, ActorActionPacket packet)
-    {
-        if (packet.Action != "queue_free") return;
-
-        if (packet.Params.Count != 0)
-        {
-            logger.LogError("invalid queue_free packet from {Member} : {Data}", sender.Friend, JsonSerializer.Serialize(packet.Params));
-            return;
-        }
-
         var actor = actorManager.GetActor(packet.ActorId);
+
         if (actor == null)
         {
-            logger.LogError("actor {ActorId} not found for {Member}", packet.ActorId, sender.Friend);
+            logger.LogWarning("actor {ActorId} not found for {Member}", packet.ActorId, sender.Friend);
             return;
         }
 
         if (actor.CreatorId != sender.SteamId)
         {
-            logger.LogError("actor {ActorId} not owned by {Member}", packet.ActorId, sender.Friend);
+            logger.LogWarning("actor {ActorId} not owned by {Member}", packet.ActorId, sender.Friend);
             return;
         }
 
+        QueueFree(sender, packet);
+        WipeActor(sender, packet);
+        SetZone(sender, packet);
+        UpdateCosmetics(sender, packet);
+        UpdateHeldItem(sender, packet);
+        SyncCreateBubble(sender, packet);
+        SyncLevelBubble(sender, packet);
+
+        await Task.CompletedTask;
+    }
+
+    private void QueueFree(Session sender, ActorActionPacket packet)
+    {
+        if (packet.Action != "queue_free") return;
+        if (packet.Params.Count != 0)
+        {
+            logger.LogError("invalid queue_free packet from {Member} : {Data}", sender.Friend, JsonSerializer.Serialize(packet.Params));
+            return;
+        }
+        
         actorManager.TryRemoveActor(packet.ActorId, ActorRemoveTypes.QueueFree, out _);
     }
 
@@ -85,28 +79,16 @@ internal class ActorActionHandler(ILogger<ActorActionHandler> logger, IActorMana
         var param = packet.Params[0];
         var actorId = param.GetNumber();
 
+        var actor = actorManager.GetActor(actorId);
+        if (actor == null) return;
+
+        if (actor.CreatorId == SteamClient.SteamId && actor.CanWipe)
         {
-            var actor = actorManager.GetActor(actorId);
-            if (actor == null) return;
-
-            if (actor.CreatorId == SteamClient.SteamId && actor.CanWipe)
-            {
-                actorManager.TryRemoveActor(actorId, ActorRemoveTypes.WipeActor, out _);
-            }
-        }
-
-        {
-            var actor = actorManager.GetActor(packet.ActorId);
-            if (actor == null) return;
-
-            if (actor.CreatorId == SteamClient.SteamId && actor.CanWipe)
-            {
-                actorManager.TryRemoveActor(packet.ActorId, ActorRemoveTypes.WipeActor, out _);
-            }
+            actorManager.TryRemoveActor(actorId, ActorRemoveTypes.WipeActor, out _);
         }
     }
 
-    private async Task SetZone(Session sender, ActorActionPacket packet)
+    private void SetZone(Session sender, ActorActionPacket packet)
     {
         if (packet.Action != "_set_zone") return;
 
@@ -126,11 +108,9 @@ internal class ActorActionHandler(ILogger<ActorActionHandler> logger, IActorMana
             var zoneOwner = packet.Params[1].GetNumber();
             GameEventBus.Publish(new ActorZoneUpdateEvent(actor.ActorId, zone, zoneOwner));
         }
-        
-        await Task.Yield();
     }
 
-    private async Task UpdateCosmetics(Session sender, ActorActionPacket packet)
+    private void UpdateCosmetics(Session sender, ActorActionPacket packet)
     {
         if (packet.Action != "_update_cosmetics") return;
 
@@ -151,10 +131,9 @@ internal class ActorActionHandler(ILogger<ActorActionHandler> logger, IActorMana
         var cosmetics = new Cosmetics();
         cosmetics.Deserialize(dic);
         GameEventBus.Publish(new PlayerCosmeticsUpdateEvent(sender.SteamId, cosmetics));
-        await Task.Yield();
     }
 
-    private async Task UpdateHeldItem(Session sender, ActorActionPacket packet)
+    private void UpdateHeldItem(Session sender, ActorActionPacket packet)
     {
         if (packet.Action != "_update_held_item") return;
 
@@ -175,10 +154,9 @@ internal class ActorActionHandler(ILogger<ActorActionHandler> logger, IActorMana
         var item = new GameItem();
         item.Deserialize(dic);
         GameEventBus.Publish(new PlayerHeldItemUpdateEvent(sender.SteamId, item));
-        await Task.Yield();
     }
 
-    private async Task SyncCreateBubble(Session sender, ActorActionPacket packet)
+    private void SyncCreateBubble(Session sender, ActorActionPacket packet)
     {
         if (packet.Action != "_sync_create_bubble") return;
         if (packet.Params.Count != 1)
@@ -196,10 +174,9 @@ internal class ActorActionHandler(ILogger<ActorActionHandler> logger, IActorMana
 
         var text = packet.Params[0].GetString();
         GameEventBus.Publish(new PlayerChatMessageEvent(sender.SteamId, text));
-        await Task.Yield();
     }
 
-    private async Task SyncLevelBubble(Session sender, ActorActionPacket packet)
+    private void SyncLevelBubble(Session sender, ActorActionPacket packet)
     {
         if (packet.Action != "_sync_level_bubble") return;
         if (packet.Params.Count != 0)
@@ -216,7 +193,6 @@ internal class ActorActionHandler(ILogger<ActorActionHandler> logger, IActorMana
         }
 
         GameEventBus.Publish(new PlayerLevelUpEvent(sender.SteamId));
-        await Task.Yield();
     }
 }
 

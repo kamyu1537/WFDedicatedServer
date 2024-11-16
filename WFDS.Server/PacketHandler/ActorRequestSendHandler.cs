@@ -48,6 +48,6 @@ internal class ActorRequestSendHandler(ILogger<ActorRequestSendHandler> logger, 
             player.ReceiveReplication = true;
         }
         
-        await Task.Yield();
+        await Task.CompletedTask;
     }
 }

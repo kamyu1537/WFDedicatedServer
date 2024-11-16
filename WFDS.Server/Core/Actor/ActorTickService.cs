@@ -18,7 +18,7 @@ internal sealed class ActorTickService(ILogger<ActorTickService> logger, IActorM
             prev = now;
 
             await UpdateAsync(delta);
-            await GameEventBus.WaitAsync();
+            await GameEventBus.WaitEmptyAsync();
             await Task.Delay(1000 / 60, stoppingToken); // godot physics fps is 60
         }
     }
@@ -30,10 +30,11 @@ internal sealed class ActorTickService(ILogger<ActorTickService> logger, IActorM
         {
             if (Decay(actor)) return;
             if (actor.IsRemoved) continue;
-            
+
             GameEventBus.Publish(new ActorTickEvent(actor.ActorId, delta));
         }
-        await Task.Yield();
+
+        await Task.CompletedTask;
     }
 
     private bool Decay(IActor actor)
@@ -44,7 +45,7 @@ internal sealed class ActorTickService(ILogger<ActorTickService> logger, IActorM
             {
                 actor.IsDead = true;
                 actor.IsRemoved = true;
-                
+
                 logger.LogInformation("remove actor {ActorId} {ActorType} (owner not found)", actor.ActorId, actor.Type);
                 manager.TryRemoveActor(actor.ActorId, ActorRemoveTypes.OwnerNotFound, out _);
                 return false;
@@ -60,7 +61,7 @@ internal sealed class ActorTickService(ILogger<ActorTickService> logger, IActorM
         {
             actor.IsDead = true;
             actor.IsRemoved = true;
-            
+
             logger.LogInformation("decay actor {ActorId} {ActorType}", actor.ActorId, actor.Type);
             manager.TryRemoveActor(actor.ActorId, ActorRemoveTypes.Decay, out _);
             return true;

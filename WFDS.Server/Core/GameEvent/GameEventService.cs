@@ -10,7 +10,8 @@ internal sealed class GameEventService(IServiceProvider provider, ILogger<GameEv
         {
             try
             {
-                await GameEventBus.DequeueAsync(HandleEventAsync);
+                await GameEventBus.ProcessQueueAsync(HandleEventAsync);
+                await Task.Delay(10, stoppingToken);
             }
             catch (Exception ex)
             {

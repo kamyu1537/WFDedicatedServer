@@ -13,6 +13,6 @@ internal class ActorTransformUpdateGameEventHandler(IActorManager actorManager) 
 
         actor.Position = e.Position;
         actor.Rotation = e.Rotation;
-        await Task.Yield();
+        await Task.CompletedTask;
     }
 }

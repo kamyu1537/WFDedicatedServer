@@ -336,7 +336,7 @@ internal sealed class ActorManager(ILogger<ActorManager> logger, IActorIdManager
     public bool TryRemoveActorFirstByType(ActorType actorType, ActorRemoveTypes type, out IActor actor)
     {
         actor = null!;
-        var find = _owned.Values.FirstOrDefault(a => a.Type == actorType);
+        var find = _owned.Values.OrderBy(x => x.CreateTime).FirstOrDefault(a => a.Type == actorType);
         return find != null && TryRemoveActor(find.ActorId, type, out actor);
     }
 

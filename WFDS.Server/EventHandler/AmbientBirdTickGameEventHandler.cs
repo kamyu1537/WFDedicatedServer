@@ -25,6 +25,6 @@ internal class AmbientBirdTickGameEventHandler(ILogger<AmbientBirdTickGameEventH
             }
         }
         
-        await Task.Yield();
+        await Task.CompletedTask;
     }
 }

@@ -20,6 +20,6 @@ internal class PlayerLeaveGameEventHandler(ILogger<PlayerLeaveGameEventHandler> 
             }
         }
         
-        await Task.Yield();
+        await Task.CompletedTask;
     }
 }

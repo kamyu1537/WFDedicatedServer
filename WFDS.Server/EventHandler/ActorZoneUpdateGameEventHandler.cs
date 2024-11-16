@@ -13,6 +13,6 @@ internal class ActorZoneUpdateGameEventHandler(IActorManager actorManager) : Gam
 
         actor.Zone = e.Zone;
         actor.ZoneOwner = e.ZoneOwner;
-        await Task.Yield();
+        await Task.CompletedTask;
     }
 }

@@ -13,12 +13,12 @@ internal class ActorRemoveGameEventHandler(ISessionManager sessionManager) : Gam
     {
         if (e.OwnerId != SteamClient.SteamId) return;
         
-        var wipe = ActorActionPacket.CreateWipeActorPacket(e.ActorId);
-        sessionManager.BroadcastP2PPacket(NetChannel.ActorAction, wipe);
+        // var wipe = ActorActionPacket.CreateWipeActorPacket(e.ActorId);
+        // sessionManager.BroadcastP2PPacket(NetChannel.ActorAction, wipe);
         
         var queue = ActorActionPacket.CreateQueueFreePacket(e.ActorId);
         sessionManager.BroadcastP2PPacket(NetChannel.ActorAction, queue);
         
-        await Task.Yield();
+        await Task.CompletedTask;
     }
 }

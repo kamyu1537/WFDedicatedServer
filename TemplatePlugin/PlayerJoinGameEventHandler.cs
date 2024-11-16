@@ -16,6 +16,6 @@ public class PlayerJoinGameEventHandler(ISessionManager sessionManager) : GameEv
 
         var packet = MessagePacket.Create("Welcome to the server!", Color.White);
         sessionManager.SendP2PPacket(player.SteamId, NetChannel.GameState, packet);
-        await Task.Yield();
+        await Task.CompletedTask;
     }
 }

@@ -5,67 +5,39 @@ namespace WFDS.Server.Core.GameEvent;
 internal static class GameEventBus
 {
     private static readonly ConcurrentQueue<Common.GameEvents.GameEvent> Queue = new();
-    private static readonly ReaderWriterLockSlim Lock = new();
 
     public static void Publish(Common.GameEvents.GameEvent e)
     {
-        try
-        {
-            Lock.EnterReadLock();
-            Queue.Enqueue(e);
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine(ex);
-        }
-        finally
-        {
-            Lock.ExitReadLock();
-        }
+        Queue.Enqueue(e);
     }
-    
-    public static Task WaitAsync()
+
+    public static Task WaitEmptyAsync()
     {
-        TaskCompletionSource tcs = new();
-        Task.Run(() =>
+        var tcs = new TaskCompletionSource();
+        Task.Run(async () =>
         {
-            try
+            while (!Queue.IsEmpty)
             {
-                Console.WriteLine("wait"); // debug
-                Lock.EnterReadLock();
-                tcs.SetResult();
+                await Task.Delay(10);
             }
-            finally
-            {
-                Lock.ExitReadLock();
-                Console.WriteLine("wait end");
-            }
+            tcs.SetResult();
         });
+        
         return tcs.Task;
     }
 
-    public static async Task DequeueAsync(Func<Common.GameEvents.GameEvent, Task> action)
+    public static async Task ProcessQueueAsync(Func<Common.GameEvents.GameEvent, Task> action)
     {
-        try
+        while (Queue.TryDequeue(out var e))
         {
-            Lock.EnterWriteLock();
-            Console.WriteLine("dequeue start");
-            while (Queue.TryDequeue(out var e))
+            try
             {
-                try
-                {
-                    await action(e);
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex);
-                }
+                await action(e);
             }
-        }
-        finally
-        {
-            Lock.ExitWriteLock();
-            Console.WriteLine("dequeue end");
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
         }
     }
 }

@@ -18,6 +18,6 @@ internal class RequestPingHandler(ISessionManager sessionManager) : PacketHandle
         {
             FromId = SteamClient.SteamId
         });
-        await Task.Yield();
+        await Task.CompletedTask;
     }
 }

@@ -22,6 +22,6 @@ internal class LetterReceivedHandler(ILogger<LetterReceivedHandler> logger, ISes
         packet.To = packet.Data.To;
 
         sessionManager.SendP2PPacket(sender.SteamId, NetChannel.GameState, packet);
-        await Task.Yield();
+        await Task.CompletedTask;
     }
 }

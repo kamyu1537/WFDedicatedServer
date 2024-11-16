@@ -29,7 +29,8 @@ internal class PacketProcessService(ILogger<PacketProcessService> logger, Packet
             TryProcessChannel(NetChannel.Guitar);
             TryProcessChannel(NetChannel.Speech);
 #endif
-            await Task.Yield();
+
+            await Task.Delay(10, stoppingToken);
         }
 
         logger.LogInformation("PacketProcessService is stopping.");

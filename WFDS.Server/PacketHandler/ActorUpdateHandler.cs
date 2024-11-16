@@ -22,6 +22,6 @@ internal class ActorUpdateHandler(IActorManager actorManager) : PacketHandler<Ac
         }
         
         GameEventBus.Publish(new ActorTransformUpdateEvent(actor.ActorId, packet.Position, packet.Rotation));
-        await Task.Yield();
+        await Task.CompletedTask;
     }
 }

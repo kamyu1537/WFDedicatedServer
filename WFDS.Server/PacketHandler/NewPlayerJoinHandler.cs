@@ -14,6 +14,6 @@ internal class NewPlayerJoinHandler(ILogger<NewPlayerJoinHandler> logger) : Pack
     {
         logger.LogDebug("received new_player_join from {Sender} on channel {Channel}", sender.SteamId, channel);
         GameEventBus.Publish(new NewPlayerJoinEvent(sender.SteamId));
-        await Task.Yield();
+        await Task.CompletedTask;
     }
 }

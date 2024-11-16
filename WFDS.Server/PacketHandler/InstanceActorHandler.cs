@@ -16,7 +16,7 @@ internal class InstanceActorHandler(ILogger<InstanceActorHandler> logger, IActor
         
         if (packet.Param.ActorType == "player") CreatePlayerActor(sender, packet);
         else CreateRemoteActor(sender, packet);
-        await Task.Yield();
+        await Task.CompletedTask;
     }
 
     private void CreateRemoteActor(Session sender, InstanceActorPacket packet)

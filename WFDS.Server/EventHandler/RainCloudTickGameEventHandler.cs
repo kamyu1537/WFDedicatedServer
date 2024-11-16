@@ -19,6 +19,6 @@ internal class RainCloudTickGameEventHandler(IActorManager actorManager) : GameE
         
         var vel = new Vector2(1, 0).Rotated(rainCloud.Direction) * RainCloudActor.Speed;
         rainCloud.Position += new Vector3(vel.X, 0f, vel.X) * (float)delta;
-        await Task.Yield();
+        await Task.CompletedTask;
     }
 }
