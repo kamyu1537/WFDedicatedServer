@@ -84,6 +84,8 @@ try
     }
 
     builder.Services.AddSerilog(Log.Logger);
+    
+    builder.Services.AddRazorPages();
     builder.Services.AddControllers();
     builder.Services.AddEndpointsApiExplorer();
 
@@ -102,14 +104,14 @@ try
 
     // server start
     var app = builder.Build();
-    app.MapControllers();
 
+    app.UseRouting();
     app.UseSwagger();
-    app.UseSwaggerUI(options =>
-    {
-        options.SwaggerEndpoint("/swagger/v1/swagger.json", "WFDS.Server");
-        options.RoutePrefix = "";
-    });
+    app.UseSwaggerUI();
+
+    app.UseStaticFiles();
+    app.MapControllers();
+    app.MapRazorPages();
 
     app.Urls.Add($"http://*:{setting.AdminPort}/");
 

@@ -137,7 +137,7 @@ internal sealed class ActorManager(ILogger<ActorManager> logger, IActorIdManager
 
     public IEnumerable<IActor> GetActorsByCreatorId(SteamId creatorId)
     {
-        return _actors.Values.Where(actor => actor.CreatorId == creatorId);
+        return _actors.Values.Where(actor => actor.CreatorId.Value == creatorId);
     }
 
     private bool TryAddActorAndPropagate(IActor actor)

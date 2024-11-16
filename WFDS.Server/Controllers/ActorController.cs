@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 using WFDS.Common.Actor;
+using WFDS.Server.Core.Actor;
 
 namespace WFDS.Server.Controllers;
 
@@ -17,7 +18,7 @@ public class ActorController(IActorManager manager) : Controller
         return Json(new
         {
             Count = actors.Length,
-            Actors = actors.Select(x => $"{x.Type} ({x.ActorId})").ToArray()
+            Actors = actors.Select(x => new { x.ActorId, Type = x.Type.ToString() }).ToArray()
         });
     }
     
@@ -36,20 +37,25 @@ public class ActorController(IActorManager manager) : Controller
         return Json(new
         {
             Count = actors.Length,
-            Actors = actors.Select(x => $"{x.Type} ({x.ActorId})")
+            Actors = actors.Select(x => new { x.ActorId, Type = x.Type.ToString() })
         });
     }
     
     [HttpGet("creator/{creatorId}")]
     [SwaggerOperation("get actors by creator id")]
-    public IActionResult GetActorsByCreatorId(ulong creatorId)
+    public IActionResult GetActorsByCreatorId(string creatorId)
     {
-        var actors = manager.GetActorsByCreatorId(creatorId).ToArray();
+        if (!ulong.TryParse(creatorId, out var id))
+        {
+            return BadRequest();
+        }
+        
+        var actors = manager.GetActorsByCreatorId(id).ToArray();
         
         return Json(new
         {
             Count = actors.Length,
-            Actors = actors.Select(x => $"{x.Type} ({x.ActorId})")
+            Actors = actors.Select(x => new { x.ActorId, Type = x.Type.ToString() })
         });
     }
     
@@ -62,7 +68,7 @@ public class ActorController(IActorManager manager) : Controller
         return Json(new
         {
             Count = actors.Length,
-            Actors = actors.Select(x => $"{x.Type} ({x.ActorId})")
+            Actors = actors.Select(x => new { x.ActorId, Type = x.Type.ToString() })
         });
     }
     
@@ -76,23 +82,7 @@ public class ActorController(IActorManager manager) : Controller
             return NotFound();
         }
         
-        return Json(new
-        {
-            actor.ActorId,
-            actor.Type,
-            actor.CreatorId,
-            actor.Zone,
-            actor.ZoneOwner,
-            actor.Position,
-            actor.Rotation,
-            actor.Decay,
-            actor.DecayTimer,
-            actor.CreateTime,
-            actor.IsDead,
-            actor.IsRemoved,
-            actor.NetworkShareDefaultCooldown,
-            actor.NetworkShareCooldown,
-        });
+        return Json(actor.ToDynamic());
     }
     
     [HttpDelete("{actorId}")]

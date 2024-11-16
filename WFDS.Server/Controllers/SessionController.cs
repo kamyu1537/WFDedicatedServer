@@ -50,7 +50,7 @@ public class SessionController(ISessionManager manager) : Controller
         
         return Json(new
         {
-            session.SteamId,
+            SteamId = session.SteamId.ToString(),
             session.Friend,
             session.ConnectTime,
             session.HandshakeReceiveTime,

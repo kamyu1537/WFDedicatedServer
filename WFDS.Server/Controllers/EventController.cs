@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 using WFDS.Common.Actor;
+using WFDS.Server.Core.Actor;
 
 namespace WFDS.Server.Controllers;
 
@@ -22,7 +23,7 @@ public class EventController(IActorSpawnManager manager) : Controller
     public IActionResult SpawnFish()
     {
         var actor = manager.SpawnFishSpawnActor();
-        return actor != null ? Ok(actor) : NotFound();
+        return actor != null ? Json(actor.ToDynamic()) : NotFound();
     }
     
     [HttpPost("alien")]
@@ -30,7 +31,7 @@ public class EventController(IActorSpawnManager manager) : Controller
     public IActionResult SpawnAlien()
     {
         var actor = manager.SpawnFishSpawnAlienActor();
-        return actor != null ? Ok(actor) : NotFound();
+        return actor != null ? Json(actor.ToDynamic()) : NotFound();
     }
     
     [HttpPost("raincloud")]
@@ -38,7 +39,7 @@ public class EventController(IActorSpawnManager manager) : Controller
     public IActionResult SpawnRaincloud()
     {
         var actor = manager.SpawnRainCloudActor();
-        return actor != null ? Ok(actor) : NotFound();
+        return actor != null ? Json(actor.ToDynamic()) : NotFound();
     }
     
     [HttpPost("portal")]
@@ -46,7 +47,7 @@ public class EventController(IActorSpawnManager manager) : Controller
     public IActionResult SpawnPortal()
     {
         var actor = manager.SpawnVoidPortalActor();
-        return actor != null ? Ok(actor) : NotFound();
+        return actor != null ? Json(actor.ToDynamic()) : NotFound();
     }
     
     [HttpPost("metal")]
@@ -54,6 +55,6 @@ public class EventController(IActorSpawnManager manager) : Controller
     public IActionResult SpawnMetal()
     {
         var actor = manager.SpawnMetalActor();
-        return actor != null ? Ok(actor) : NotFound();
+        return actor != null ? Json(actor.ToDynamic()) : NotFound();
     }
 }
