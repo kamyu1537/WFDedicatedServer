@@ -387,6 +387,7 @@ internal sealed class SessionManager : ISessionManager
 
         _logger.LogInformation("try kick player: {SteamId}", target);
         SendP2PPacket(target, NetChannel.GameState, new ServerClosePacket(), false);
+        SteamNetworking.CloseP2PSessionWithUser(target);
     }
 
     public void KickPlayer(SteamId target)
@@ -404,7 +405,6 @@ internal sealed class SessionManager : ISessionManager
 
         _logger.LogInformation("try kick player: {Member}", target);
         SendP2PPacket(target, NetChannel.GameState, new KickPacket(), false);
-
         SteamNetworking.CloseP2PSessionWithUser(target);
     }
 
@@ -417,7 +417,7 @@ internal sealed class SessionManager : ISessionManager
         SendP2PPacket(target, NetChannel.GameState, new BanPacket(), false);
         BroadcastP2PPacket(NetChannel.GameState, new ForceDisconnectPlayerPacket { UserId = target }, false);
         SteamNetworking.CloseP2PSessionWithUser(target);
-
+        
         if (update) UpdateBannedPlayers();
     }
 
@@ -552,14 +552,27 @@ internal sealed class SessionManager : ISessionManager
 
     private void OnP2PSessionRequest(SteamId requester)
     {
-        _logger.LogWarning("P2P session request: {SteamId}", requester);
-        SteamNetworking.AcceptP2PSessionWithUser(requester);
+        _logger.LogWarning("p2p session request: {SteamId}", requester);
 
+        if (!_banned.Contains(requester))
+        {
+            _logger.LogWarning("banned player request: {SteamId}", requester);
+            SteamNetworking.CloseP2PSessionWithUser(requester);
+            return;
+        }
+        
+        _logger.LogWarning("accept p2p session: {SteamId}", requester);
+        SteamNetworking.AcceptP2PSessionWithUser(requester);
+        
         if (GetSession(requester) == null)
         {
-            _logger.LogWarning("P2P session request from session: {SteamId}", requester);
+            _logger.LogWarning("but.. not found session: {SteamId}", requester);
             ServerClose(requester);
+            return;
         }
+        
+        _logger.LogWarning("and.. found session: {SteamId}", requester);
+        BroadcastP2PPacket(NetChannel.GameState, new HandshakePacket());
     }
 
     #endregion
