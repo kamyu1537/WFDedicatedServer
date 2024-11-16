@@ -52,13 +52,7 @@ internal class WFServer(
 
     public override async Task StopAsync(CancellationToken cancellationToken)
     {
-        var sessions = session.GetSessions();
-        foreach (var player in sessions)
-        {
-            session.ServerClose(player.SteamId);
-        }
-        
-        await session.LeaveLobbyAsync();
+        session.ServerClose();
         SteamClient.Shutdown();
         
         await base.StopAsync(cancellationToken);

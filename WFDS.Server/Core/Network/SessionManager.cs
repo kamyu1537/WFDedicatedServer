@@ -32,6 +32,7 @@ internal sealed class SessionManager : ISessionManager
     private bool _public;
     private bool _adult;
     private string _code = string.Empty;
+    private bool _closed;
 
     private Lobby? _lobby;
 
@@ -373,6 +374,28 @@ internal sealed class SessionManager : ISessionManager
         }
     }
 
+    public bool IsServerClosed()
+    {
+        return _closed;
+    }
+
+    public void ServerClose()
+    {
+        if (!_lobby.HasValue)
+        {
+            return;
+        }
+
+        _closed = true;
+        var sessions = GetSessions();
+        foreach (var player in sessions)
+        {
+            ServerClose(player.SteamId);
+        }
+        
+        LeaveLobbyAsync().Wait();
+    }
+
     public void ServerClose(SteamId target)
     {
         if (!_lobby.HasValue)
@@ -558,6 +581,13 @@ internal sealed class SessionManager : ISessionManager
         {
             _logger.LogWarning("banned player request: {SteamId}", requester);
             SteamNetworking.CloseP2PSessionWithUser(requester);
+            return;
+        }
+
+        if (IsServerClosed())
+        {
+            _logger.LogWarning("server closed: {SteamId}", requester);
+            ServerClose(requester);
             return;
         }
         

@@ -16,6 +16,7 @@ public interface ISessionManager
     void SetLobbyType(GameLobbyType lobbyType);
 
     bool IsLobbyValid();
+    bool IsServerClosed();
     
     void CreateLobby(string serverName, string roomCode, GameLobbyType lobbyType, bool isPublic, bool isAdult, int maxPlayers);
     Task LeaveLobbyAsync();
@@ -27,7 +28,8 @@ public interface ISessionManager
     Session? GetSession(SteamId steamId);
     IEnumerable<Session> GetSessions();
     bool IsSessionValid(SteamId steamId);
-    
+
+    void ServerClose();
     void ServerClose(SteamId steamId);
     void KickPlayer(SteamId steamId);
     void TempBanPlayer(SteamId steamId, bool update = true);
