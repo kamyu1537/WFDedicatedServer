@@ -258,8 +258,8 @@ internal sealed class SessionManager : ISessionManager
         {
             if (!session.HandshakeReceived && now - session.ConnectTime > TimeSpan.FromMinutes(5))
             {
-                _logger.LogError("kick no handshake player: {Member}", session.Friend);
-                KickPlayer(session.SteamId);
+                _logger.LogWarning("no handshake player: {Member}", session.Friend);
+                // KickPlayer(session.SteamId);
             }
         }
     }
