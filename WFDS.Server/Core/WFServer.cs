@@ -9,7 +9,7 @@ internal class WFServer(
     ILogger<WFServer> logger,
     IOptions<ServerSetting> settings,
     ISessionManager session,
-    IMapManager map
+    IZoneManager zone
 ) : BackgroundService
 {
     private const uint AppId = 3146520;
@@ -20,7 +20,7 @@ internal class WFServer(
         SteamClient.Init(AppId);
         SteamNetworking.AllowP2PPacketRelay(true);
 
-        map.LoadSpawnPoints();
+        zone.LoadZones();
 
         session.BanPlayers(settings.Value.BannedPlayers);
         session.CreateLobby(

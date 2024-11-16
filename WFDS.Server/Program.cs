@@ -45,7 +45,7 @@ try
     builder.Services.AddSingleton<IServerSetting>(setting);
     builder.Services.AddSingleton<PacketHandleManager>();
 
-    builder.Services.AddSingleton<IMapManager, MapManager>();
+    builder.Services.AddSingleton<IZoneManager, ZoneManager>();
     builder.Services.AddSingleton<IActorIdManager, ActorIdManager>();
     builder.Services.AddSingleton<IActorManager, ActorManager>();
     builder.Services.AddSingleton<IActorSpawnManager, ActorSpawnManager>();

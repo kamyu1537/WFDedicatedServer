@@ -35,7 +35,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <None Update="Resources\**">
+        <None Update="Zones\**">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
             <Visible>false</Visible>
         </None>

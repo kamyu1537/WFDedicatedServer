@@ -3,29 +3,26 @@ using System.Text;
 using System.Text.Json;
 using WFDS.Common.Extensions;
 using WFDS.Common.Types;
-using WFDS.Common.Types.Manager;
 using WFDS.Godot.Types;
 
 namespace WFDS.Server.Core.Resource;
 
-internal class MapManager(ILogger<MapManager> logger) : IMapManager
+internal sealed class ZoneData(string fileName, string filePath) : IZoneData
 {
-    private const string MapPath = "Resources/main_zone.tscn";
+    public string FileName { get; } = fileName;
+    public string FilePath { get; } = filePath;
 
     public List<PositionNode> FishSpawnPoints { get; } = [];
     public List<PositionNode> TrashPoints { get; } = [];
     public List<PositionNode> ShorelinePoints { get; } = [];
     public List<PositionNode> HiddenSpots { get; } = [];
 
-
-    public void LoadSpawnPoints()
+    public void LoadZoneData(ILogger logger)
     {
-        var path = Path.Combine(Directory.GetCurrentDirectory(), MapPath);
+        using var file = new FileStream(FilePath, FileMode.Open);
+        using var reader = new StreamReader(file, Encoding.UTF8);
 
-        using var file = new FileStream(path, FileMode.Open);
-        using var reader = new StreamReader(file);
-
-        logger.LogInformation("Loading map from {Path}", path);
+        logger.LogInformation("loading tscn from {Path}", FilePath);
         var nodes = LoadPositionNodeList(reader)
             .Select(ParsePositionNode)
             .Where(x => x != null)
@@ -36,7 +33,7 @@ internal class MapManager(ILogger<MapManager> logger) : IMapManager
         TrashPoints.Clear();
         ShorelinePoints.Clear();
         HiddenSpots.Clear();
-
+        
         FishSpawnPoints.AddRange(nodes.Where(x => x.Groups.Contains("fish_spawn")));
         TrashPoints.AddRange(nodes.Where(x => x.Groups.Contains("trash_point")));
         ShorelinePoints.AddRange(nodes.Where(x => x.Groups.Contains("shoreline_point")));
@@ -131,16 +128,16 @@ internal class MapManager(ILogger<MapManager> logger) : IMapManager
     private static Transform3D? GetTransform3D(string line)
     {
         var substring = line.Substring(23, line.Length - 24).Trim();
-        var split = substring.Split(',').Select(x => x.Trim()).ToArray();
+        var split = substring.Split(',').Select(x => x.Trim()).Select(x => float.TryParse(x, out var value) ? value : 0).ToArray();
         if (split.Length < 12)
         {
             return null;
         }
 
-        var x = new Vector3(float.Parse(split[0]), float.Parse(split[1]), float.Parse(split[2]));
-        var y = new Vector3(float.Parse(split[3]), float.Parse(split[4]), float.Parse(split[5]));
-        var z = new Vector3(float.Parse(split[6]), float.Parse(split[7]), float.Parse(split[8]));
-        var origin = new Vector3(float.Parse(split[9]), float.Parse(split[10]), float.Parse(split[11]));
+        var x = new Vector3(split[0], split[1], split[2]);
+        var y = new Vector3(split[3], split[4], split[5]);
+        var z = new Vector3(split[6], split[7], split[8]);
+        var origin = new Vector3(split[9], split[10], split[11]);
         return new Transform3D(x, y, z, origin);
     }
 }

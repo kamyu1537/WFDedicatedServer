@@ -5,55 +5,54 @@ using WFDS.Common.Types.Manager;
 
 namespace WFDS.Server.Core.Actor;
 
-internal sealed class ActorSpawnManager(ILogger<ActorSpawnManager> logger, IMapManager map, IActorManager actor) : IActorSpawnManager
+internal sealed class ActorSpawnManager(ILogger<ActorSpawnManager> logger, IZoneManager zoneManager, IActorManager actor) : IActorSpawnManager
 {
     private readonly Random _random = new();
 
     public void SpawnAmbientBirdActor()
     {
-        PositionNode point;
-        bool found;
-        do
-        {
-            point = map.TrashPoints[_random.Next() % map.TrashPoints.Count];
-            found = actor.IsInSphereActor(ActorType.AmbientBird, point.Transform.Origin, 5f);
-        } while (found); // prevent spawn on top of each other
+        var zone = zoneManager.GetZone();
 
         var count = _random.Next() % 3 + 1;
         for (var i = 0; i < count; i++)
         {
-            var x = _random.NextSingle() * 5f - 2.5f;
-            var z = _random.NextSingle() * 5f - 2.5f;
-            var pos = point.Transform.Origin + new Vector3(x, 0, z);
+            if (TryPickRandomNode(zone.TrashPoints, out var point))
+            {
+                var x = _random.NextSingle() * 5f - 2.5f;
+                var z = _random.NextSingle() * 5f - 2.5f;
+                var pos = point.Transform.Origin + new Vector3(x, 0, z);
 
-            actor.SpawnAmbientBirdActor(pos);
+                actor.SpawnAmbientBirdActor(pos);
+            }
+            else
+            {
+                logger.LogError("no fish spawn point found");
+            }
         }
     }
 
     public IActor? SpawnFishSpawnActor()
     {
-        PositionNode point;
-        bool found;
-        do
+        var zone = zoneManager.GetZone();
+        if (TryPickRandomNode(zone.FishSpawnPoints, out var point))
         {
-            point = map.FishSpawnPoints[_random.Next() % map.FishSpawnPoints.Count];
-            found = actor.IsInSphereActor(ActorType.FishSpawn, point.Transform.Origin, 1f);
-        } while (found); // prevent spawn on top of each other
-
-        return actor.SpawnFishSpawnActor(point.Transform.Origin);
+            return actor.SpawnFishSpawnActor(point.Transform.Origin);
+        }
+        
+        logger.LogError("no fish spawn point found");
+        return null;
     }
 
     public IActor? SpawnFishSpawnAlienActor()
     {
-        PositionNode point;
-        bool found;
-        do
+        var zone = zoneManager.GetZone();
+        if (TryPickRandomNode(zone.FishSpawnPoints, out var point))
         {
-            point = map.FishSpawnPoints[_random.Next() % map.FishSpawnPoints.Count];
-            found = actor.IsInSphereActor(ActorType.FishSpawnAlien, point.Transform.Origin, 1f);
-        } while (found); // prevent spawn on top of each other
+            return actor.SpawnFishSpawnAlienActor(point.Transform.Origin);
+        }
 
-        return actor.SpawnFishSpawnAlienActor(point.Transform.Origin);
+        logger.LogError("no fish spawn point found");
+        return null;
     }
 
     public IActor? SpawnRainCloudActor()
@@ -67,30 +66,29 @@ internal sealed class ActorSpawnManager(ILogger<ActorSpawnManager> logger, IMapM
 
     public IActor? SpawnVoidPortalActor()
     {
-        if (map.HiddenSpots.Count == 0)
+        var zone = zoneManager.GetZone();
+        if (TryPickRandomNode(zone.HiddenSpots, out var point))
         {
-            logger.LogError("no hidden_spots found");
-            return null;
+            var x = _random.NextSingle() - 0.5f;
+            var z = _random.NextSingle() - 0.5f;
+            var pos = point.Transform.Origin + new Vector3(x, 0, z);
+
+            return actor.SpawnVoidPortalActor(pos);
         }
 
-        PositionNode point;
-        bool found;
-        do
-        {
-            point = map.HiddenSpots[_random.Next() % map.HiddenSpots.Count];
-            found = actor.IsInSphereActor(ActorType.VoidPortal, point.Transform.Origin, 1f);
-        } while (found); // prevent spawn on top of each other
-
-        var x = _random.NextSingle() - 0.5f;
-        var z = _random.NextSingle() - 0.5f;
-        var pos = point.Transform.Origin + new Vector3(x, 0, z);
-
-        return actor.SpawnVoidPortalActor(pos);
+        logger.LogError("no hidden spot found");
+        return null;
     }
 
     public IActor? SpawnMetalActor()
     {
         var point = RandomPickMetalPoint();
+        if (point == null)
+        {
+            logger.LogError("no metal point found");
+            return null;
+        }
+
         var x = _random.NextSingle() - 0.5f;
         var z = _random.NextSingle() - 0.5f;
         var pos = point.Transform.Origin + new Vector3(x, 0, z);
@@ -98,28 +96,49 @@ internal sealed class ActorSpawnManager(ILogger<ActorSpawnManager> logger, IMapM
         return actor.SpawnMetalActor(pos);
     }
 
-    private PositionNode RandomPickMetalPoint()
+    private PositionNode? RandomPickMetalPoint()
     {
-        PositionNode point;
-        bool found;
-
+        var zone = zoneManager.GetZone();
         if (_random.NextSingle() < 0.15)
         {
-            do
+            if (TryPickRandomNode(zone.ShorelinePoints, out var point))
             {
-                point = map.ShorelinePoints[_random.Next() % map.ShorelinePoints.Count];
-                found = actor.IsInSphereActor(ActorType.MetalSpawn, point.Transform.Origin, 1f);
-            } while (found); // prevent spawn on top of each other
+                return point;
+            }
         }
         else
         {
-            do
+            if (TryPickRandomNode(zone.TrashPoints, out var point))
             {
-                point = map.TrashPoints[_random.Next() % map.TrashPoints.Count];
-                found = actor.IsInSphereActor(ActorType.MetalSpawn, point.Transform.Origin, 1f);
-            } while (found); // prevent spawn on top of each other
+                return point;
+            }
         }
 
-        return point;
+        return null;
+    }
+
+    private bool TryPickRandomNode(List<PositionNode> nodes, out PositionNode point)
+    {
+        point = default!;
+        if (nodes.Count == 0)
+        {
+            logger.LogError("no node found");
+            return false;
+        }
+
+        bool found;
+        var repeat = 0;
+        do
+        {
+            if (repeat++ > 10)
+            {
+                break;
+            }
+
+            point = nodes[_random.Next() % nodes.Count];
+            found = actor.IsInSphereActor(ActorType.MetalSpawn, point.Transform.Origin, 1f);
+        } while (found); // prevent spawn on top of each other
+
+        return true;
     }
 }
