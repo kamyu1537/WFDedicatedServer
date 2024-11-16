@@ -1,4 +1,5 @@
-﻿using System.Numerics;
+﻿using System.Globalization;
+using System.Numerics;
 
 namespace WFDS.Common.Extensions;
 
@@ -86,18 +87,18 @@ public static class DictionaryExtensions
     public static int GetParseInt(this Dictionary<object, object> dic, string key)
     {
         var value = dic.GetString(key);
-        return int.TryParse(value, out var result) ? result : 0;
+        return int.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture, out var result) ? result : 0;
     }
 
     public static long GetParseLong(this Dictionary<object, object> dic, string key)
     {
         var value = dic.GetString(key);
-        return long.TryParse(value, out var result) ? result : 0;
+        return long.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture, out var result) ? result : 0;
     }
 
     public static ulong GetParseULong(this Dictionary<object, object> dic, string key)
     {
         var value = dic.GetString(key);
-        return ulong.TryParse(value, out var result) ? result : 0;
+        return ulong.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture, out var result) ? result : 0;
     }
 }

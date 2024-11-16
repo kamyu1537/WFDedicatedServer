@@ -1,4 +1,5 @@
 ﻿using System.Collections.Concurrent;
+using System.Globalization;
 using Steamworks;
 using Steamworks.Data;
 using WFDS.Common.GameEvents.Events;
@@ -148,7 +149,7 @@ internal sealed class SessionManager : ISessionManager
 
         lobby.SetData("name", _name);
         lobby.SetData("lobby_name", _name);
-        lobby.SetData("cap", (_cap + 1).ToString());
+        lobby.SetData("cap", (_cap + 1).ToString(CultureInfo.InvariantCulture));
         lobby.SetData("age_limit", _adult ? "true" : "");
 
         lobby.SetData("banned_players", "");
@@ -249,7 +250,7 @@ internal sealed class SessionManager : ISessionManager
 
         var random = new Random();
 
-        _lobby.Value.SetData("server_browser_value", (random.Next() % 20).ToString());
+        _lobby.Value.SetData("server_browser_value", (random.Next() % 20).ToString(CultureInfo.InvariantCulture));
     }
 
     public void KickNoHandshakePlayers()
@@ -289,7 +290,7 @@ internal sealed class SessionManager : ISessionManager
     
     public IEnumerable<string> GetBannedPlayers()
     {
-        return _banned.Select(x => x.ToString());
+        return _banned.Select(x => x.ToString(CultureInfo.InvariantCulture));
     }
 
     public bool IsSessionValid(SteamId steamId)
@@ -453,7 +454,7 @@ internal sealed class SessionManager : ISessionManager
     {
         foreach (var banPlayer in banPlayers)
         {
-            if (ulong.TryParse(banPlayer, out var steamId))
+            if (ulong.TryParse(banPlayer, NumberStyles.Any, CultureInfo.InvariantCulture, out var steamId))
             {
                 TempBanPlayer(steamId, false);
             }

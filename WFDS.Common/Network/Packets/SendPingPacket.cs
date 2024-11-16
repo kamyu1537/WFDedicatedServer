@@ -1,4 +1,5 @@
-﻿using Steamworks;
+﻿using System.Globalization;
+using Steamworks;
 using WFDS.Common.Extensions;
 
 namespace WFDS.Common.Network.Packets;
@@ -14,10 +15,10 @@ public class SendPingPacket : Packet
 
     public override void Serialize(Dictionary<object, object> data)
     {
-        var time = DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString();
+        var time = DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString(CultureInfo.InvariantCulture);
         
         data.TryAdd("type", "send_ping");
-        data.TryAdd("from", FromId.Value.ToString());
+        data.TryAdd("from", FromId.Value.ToString(CultureInfo.InvariantCulture));
         data.TryAdd("time", time);
     }
 }

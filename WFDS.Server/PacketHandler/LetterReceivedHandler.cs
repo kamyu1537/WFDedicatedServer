@@ -1,4 +1,5 @@
-﻿using Steamworks;
+﻿using System.Globalization;
+using Steamworks;
 using WFDS.Common.Network;
 using WFDS.Common.Network.Packets;
 using WFDS.Common.Types;
@@ -12,7 +13,7 @@ internal class LetterReceivedHandler(ILogger<LetterReceivedHandler> logger, ISes
 {
     protected override void Handle(Session sender, NetChannel channel, LetterReceivedPacket packet)
     {
-        if (packet.To != SteamClient.SteamId.Value.ToString())
+        if (packet.To != SteamClient.SteamId.Value.ToString(CultureInfo.InvariantCulture))
             return;
 
         logger.LogDebug("received letter from {Sender} ({From} -> {To}) on channel {Channel} / {Header}: {Body} - {Closing} {User}", sender.SteamId, packet.Data.From, packet.Data.To, channel, packet.Data.Header, packet.Data.Body, packet.Data.Closing, packet.Data.User);

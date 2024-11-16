@@ -1,4 +1,5 @@
-﻿using Steamworks;
+﻿using System.Globalization;
+using Steamworks;
 using WFDS.Common.Extensions;
 using WFDS.Common.Types;
 
@@ -64,12 +65,12 @@ public class LetterReceivedPacket : Packet
     {
         return new LetterReceivedPacket
         {
-            To = to.Value.ToString(),
+            To = to.Value.ToString(CultureInfo.InvariantCulture),
             Data = new LetterData
             {
                 LetterId = new Random().Next(),
-                To = SteamClient.SteamId.ToString(),
-                From = SteamClient.SteamId.ToString(),
+                To = SteamClient.SteamId.Value.ToString(CultureInfo.InvariantCulture),
+                From = SteamClient.SteamId.Value.ToString(CultureInfo.InvariantCulture),
                 Closing = "From, ",
                 User = "[SERVER]",
                 Header = "Letter",

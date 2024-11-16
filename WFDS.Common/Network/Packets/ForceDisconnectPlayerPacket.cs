@@ -1,4 +1,5 @@
-﻿using Steamworks;
+﻿using System.Globalization;
+using Steamworks;
 using WFDS.Common.Extensions;
 
 namespace WFDS.Common.Network.Packets;
@@ -15,6 +16,6 @@ public class ForceDisconnectPlayerPacket : Packet
     public override void Serialize(Dictionary<object, object> data)
     {
         data.TryAdd("type", "force_disconnect_player");
-        data.TryAdd("user_id", UserId.Value.ToString());
+        data.TryAdd("user_id", UserId.Value.ToString(CultureInfo.InvariantCulture));
     }
 }

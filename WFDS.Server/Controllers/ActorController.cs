@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Globalization;
+using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 using WFDS.Common.Actor;
 using WFDS.Server.Core.Actor;
@@ -45,7 +46,7 @@ public class ActorController(IActorManager manager) : Controller
     [SwaggerOperation("get actors by creator id")]
     public IActionResult GetActorsByCreatorId(string creatorId)
     {
-        if (!ulong.TryParse(creatorId, out var id))
+        if (!ulong.TryParse(creatorId, NumberStyles.Any, CultureInfo.InvariantCulture, out var id))
         {
             return BadRequest();
         }

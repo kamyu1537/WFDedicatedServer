@@ -1,4 +1,5 @@
-﻿using Steamworks;
+﻿using System.Globalization;
+using Steamworks;
 using WFDS.Common.Extensions;
 
 namespace WFDS.Common.Network.Packets;
@@ -15,6 +16,6 @@ public class RequestPingPacket : Packet
     public override void Serialize(Dictionary<object, object> data)
     {
         data.TryAdd("type", "request_ping");
-        data.TryAdd("sender", Sender.Value.ToString());
+        data.TryAdd("sender", Sender.Value.ToString(CultureInfo.InvariantCulture));
     }
 }

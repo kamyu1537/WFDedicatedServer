@@ -1,4 +1,5 @@
-﻿using Steamworks;
+﻿using System.Globalization;
+using Steamworks;
 using WFDS.Common.Actor;
 using WFDS.Common.Network.Packets;
 using WFDS.Common.Types;
@@ -40,7 +41,7 @@ internal class RequestPingScheduleService(ISessionManager sessionManager, IActor
 
             sessionManager.SendP2PPacket(player.CreatorId, NetChannel.GameState, new RequestActorsPacket
             {
-                UserId = SteamClient.SteamId.Value.ToString()
+                UserId = SteamClient.SteamId.Value.ToString(CultureInfo.InvariantCulture)
             });
         }
     }

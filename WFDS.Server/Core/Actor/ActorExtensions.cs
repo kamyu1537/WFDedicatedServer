@@ -1,4 +1,5 @@
-﻿using WFDS.Common.Actor;
+﻿using System.Globalization;
+using WFDS.Common.Actor;
 
 namespace WFDS.Server.Core.Actor;
 
@@ -10,7 +11,7 @@ public static class ActorExtensions
         {
             actor.ActorId,
             Type = actor.Type.ToString(),
-            CreatorId = actor.CreatorId.ToString(),
+            CreatorId = actor.CreatorId.Value.ToString(CultureInfo.InvariantCulture),
             actor.Zone,
             actor.ZoneOwner,
             actor.Position,

@@ -1,4 +1,5 @@
-﻿using System.Numerics;
+﻿using System.Globalization;
+using System.Numerics;
 using System.Text;
 using System.Text.Json;
 using WFDS.Common.Extensions;
@@ -128,7 +129,7 @@ internal sealed class ZoneData(string fileName, string filePath) : IZoneData
     private static Transform3D? GetTransform3D(string line)
     {
         var substring = line.Substring(23, line.Length - 24).Trim();
-        var split = substring.Split(',').Select(x => x.Trim()).Select(x => float.TryParse(x, out var value) ? value : 0).ToArray();
+        var split = substring.Split(',').Select(x => x.Trim()).Select(x => float.Parse(x, NumberStyles.Any, CultureInfo.InvariantCulture)).ToArray();
         if (split.Length < 12)
         {
             return null;

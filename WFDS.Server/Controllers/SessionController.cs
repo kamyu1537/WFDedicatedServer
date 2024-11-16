@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Globalization;
+using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 using WFDS.Common.Types.Manager;
 
@@ -51,7 +52,7 @@ public class SessionController(ISessionManager manager) : Controller
         
         return Json(new
         {
-            SteamId = session.SteamId.ToString(),
+            SteamId = session.SteamId.Value.ToString(CultureInfo.InvariantCulture),
             session.Friend,
             session.ConnectTime,
             session.HandshakeReceiveTime,
