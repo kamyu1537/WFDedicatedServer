@@ -33,6 +33,7 @@ internal sealed class ActorTickService(ILogger<ActorTickService> logger, IActorM
             
             GameEventBus.Publish(new ActorTickEvent(actor.ActorId, delta));
         }
+        await Task.Yield();
     }
 
     private bool Decay(IActor actor)
