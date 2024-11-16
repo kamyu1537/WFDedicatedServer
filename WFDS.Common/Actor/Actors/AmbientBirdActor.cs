@@ -17,7 +17,7 @@ public sealed class AmbientBirdActor : IActor
     public DateTimeOffset CreateTime { get; set; } = DateTimeOffset.UtcNow;
 
     public bool IsCanWipe => true;
-    public bool IsDeadActor { get; set; }
+    public bool IsDeadActor { get; set; } = true;
     public long NetworkShareDefaultCooldown => 32;
     public long NetworkShareCooldown { get; set; }
 }

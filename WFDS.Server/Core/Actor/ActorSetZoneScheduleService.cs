@@ -7,12 +7,12 @@ namespace WFDS.Server.Core.Actor;
 
 internal class ActorSetZoneScheduleService(IActorManager actorManager, ISessionManager sessionManager) : IHostedService
 {
-    private static readonly TimeSpan RequestPingTimeoutPeriod = TimeSpan.FromSeconds(8);
+    private static readonly TimeSpan SetZoneTimeoutPeriod = TimeSpan.FromSeconds(5);
     private Timer? _timer;
 
     public Task StartAsync(CancellationToken cancellationToken)
     {
-        _timer = new Timer(DoWork, null, TimeSpan.Zero, RequestPingTimeoutPeriod);
+        _timer = new Timer(DoWork, null, TimeSpan.Zero, SetZoneTimeoutPeriod);
         return Task.CompletedTask;
     }
 
@@ -27,6 +27,7 @@ internal class ActorSetZoneScheduleService(IActorManager actorManager, ISessionM
     {
         foreach (var actor in actorManager.GetOwnedActors())
         {
+            if (actor.IsDeadActor) continue;
             sessionManager.BroadcastP2PPacket(NetChannel.GameState, ActorActionPacket.CreateSetZonePacket(actor.ActorId, actor.Zone, actor.ZoneOwner));
         }
     }

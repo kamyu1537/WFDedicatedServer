@@ -29,8 +29,6 @@ internal sealed class ActorTickService(ILogger<ActorTickService> logger, IActorM
         foreach (var actor in actors)
         {
             if (Decay(actor)) return;
-            if (actor.IsDeadActor) return;
-
             await ChannelEventBus.PublishAsync(new ActorTickEvent(actor.ActorId, delta));
         }
     }
@@ -44,9 +42,10 @@ internal sealed class ActorTickService(ILogger<ActorTickService> logger, IActorM
                 actor.IsDeadActor = true;
                 logger.LogInformation("remove actor {ActorId} {ActorType} (owner not found)", actor.ActorId, actor.Type);
                 manager.TryRemoveActor(actor.ActorId, ActorRemoveTypes.OwnerNotFound, out _);
+                return false;
             }
 
-            return false;
+            return true;
         }
 
         if (!actor.Decay) return false;
