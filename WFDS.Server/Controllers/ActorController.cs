@@ -88,7 +88,8 @@ public class ActorController(IActorManager manager) : Controller
             actor.Decay,
             actor.DecayTimer,
             actor.CreateTime,
-            actor.IsDeadActor,
+            actor.IsDead,
+            actor.IsRemoved,
             actor.NetworkShareDefaultCooldown,
             actor.NetworkShareCooldown,
         });

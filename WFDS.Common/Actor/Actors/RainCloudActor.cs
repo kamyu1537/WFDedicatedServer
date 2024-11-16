@@ -16,8 +16,10 @@ public sealed class RainCloudActor : IActor
     public long DecayTimer { get; set; } = 32500;
     public DateTimeOffset CreateTime { get; set; } = DateTimeOffset.UtcNow;
     
-    public bool IsCanWipe => false;
-    public bool IsDeadActor { get; set; } = false;
+    public bool CanWipe => false;
+    public bool IsRemoved { get; set; }
+    
+    public bool IsDead { get; set; } = false;
     public long NetworkShareDefaultCooldown => 8;
     public long NetworkShareCooldown { get; set; }
 

@@ -13,11 +13,13 @@ public sealed class MetalSpawnActor : IActor
     public Vector3 Position { get; set; } = Vector3.Zero;
     public Vector3 Rotation { get; set; } = Vector3.Zero;
     public bool Decay => true;
+    public bool IsRemoved { get; set; }
+    
     public long DecayTimer { get; set; } = 10000;
     public DateTimeOffset CreateTime { get; set; } = DateTimeOffset.UtcNow;
 
-    public bool IsCanWipe => true;
-    public bool IsDeadActor { get; set; }
+    public bool CanWipe => true;
+    public bool IsDead { get; set; }
     public long NetworkShareDefaultCooldown => 32;
     public long NetworkShareCooldown { get; set; }
 }

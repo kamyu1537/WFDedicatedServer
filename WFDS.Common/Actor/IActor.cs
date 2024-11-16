@@ -17,8 +17,10 @@ public interface IActor
     long DecayTimer { get; set; }
     DateTimeOffset CreateTime { get; set; }
 
-    bool IsCanWipe { get; }
-    bool IsDeadActor { get; set; }
+    bool CanWipe { get; }
+    bool IsRemoved { get; set; }
+    bool IsDead { get; set; }
+    
     long NetworkShareDefaultCooldown { get; }
     long NetworkShareCooldown { get; set; }
 }

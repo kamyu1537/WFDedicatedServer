@@ -15,7 +15,7 @@ internal class RainCloudTickEventHandler(IActorManager actorManager) : ChannelEv
 
         var actor = actorManager.GetActor(e.ActorId);
         if (actor is not RainCloudActor rainCloud) return;
-        if (rainCloud.IsDeadActor) return;
+        if (rainCloud.IsDead || rainCloud.IsRemoved) return;
         
         var vel = new Vector2(1, 0).Rotated(rainCloud.Direction) * RainCloudActor.Speed;
         rainCloud.Position += new Vector3(vel.X, 0f, vel.X) * (float)delta;

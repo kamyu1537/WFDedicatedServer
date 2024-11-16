@@ -283,7 +283,7 @@ internal sealed class ActorManager(ILogger<ActorManager> logger, IActorIdManager
             ZoneOwner = player.ZoneOwner,
             Position = position,
             Rotation = rotation,
-            IsDeadActor = true,
+            IsDead = true,
             Decay = false
         };
 
@@ -308,6 +308,9 @@ internal sealed class ActorManager(ILogger<ActorManager> logger, IActorIdManager
             return false;
         }
 
+        actor.IsRemoved = true;
+        actor.IsDead = true;
+        
         if (actor.Type == ActorType.Player)
         {
             if (!_players.TryRemove(actor.CreatorId, out _))

@@ -89,20 +89,20 @@ internal class ActorActionHandler(ILogger<ActorActionHandler> logger, IActorMana
             var actor = actorManager.GetActor(actorId);
             if (actor == null) return;
 
-            if (actor.CreatorId == SteamClient.SteamId && actor.IsCanWipe)
+            if (actor.CreatorId == SteamClient.SteamId && actor.CanWipe)
             {
                 actorManager.TryRemoveActor(actorId, ActorRemoveTypes.WipeActor, out _);
-            }    
+            }
         }
-        
+
         {
             var actor = actorManager.GetActor(packet.ActorId);
             if (actor == null) return;
 
-            if (actor.CreatorId == SteamClient.SteamId && actor.IsCanWipe)
+            if (actor.CreatorId == SteamClient.SteamId && actor.CanWipe)
             {
                 actorManager.TryRemoveActor(packet.ActorId, ActorRemoveTypes.WipeActor, out _);
-            }    
+            }
         }
     }
 

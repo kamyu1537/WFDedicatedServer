@@ -27,7 +27,9 @@ internal class ActorSetZoneScheduleService(IActorManager actorManager, ISessionM
     {
         foreach (var actor in actorManager.GetOwnedActors())
         {
-            if (actor.IsDeadActor) continue;
+            if (actor.IsDead) continue;
+            if (actor.IsRemoved) continue;
+            
             sessionManager.BroadcastP2PPacket(NetChannel.GameState, ActorActionPacket.CreateSetZonePacket(actor.ActorId, actor.Zone, actor.ZoneOwner));
         }
     }

@@ -33,7 +33,7 @@ internal sealed class ActorNetworkShareService(IActorManager actorManager, ISess
     // _network_share
     private void NetworkShare(IActor actor)
     {
-        if (actor.IsDeadActor)
+        if (actor.IsDead || actor.IsRemoved)
             return;
         
         if (actor.CreatorId != SteamClient.SteamId.Value)

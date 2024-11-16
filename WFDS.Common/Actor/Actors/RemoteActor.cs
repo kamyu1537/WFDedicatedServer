@@ -16,8 +16,10 @@ public sealed class RemoteActor : IActor
     public long DecayTimer { get; set; } = 600;
     public DateTimeOffset CreateTime { get; set; } = DateTimeOffset.UtcNow;
 
-    public bool IsCanWipe => false;
-    public bool IsDeadActor { get; set; } = true;
+    public bool CanWipe => false;
+    public bool IsRemoved { get; set; }
+    
+    public bool IsDead { get; set; } = true;
     public long NetworkShareDefaultCooldown => 0;
     public long NetworkShareCooldown { get; set; }
 }
