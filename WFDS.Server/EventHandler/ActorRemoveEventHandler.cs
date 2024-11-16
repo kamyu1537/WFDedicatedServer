@@ -11,14 +11,13 @@ internal class ActorRemoveEventHandler(ISessionManager sessionManager) : Channel
 {
     protected override async Task HandleAsync(ActorRemoveEvent e)
     {
+        if (e.OwnerId != SteamClient.SteamId) return;
+        
         var wipe = ActorActionPacket.CreateWipeActorPacket(e.ActorId);
         sessionManager.BroadcastP2PPacket(NetChannel.ActorAction, wipe);
         
-        if (e.OwnerId == SteamClient.SteamId)
-        {
-            var queue = ActorActionPacket.CreateQueueFreePacket(e.ActorId);
-            sessionManager.BroadcastP2PPacket(NetChannel.ActorAction, queue);
-        }
+        var queue = ActorActionPacket.CreateQueueFreePacket(e.ActorId);
+        sessionManager.BroadcastP2PPacket(NetChannel.ActorAction, queue);
         
         await Task.Yield();
     }
