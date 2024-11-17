@@ -325,6 +325,7 @@ internal sealed class ActorManager(ILogger<ActorManager> logger, IActorIdManager
         }
 
         idManager.Return(actorId);
+        logger.LogInformation("actor removed {ActorId} {ActorType} {CreatorId} {Type}", actorId, actor.Type, actor.CreatorId, type);
         GameEventBus.Publish(new ActorRemoveEvent(actorId, actor.Type, actor.CreatorId, type));
         return true;
     }
