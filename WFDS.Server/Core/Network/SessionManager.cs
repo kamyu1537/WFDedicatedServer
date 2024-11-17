@@ -495,6 +495,14 @@ internal sealed class SessionManager : ISessionManager
     private void OnLobbyMemberJoined(Lobby lobby, Friend member)
     {
         _logger.LogInformation("lobby member joined: {Member}", member);
+        
+        if (_banned.Contains(member.Id))
+        {
+            _logger.LogWarning("banned player joined: {Member}", member);
+            KickPlayer(member.Id);
+            BroadcastP2PPacket(NetChannel.GameState, new ForceDisconnectPlayerPacket { UserId = member.Id }, false);
+            return;
+        }
 
         var session = new Session
         {
