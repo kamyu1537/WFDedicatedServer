@@ -6,6 +6,7 @@ using WFDS.Server.Core.Configuration;
 namespace WFDS.Server.Core;
 
 internal class WFServer(
+    IHostApplicationLifetime lifetime,
     ILogger<WFServer> logger,
     IOptions<ServerSetting> settings,
     ISessionManager session,
@@ -34,20 +35,18 @@ internal class WFServer(
         
         while (!stoppingToken.IsCancellationRequested)
         {
-            if (session.IsLobbyValid())
-            {
-                session.CreateLobby(
-                    settings.Value.ServerName,
-                    settings.Value.RoomCode,
-                    settings.Value.LobbyType,
-                    settings.Value.Public,
-                    settings.Value.Adult,
-                    settings.Value.MaxPlayers
-                );
-            }
-            
             await Task.Delay(1000, stoppingToken);
+            
+            if (!session.IsLobbyValid())
+            {
+                logger.LogWarning("Lobby is not valid, shutting down");
+                break;
+            }
         }
+        
+        // 프로그램을 를 종료한다.
+        logger.LogInformation("SteamClientService stop");
+        lifetime.StopApplication();
     }
 
     public override async Task StopAsync(CancellationToken cancellationToken)
