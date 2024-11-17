@@ -9,6 +9,7 @@ using WFDS.Server.Core.Actor;
 using WFDS.Server.Core.GameEvent;
 using WFDS.Server.Core.Configuration;
 using WFDS.Server.Core.Network;
+using WFDS.Server.Core.Utils;
 using WFDS.Server.Core.Zone;
 
 Log.Logger = new LoggerConfiguration()
@@ -24,6 +25,8 @@ Log.Logger = new LoggerConfiguration()
 
 try
 {
+    SystemMonitor.Start();
+    
     AppDomain.CurrentDomain.UnhandledException += (_, e) => Log.Logger.Fatal(e.ExceptionObject as Exception, "unhandled exception");
     AppDomain.CurrentDomain.ProcessExit += (_, _) => Log.Logger.Information("process exit");
     
@@ -38,7 +41,7 @@ try
         .AddEnvironmentVariables()
         .Build();
     
-    builder.Services.AddExceptionHandler<WFExceptionHandler>();
+    builder.Services.AddExceptionHandler<WebExceptionHandler>();
 
     var section = configuration.GetSection("Server");
     var setting = section.Get<ServerSetting>();

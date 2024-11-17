@@ -16,12 +16,13 @@ public static class SystemMonitor
     public static double PeakVirtualMemorySize { get; private set; }
     
     public static double TotalHeapMemory { get; private set; }
-    
+
+    private static readonly Thread Thread;
     
     static SystemMonitor()
     {
         var process = Process.GetCurrentProcess();
-        var thread = new Thread(() =>
+        Thread = new Thread(() =>
         {
             while (True)
             {
@@ -48,7 +49,10 @@ public static class SystemMonitor
                 TotalHeapMemory = GC.GetTotalMemory(false);
             }
         });
-
-        thread.Start();
+    }
+    
+    public static void Start()
+    {
+        Thread.Start();
     }
 }

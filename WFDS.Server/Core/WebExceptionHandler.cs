@@ -2,7 +2,7 @@
 
 namespace WFDS.Server.Core;
 
-public class WFExceptionHandler : IExceptionHandler
+public class WebExceptionHandler : IExceptionHandler
 {
     public async ValueTask<bool> TryHandleAsync(HttpContext httpContext, Exception ex, CancellationToken cancellationToken)
     {
