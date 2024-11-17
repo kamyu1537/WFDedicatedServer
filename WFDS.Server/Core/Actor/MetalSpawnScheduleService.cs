@@ -3,11 +3,10 @@ using WFDS.Common.Types.Manager;
 
 namespace WFDS.Server.Core.Actor;
 
-internal sealed class MetalSpawnScheduleService(ILogger<MetalSpawnScheduleService> logger, IActorSpawnManager spawn, ISessionManager session) : IHostedService
+internal sealed class MetalSpawnScheduleService(ILogger<MetalSpawnScheduleService> logger, IActorSpawnManager spawn) : IHostedService
 {
     private static readonly TimeSpan MetalSpawnTimeoutPeriod = TimeSpan.FromSeconds(20);
     private Timer? _timer;
-    private readonly Random _random = new();
 
     public Task StartAsync(CancellationToken cancellationToken)
     {
@@ -23,9 +22,6 @@ internal sealed class MetalSpawnScheduleService(ILogger<MetalSpawnScheduleServic
 
     private void DoWork(object? state)
     {
-        var count = session.GetSessionCount();
-        if (count < 1) return;
-
         var metal = spawn.SpawnMetalActor();
         if (metal != null)
         {

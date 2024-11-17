@@ -19,10 +19,6 @@ internal sealed class ActorNetworkShareService(IActorManager actorManager, ISess
 
     private void Tick()
     {
-        var count = sessionManager.GetSessionCount();
-        if (count < 1)
-            return;
-
         var owned = actorManager.GetOwnedActors();
         foreach (var actor in owned)
         {

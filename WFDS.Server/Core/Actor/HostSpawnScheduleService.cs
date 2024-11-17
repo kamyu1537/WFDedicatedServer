@@ -4,7 +4,7 @@ using WFDS.Common.Types.Manager;
 
 namespace WFDS.Server.Core.Actor;
 
-internal sealed class HostSpawnScheduleService(ILogger<HostSpawnScheduleService> logger, IActorManager actor, IActorSpawnManager spawn, ISessionManager session) : IHostedService
+internal sealed class HostSpawnScheduleService(ILogger<HostSpawnScheduleService> logger, IActorManager actor, IActorSpawnManager spawn) : IHostedService
 {
     private const int DefaultAlienCooldown = 6;
     private const int ResetAlienCooldown = 16;
@@ -32,9 +32,6 @@ internal sealed class HostSpawnScheduleService(ILogger<HostSpawnScheduleService>
 
     private void DoWork(object? state)
     {
-        var count = session.GetSessionCount();
-        if (count < 1) return;
-
         var ownedActorCount = actor.GetOwnedActorCount();
         var ownedActorTypes = actor.GetOwnedActorTypes();
 

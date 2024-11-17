@@ -3,7 +3,7 @@ using WFDS.Common.Types.Manager;
 
 namespace WFDS.Server.Core.Actor;
 
-internal sealed class AmbientSpawnScheduleService(ISessionManager session, IActorSpawnManager spawn) : IHostedService
+internal sealed class AmbientSpawnScheduleService(IActorSpawnManager spawn) : IHostedService
 {
     private static readonly TimeSpan AmbientSpawnTimeoutPeriod = TimeSpan.FromSeconds(10);
     private readonly Random _random = new();
@@ -24,9 +24,6 @@ internal sealed class AmbientSpawnScheduleService(ISessionManager session, IActo
     // _on_ambient_spawn_timer_timeout
     private void DoWork(object? state)
     {
-        var count = session.GetSessionCount();
-        if (count < 1) return;
-
         var index = _random.Next() % 3;
 
         if (index == 2)
