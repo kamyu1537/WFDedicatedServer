@@ -14,12 +14,17 @@ public static class NumericExtensions
         var rad = angle * Deg2Rad;
         var cos = MathF.Cos(rad);
         var sin = MathF.Sin(rad);
-        
+
         return new Vector2(
             v.X * cos - v.Y * sin,
             v.X * sin + v.Y * cos
         );
     }
-    
-    public static string ToInvariantString(this Vector2 value) => $"<{value.X.ToString(CultureInfo.InvariantCulture)},{value.Y.ToString(CultureInfo.InvariantCulture)}>";
+
+    public static dynamic ToDynamic(this Vector3 value) => new
+    {
+        value.X,
+        value.Y,
+        value.Z
+    };
 }
