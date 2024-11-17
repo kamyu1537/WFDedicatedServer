@@ -14,7 +14,7 @@ using WFDS.Server.Core.Zone;
 Log.Logger = new LoggerConfiguration()
     .Enrich.FromLogContext()
     .WriteTo.File("Logs/log-.txt", rollingInterval: RollingInterval.Day, retainedFileCountLimit: 3)
-    .WriteTo.Console(outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level:u3}] {Message:lj}{NewLine}{Exception}")
+    .WriteTo.Console(outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level:u3}] [{SourceContext}] {Message:lj}{NewLine}{Exception}")
 #if DEBUG
     .MinimumLevel.Debug()
 #else
