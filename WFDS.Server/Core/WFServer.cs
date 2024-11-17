@@ -26,24 +26,9 @@ internal class WFServer(
         }
         
         logger.LogInformation("SteamClientService start");
-        if (!SteamClient.IsValid)
-        {
-            logger.LogError("SteamClient is not valid, shutting down");
-            lifetime.StopApplication();
-            return;
-        }
-        
-        if (!SteamClient.IsLoggedOn)
-        {
-            logger.LogError("SteamClient is not logged on, shutting down");
-            lifetime.StopApplication();
-            return;
-        }
         
         SteamClient.Init(AppId);
         SteamNetworking.AllowP2PPacketRelay(true);
-
-        zone.LoadZones();
 
         session.BanPlayers(settings.Value.BannedPlayers);
         session.CreateLobby(

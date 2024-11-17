@@ -108,6 +108,7 @@ try
 
     // server start
     var app = builder.Build();
+    app.LoadZones();
 
     app.UseRouting();
     app.UseStaticFiles();

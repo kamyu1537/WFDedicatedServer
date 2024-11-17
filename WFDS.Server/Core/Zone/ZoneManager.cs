@@ -8,7 +8,7 @@ internal class ZoneManager(ILogger<ZoneManager> logger) : IZoneManager
     private const string DirectoryName = "Zones";
     private const string ZoneFileName = "main_zone.tscn";
     private static string DirectoryPath => Path.Combine(Directory.GetCurrentDirectory(), DirectoryName);
-
+    
     private static void CheckAndCreateDirectory()
     {
         var zonePath = DirectoryPath;

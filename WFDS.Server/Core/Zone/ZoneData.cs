@@ -23,7 +23,7 @@ internal sealed class ZoneData(string fileName, string filePath) : IZoneData
         using var file = new FileStream(FilePath, FileMode.Open);
         using var reader = new StreamReader(file, Encoding.UTF8);
 
-        logger.LogInformation("loading tscn from {Path}", FilePath);
+        logger.LogInformation("loading zone from {Path}", FileName);
         var nodes = LoadPositionNodeList(reader)
             .Select(ParsePositionNode)
             .Where(x => x != null)
