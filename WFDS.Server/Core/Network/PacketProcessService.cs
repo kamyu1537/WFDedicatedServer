@@ -1,11 +1,12 @@
 ﻿using Steamworks;
 using WFDS.Common.Helpers;
 using WFDS.Common.Types;
+using WFDS.Common.Types.Manager;
 using WFDS.Godot.Binary;
 
 namespace WFDS.Server.Core.Network;
 
-internal class PacketProcessService(ILogger<PacketProcessService> logger, PacketHandleManager packetHandleManager) : BackgroundService
+internal class PacketProcessService(ILogger<PacketProcessService> logger, PacketHandleManager packetHandleManager, ISessionManager sessionManager) : BackgroundService
 {
     private static readonly NetChannel[] Channels =
     {
@@ -56,6 +57,14 @@ internal class PacketProcessService(ILogger<PacketProcessService> logger, Packet
             if (!packet.HasValue)
             {
                 break;
+            }
+
+            if (sessionManager.IsBannedPlayer(packet.Value.SteamId))
+            {
+                var steamId = packet.Value.SteamId;
+                var packetDataBase64 = Convert.ToBase64String(packet.Value.Data);
+                logger.LogError("banned player {SteamId} tried to send packet: {PacketData}", steamId, packetDataBase64);
+                continue;
             }
 
             var data = packet.Value.Data;

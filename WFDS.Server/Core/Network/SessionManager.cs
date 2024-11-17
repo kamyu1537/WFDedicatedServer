@@ -287,7 +287,7 @@ internal sealed class SessionManager : ISessionManager
     {
         return _sessions.Values;
     }
-    
+
     public IEnumerable<string> GetBannedPlayers()
     {
         return _banned.Select(x => x.ToString(CultureInfo.InvariantCulture));
@@ -385,6 +385,11 @@ internal sealed class SessionManager : ISessionManager
         return _closed;
     }
 
+    public bool IsBannedPlayer(SteamId target)
+    {
+        return _banned.Contains(target);
+    }
+
     public void ServerClose()
     {
         if (!_lobby.HasValue)
@@ -398,7 +403,7 @@ internal sealed class SessionManager : ISessionManager
         {
             ServerClose(player.SteamId);
         }
-        
+
         LeaveLobbyAsync().Wait();
     }
 
@@ -439,15 +444,16 @@ internal sealed class SessionManager : ISessionManager
 
     public void TempBanPlayer(SteamId target, bool update = true)
     {
-        if (!_banned.Add(target))
-            return;
-
         _logger.LogInformation("try ban player: {Member}", target);
         SendP2PPacket(target, NetChannel.GameState, new BanPacket(), false);
         BroadcastP2PPacket(NetChannel.GameState, new ForceDisconnectPlayerPacket { UserId = target }, false);
         // SteamNetworking.CloseP2PSessionWithUser(target);
-        
-        if (update) UpdateBannedPlayers();
+
+        if (update)
+        {
+            if (_banned.Add(target))
+                UpdateBannedPlayers();
+        }
     }
 
     public void BanPlayers(string[] banPlayers)
@@ -495,12 +501,11 @@ internal sealed class SessionManager : ISessionManager
     private void OnLobbyMemberJoined(Lobby lobby, Friend member)
     {
         _logger.LogInformation("lobby member joined: {Member}", member);
-        
+
         if (_banned.Contains(member.Id))
         {
             _logger.LogWarning("banned player joined: {Member}", member);
-            KickPlayer(member.Id);
-            BroadcastP2PPacket(NetChannel.GameState, new ForceDisconnectPlayerPacket { UserId = member.Id }, false);
+            TempBanPlayer(member.Id, false);
             return;
         }
 
@@ -604,17 +609,17 @@ internal sealed class SessionManager : ISessionManager
             ServerClose(requester);
             return;
         }
-        
+
         _logger.LogWarning("accept p2p session: {SteamId}", requester);
         SteamNetworking.AcceptP2PSessionWithUser(requester);
-        
+
         if (GetSession(requester) == null)
         {
             _logger.LogWarning("but.. not found session: {SteamId}", requester);
             ServerClose(requester);
             return;
         }
-        
+
         _logger.LogWarning("and.. found session: {SteamId}", requester);
         BroadcastP2PPacket(NetChannel.GameState, new HandshakePacket());
     }

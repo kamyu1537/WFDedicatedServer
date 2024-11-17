@@ -17,6 +17,7 @@ public interface ISessionManager
 
     bool IsLobbyValid();
     bool IsServerClosed();
+    bool IsBannedPlayer(SteamId target);
     
     void CreateLobby(string serverName, string roomCode, GameLobbyType lobbyType, bool isPublic, bool isAdult, int maxPlayers);
     Task LeaveLobbyAsync();

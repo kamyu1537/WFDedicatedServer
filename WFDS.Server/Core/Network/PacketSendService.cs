@@ -10,6 +10,12 @@ internal class PacketSendService(ISessionManager sessionManager) : BackgroundSer
         {
             foreach (var session in sessionManager.GetSessions())
             {
+                // skip banned players
+                if (sessionManager.IsBannedPlayer(session.SteamId))
+                {
+                    continue;
+                }
+                
                 session.ProcessPacket();
             }
             
