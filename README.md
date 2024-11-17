@@ -20,6 +20,9 @@ It is a simple server that can be used to host a game of WebFishing.
 - 1.1
 
 ## How to run the server
+> [!WARNING]  
+> You need to purchase the webfishing game on a different account and log in with the purchased account on another computer with Steam running for the server to operate properly. 
+
 1. Copy the `appsettings.json` file to create a new file named `appsettings.local.json`
 2. Edit `appsettings.local.json` file Server section
 3. Run the server using the command `dotnet WFDS.Server.dll` or by executing the `WFDS.Server.exe` file.
