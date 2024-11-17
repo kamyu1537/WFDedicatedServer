@@ -15,7 +15,7 @@ internal class RequestActorsHandler(ILogger<RequestActorsHandler> logger, IActor
         logger.LogDebug("received request_actors from {Sender} on channel {Channel}", sender.SteamId, channel);
 
         var send = new ActorRequestSendPacket();
-        var actors = actorManager.GetActors().Where(x => !x.IsRemoved).Select(ActorReplicationData.FromActor);
+        var actors = actorManager.GetOwnedActors().Where(x => !x.IsRemoved).Select(ActorReplicationData.FromActor);
         send.Actors.AddRange(actors);
         sessionManager.SendP2PPacket(sender.SteamId, NetChannel.GameState, send);
     }
