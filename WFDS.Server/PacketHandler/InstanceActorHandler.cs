@@ -12,7 +12,7 @@ internal class InstanceActorHandler(ILogger<InstanceActorHandler> logger, IActor
 {
     protected override void Handle(Session sender, NetChannel channel, InstanceActorPacket packet)
     {
-        logger.LogDebug("received instance_actor from {Sender} on channel {Channel} / {ActorId} {ActorType} ", sender.SteamId, channel, packet.Param.ActorId, packet.Param.ActorType);
+        logger.LogInformation("received instance_actor from {Sender} on channel {Channel} / {ActorId} {ActorType} ", sender.SteamId, channel, packet.Param.ActorId, packet.Param.ActorType);
 
         if (packet.Param.ActorType == "player") CreatePlayerActor(sender, packet);
         else CreateRemoteActor(sender, packet);

@@ -1,9 +1,6 @@
-﻿using WFDS.Common.Actor;
-using WFDS.Common.Network;
+﻿using WFDS.Common.Network;
 using WFDS.Common.Network.Packets;
 using WFDS.Common.Types;
-using WFDS.Common.Types.Manager;
-using WFDS.Server.Core.Network;
 using Session = WFDS.Common.Network.Session;
 
 namespace WFDS.Server.PacketHandler;
@@ -13,7 +10,7 @@ internal class HandshakeHandler(ILogger<HandshakeHandler> logger) : PacketHandle
 {
     protected override void Handle(Session sender, NetChannel channel, HandshakePacket packet)
     {
-        logger.LogDebug("received handshake from {Sender} : {UserId}", sender.Friend, packet.UserId);
+        logger.LogInformation("received handshake from {Sender} : {UserId}", sender.Friend, packet.UserId);
 
         sender.HandshakeReceived = true;
         sender.HandshakeReceiveTime = DateTimeOffset.UtcNow;
