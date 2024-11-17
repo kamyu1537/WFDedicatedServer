@@ -23,7 +23,7 @@ internal sealed class SessionManager : ISessionManager
 
     private readonly ILogger<SessionManager> _logger;
 
-    private readonly HashSet<ulong> _banned = [];
+    private readonly HashSet<string> _banned = [];
     private readonly ConcurrentDictionary<ulong, Session> _sessions = [];
 
     private bool _created;
@@ -387,7 +387,7 @@ internal sealed class SessionManager : ISessionManager
 
     public bool IsBannedPlayer(SteamId target)
     {
-        return _banned.Contains(target);
+        return _banned.Contains(target.Value.ToString(CultureInfo.InvariantCulture));
     }
 
     public void ServerClose()
@@ -451,7 +451,7 @@ internal sealed class SessionManager : ISessionManager
 
         if (update)
         {
-            if (_banned.Add(target))
+            if (_banned.Add(target.Value.ToString(CultureInfo.InvariantCulture)))
                 UpdateBannedPlayers();
         }
     }
@@ -471,7 +471,7 @@ internal sealed class SessionManager : ISessionManager
 
     public void RemoveBanPlayer(SteamId target)
     {
-        if (!_banned.Remove(target))
+        if (!_banned.Remove(target.Value.ToString(CultureInfo.InvariantCulture)))
         {
             return;
         }
@@ -502,7 +502,7 @@ internal sealed class SessionManager : ISessionManager
     {
         _logger.LogInformation("lobby member joined: {Member}", member);
 
-        if (_banned.Contains(member.Id))
+        if (_banned.Contains(member.Id.Value.ToString(CultureInfo.InvariantCulture)))
         {
             _logger.LogWarning("banned player joined: {Member}", member);
             TempBanPlayer(member.Id, false);
@@ -596,7 +596,7 @@ internal sealed class SessionManager : ISessionManager
     {
         _logger.LogWarning("p2p session request: {SteamId}", requester);
 
-        if (_banned.Contains(requester))
+        if (_banned.Contains(requester.Value.ToString(CultureInfo.InvariantCulture)))
         {
             _logger.LogWarning("banned player request: {SteamId}", requester);
             SteamNetworking.CloseP2PSessionWithUser(requester);

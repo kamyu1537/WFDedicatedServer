@@ -1,4 +1,5 @@
-﻿using System.Numerics;
+﻿using System.Globalization;
+using System.Numerics;
 
 namespace WFDS.Common.Extensions;
 
@@ -19,4 +20,6 @@ public static class NumericExtensions
             v.X * sin + v.Y * cos
         );
     }
+    
+    public static string ToInvariantString(this Vector2 value) => $"<{value.X.ToString(CultureInfo.InvariantCulture)},{value.Y.ToString(CultureInfo.InvariantCulture)}>";
 }
