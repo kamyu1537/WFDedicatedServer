@@ -24,6 +24,9 @@ Log.Logger = new LoggerConfiguration()
 
 try
 {
+    AppDomain.CurrentDomain.UnhandledException += (_, e) => Log.Logger.Fatal(e.ExceptionObject as Exception, "unhandled exception");
+    AppDomain.CurrentDomain.ProcessExit += (_, _) => Log.Logger.Information("process exit");
+    
     var plugins = PluginManager.LoadPlugins();
     var builder = WebApplication.CreateBuilder(args);
     builder.Host.UseConsoleLifetime();
@@ -34,6 +37,8 @@ try
         .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", true)
         .AddEnvironmentVariables()
         .Build();
+    
+    builder.Services.AddExceptionHandler<WFExceptionHandler>();
 
     var section = configuration.GetSection("Server");
     var setting = section.Get<ServerSetting>();
