@@ -14,10 +14,32 @@ internal class WFServer(
 ) : BackgroundService
 {
     private const uint AppId = 3146520;
+    private readonly Mutex _mutex = new(false, "WFDS.Server");
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
+        if (!_mutex.WaitOne(0, false))
+        {
+            logger.LogError("WFDS.Server is already running");
+            lifetime.StopApplication();
+            return;
+        }
+        
         logger.LogInformation("SteamClientService start");
+        if (!SteamClient.IsValid)
+        {
+            logger.LogError("SteamClient is not valid, shutting down");
+            lifetime.StopApplication();
+            return;
+        }
+        
+        if (!SteamClient.IsLoggedOn)
+        {
+            logger.LogError("SteamClient is not logged on, shutting down");
+            lifetime.StopApplication();
+            return;
+        }
+        
         SteamClient.Init(AppId);
         SteamNetworking.AllowP2PPacketRelay(true);
 
