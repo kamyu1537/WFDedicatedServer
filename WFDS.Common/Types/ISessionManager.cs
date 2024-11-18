@@ -5,39 +5,23 @@ namespace WFDS.Common.Types.Manager;
 
 public interface ISessionManager
 {
-    string GetName();
-    string GetCode();
-    GameLobbyType GetLobbyType();
-    bool IsPublic();
-    bool IsAdult();
-    int GetCapacity();
-    
-    void SetPublic(bool isPublic);
-    void SetLobbyType(GameLobbyType lobbyType);
-
-    bool IsLobbyValid();
     bool IsServerClosed();
-    bool IsBannedPlayer(SteamId target);
-    
-    void CreateLobby(string serverName, string roomCode, GameLobbyType lobbyType, bool isPublic, bool isAdult, int maxPlayers);
-    Task LeaveLobbyAsync();
-    
-    void UpdateBrowserValue();
-    void KickNoHandshakePlayers();
+    void ServerClose();
+    void ServerClose(CSteamID steamId);
     
     int GetSessionCount();
-    Session? GetSession(SteamId steamId);
+    Session? GetSession(CSteamID steamId);
     IEnumerable<Session> GetSessions();
-    bool IsSessionValid(SteamId steamId);
-    IEnumerable<string> GetBannedPlayers();
+    bool IsSessionValid(CSteamID steamId);
 
-    void ServerClose();
-    void ServerClose(SteamId steamId);
-    void KickPlayer(SteamId steamId);
-    void TempBanPlayer(SteamId steamId, bool update = true);
-    void BanPlayers(string[] steamId);
-    void RemoveBanPlayer(SteamId steamId);
+    void KickPlayer(CSteamID steamId);
     
-    void SendP2PPacket(SteamId steamId, NetChannel channel, Packet packet, bool useSession = true);
-    void BroadcastP2PPacket(NetChannel channel, Packet packet, bool useSession = true);
+    bool IsBannedPlayer(CSteamID steamId);
+    void TempBanPlayer(CSteamID lobbyId, CSteamID steamId);
+    void BanPlayers(CSteamID lobbyId, string[] steamId);
+    void RemoveBanPlayer(CSteamID steamId);
+    IEnumerable<string> GetBannedPlayers();
+    
+    void SendP2PPacket(CSteamID steamId, NetChannel channel, Packet packet, bool useSession = true);
+    void BroadcastP2PPacket(CSteamID lobbyId, NetChannel channel, Packet packet, bool useSession = true);
 }

@@ -30,7 +30,7 @@ public static class PluginManager
     private static IEnumerable<Plugin> LoadAssembly(string pluginFile)
     {
         var assembly = Assembly.LoadFrom(pluginFile);
-        var types = assembly.GetTypes();
+        var types = assembly.GetExportedTypes();
         foreach (var type in types)
         {
             var plugin = LoadPlugin(type);

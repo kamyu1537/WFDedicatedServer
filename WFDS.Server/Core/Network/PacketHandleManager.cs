@@ -22,7 +22,7 @@ internal class PacketHandleManager
         _sessionManager = sessionManager;
 
         var packetHandlerType = typeof(Common.Network.PacketHandler);
-        var types = AppDomain.CurrentDomain.GetAssemblies().SelectMany(x => x.GetTypes()).Distinct();
+        var types = AppDomain.CurrentDomain.GetAssemblies().SelectMany(x => x.GetExportedTypes()).Distinct();
         _handlerTypes = types
             .Where(t => t.IsClass && !t.IsAbstract && packetHandlerType.IsAssignableFrom(t))
             .Select(t => (t.GetCustomAttribute<PacketTypeAttribute>(), t))
@@ -32,13 +32,13 @@ internal class PacketHandleManager
     }
 
 
-    public void OnPacketReceived(SteamId sender, NetChannel channel, object? data)
+    public void OnPacketReceived(CSteamID sender, NetChannel channel, object? data)
     {
         if (data is Dictionary<object, object> dic)
         {
             if (!dic.TryGetValue("type", out var type))
             {
-                _logger.LogError("received packet without type from {Sender} on channel {Channel}", sender, channel);
+                _logger.LogError("received packet without type from {Sender} on channel {Channel}", sender.m_SteamID, channel);
                 return;
             }
 
@@ -51,7 +51,7 @@ internal class PacketHandleManager
             var session = _sessionManager.GetSession(sender);
             if (session == null)
             {
-                _logger.LogWarning("received packet from {Sender} on channel {Channel} without session", sender, channel);
+                _logger.LogWarning("received packet from {Sender} on channel {Channel} without session", sender.m_SteamID, channel);
                 _sessionManager.KickPlayer(sender);
                 return;
             }
@@ -71,7 +71,7 @@ internal class PacketHandleManager
         }
     }
 
-    private void PrintDebugLog(string typeName, object data, SteamId sender, NetChannel channel)
+    private void PrintDebugLog(string typeName, object data, CSteamID sender, NetChannel channel)
     {
         if (typeName == "actor_update" || typeName == "actor_action")
         {
@@ -79,6 +79,6 @@ internal class PacketHandleManager
         }
 
         var json = JsonSerializer.Serialize(data);
-        _logger.LogDebug("received packet from {Sender} on channel {Channel} : {Data}", sender, channel, json);
+        _logger.LogDebug("received packet from {Sender} on channel {Channel} : {Data}", sender.m_SteamID, channel, json);
     }
 }

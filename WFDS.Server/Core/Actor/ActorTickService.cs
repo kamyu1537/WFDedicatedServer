@@ -4,10 +4,11 @@ using WFDS.Common.Actor;
 using WFDS.Common.GameEvents.Events;
 using WFDS.Common.Types.Manager;
 using WFDS.Server.Core.GameEvent;
+using WFDS.Server.Core.Network;
 
 namespace WFDS.Server.Core.Actor;
 
-internal sealed class ActorTickService(ILogger<ActorTickService> logger, IActorManager manager, ISessionManager session) : IHostedService
+internal sealed class ActorTickService(ILogger<ActorTickService> logger, IActorManager manager, ISessionManager session, SteamManager steam) : IHostedService
 {
     private readonly LogicLooper _looper = new(60);
 
@@ -30,6 +31,11 @@ internal sealed class ActorTickService(ILogger<ActorTickService> logger, IActorM
         {
             return false;
         }
+        
+        if (!steam.Initialized)
+        {
+            return true;
+        }
 
         var delta = ctx.ElapsedTimeFromPreviousFrame.TotalMilliseconds / 1000d;
         var actors = manager.GetActors();
@@ -45,7 +51,7 @@ internal sealed class ActorTickService(ILogger<ActorTickService> logger, IActorM
 
     private bool Decay(IActor actor)
     {
-        if (actor.CreatorId != SteamClient.SteamId)
+        if (actor.CreatorId != SteamUser.GetSteamID())
         {
             if (!session.IsSessionValid(actor.CreatorId))
             {

@@ -1,10 +1,11 @@
 ﻿using WFDS.Common.Actor;
 using WFDS.Common.Types;
 using WFDS.Common.Types.Manager;
+using WFDS.Server.Core.Network;
 
 namespace WFDS.Server.Core.Actor;
 
-internal sealed class HostSpawnScheduleService(ILogger<HostSpawnScheduleService> logger, IActorManager actor, IActorSpawnManager spawn) : IHostedService
+internal sealed class HostSpawnScheduleService(ILogger<HostSpawnScheduleService> logger, IActorManager actor, IActorSpawnManager spawn, SteamManager steam) : IHostedService
 {
     private const int DefaultAlienCooldown = 6;
     private const int ResetAlienCooldown = 16;
@@ -32,6 +33,11 @@ internal sealed class HostSpawnScheduleService(ILogger<HostSpawnScheduleService>
 
     private void DoWork(object? state)
     {
+        if (!steam.Initialized)
+        {
+            return;
+        }
+        
         var ownedActorCount = actor.GetOwnedActorCount();
         var ownedActorTypes = actor.GetOwnedActorTypes();
 

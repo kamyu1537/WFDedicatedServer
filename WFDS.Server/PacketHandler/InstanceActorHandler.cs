@@ -8,7 +8,7 @@ using Session = WFDS.Common.Network.Session;
 namespace WFDS.Server.PacketHandler;
 
 [PacketType("instance_actor")]
-internal class InstanceActorHandler(ILogger<InstanceActorHandler> logger, IActorManager actorManager, ISessionManager sessionManager) : PacketHandler<InstanceActorPacket>
+public class InstanceActorHandler(ILogger<InstanceActorHandler> logger, IActorManager actorManager, ISessionManager sessionManager) : PacketHandler<InstanceActorPacket>
 {
     protected override void Handle(Session sender, NetChannel channel, InstanceActorPacket packet)
     {
@@ -23,13 +23,13 @@ internal class InstanceActorHandler(ILogger<InstanceActorHandler> logger, IActor
         var actorType = ActorType.GetActorType(packet.Param.ActorType);
         if (actorType == null)
         {
-            logger.LogError("actor type not found {ActorType} : {Member}", packet.Param.ActorType, sender.Friend);
+            logger.LogError("actor type not found {ActorType} : {Member}", packet.Param.ActorType, sender.ToString());
             return;
         }
 
         if (actorType.HostOnly)
         {
-            logger.LogWarning("actor type {ActorType} is host only : {Member}", actorType.Name, sender.Friend);
+            logger.LogWarning("actor type {ActorType} is host only : {Member}", actorType.Name, sender.ToString());
             sessionManager.KickPlayer(sender.SteamId);
             return;
         }
@@ -42,7 +42,7 @@ internal class InstanceActorHandler(ILogger<InstanceActorHandler> logger, IActor
     {
         if (actorManager.GetPlayerActor(sender.SteamId) != null)
         {
-            logger.LogError("player already has actor {Member} - {ActorId} {ActorType}", sender.Friend, packet.Param.ActorId, packet.Param.ActorType);
+            logger.LogError("player already has actor {Member} - {ActorId} {ActorType}", sender.ToString(), packet.Param.ActorId, packet.Param.ActorType);
             return;
         }
 

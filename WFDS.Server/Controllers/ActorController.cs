@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 using WFDS.Common.Actor;
+using WFDS.Common.Extensions;
 using WFDS.Server.Core.Actor;
 
 namespace WFDS.Server.Controllers;
@@ -51,7 +52,7 @@ public class ActorController(IActorManager manager) : Controller
             return BadRequest();
         }
         
-        var actors = manager.GetActorsByCreatorId(id).ToArray();
+        var actors = manager.GetActorsByCreatorId(id.ToSteamID()).ToArray();
         
         return Json(new
         {

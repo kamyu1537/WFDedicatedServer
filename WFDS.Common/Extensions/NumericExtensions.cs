@@ -1,5 +1,6 @@
 ﻿using System.Globalization;
 using System.Numerics;
+using Steamworks;
 
 namespace WFDS.Common.Extensions;
 
@@ -27,4 +28,6 @@ public static class NumericExtensions
         value.Y,
         value.Z
     };
+    
+    public static CSteamID ToSteamID(this ulong value) => new(value);
 }

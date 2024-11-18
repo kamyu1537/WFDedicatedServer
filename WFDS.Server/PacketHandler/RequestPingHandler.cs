@@ -8,7 +8,7 @@ using Session = WFDS.Common.Network.Session;
 namespace WFDS.Server.PacketHandler;
 
 [PacketType("request_ping")]
-internal class RequestPingHandler(ISessionManager sessionManager) : PacketHandler<RequestPingPacket>
+public class RequestPingHandler(ISessionManager sessionManager) : PacketHandler<RequestPingPacket>
 {
     protected override void Handle(Session sender, NetChannel channel, RequestPingPacket packet)
     {
@@ -16,7 +16,7 @@ internal class RequestPingHandler(ISessionManager sessionManager) : PacketHandle
 
         sessionManager.SendP2PPacket(sender.SteamId, NetChannel.GameState, new SendPingPacket
         {
-            FromId = SteamClient.SteamId
+            FromId = SteamUser.GetSteamID()
         });
     }
 }

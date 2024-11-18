@@ -2,7 +2,7 @@
 
 namespace WFDS.Common.GameEvents.Events;
 
-public class NewPlayerJoinEvent(SteamId steamId) : GameEvent
+public class NewPlayerJoinEvent(CSteamID steamId) : GameEvent
 {
-    public SteamId SteamId { get; init; } = steamId;
+    public CSteamID SteamId { get; init; } = steamId;
 }

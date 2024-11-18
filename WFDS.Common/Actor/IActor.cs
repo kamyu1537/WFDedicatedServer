@@ -7,7 +7,7 @@ public interface IActor
 {
     ActorType Type { get; }
     long ActorId { get; init; }
-    SteamId CreatorId { get; init; }
+    CSteamID CreatorId { get; init; }
     string Zone { get; set; }
     long ZoneOwner { get; set; }
     Vector3 Position { get; set; }

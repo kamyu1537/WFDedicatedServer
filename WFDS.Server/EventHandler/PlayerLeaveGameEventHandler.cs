@@ -4,7 +4,7 @@ using WFDS.Common.GameEvents.Events;
 
 namespace WFDS.Server.EventHandler;
 
-internal class PlayerLeaveGameEventHandler(ILogger<PlayerLeaveGameEventHandler> logger, IActorManager actorManager) : GameEventHandler<PlayerLeaveEvent>
+public class PlayerLeaveGameEventHandler(ILogger<PlayerLeaveGameEventHandler> logger, IActorManager actorManager) : GameEventHandler<PlayerLeaveEvent>
 {
     protected override void Handle(PlayerLeaveEvent e)
     {

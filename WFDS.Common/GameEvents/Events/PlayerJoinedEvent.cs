@@ -2,7 +2,7 @@ using Steamworks;
 
 namespace WFDS.Common.GameEvents.Events;
 
-public class PlayerJoinedEvent(SteamId playerId) : GameEvent
+public class PlayerJoinedEvent(CSteamID playerId) : GameEvent
 {
-    public SteamId PlayerId { get; init; } = playerId;
+    public CSteamID PlayerId { get; init; } = playerId;
 }

@@ -12,7 +12,7 @@ using Session = WFDS.Common.Network.Session;
 namespace WFDS.Server.PacketHandler;
 
 [PacketType("actor_action")]
-internal class ActorActionHandler(ILogger<ActorActionHandler> logger, IActorManager actorManager) : PacketHandler<ActorActionPacket>
+public class ActorActionHandler(ILogger<ActorActionHandler> logger, IActorManager actorManager) : PacketHandler<ActorActionPacket>
 {
     private static readonly string[] AllowedActions =
     [
@@ -27,19 +27,19 @@ internal class ActorActionHandler(ILogger<ActorActionHandler> logger, IActorMana
 
     protected override void Handle(Session sender, NetChannel channel, ActorActionPacket packet)
     {
-        logger.LogDebug("received actor_action from {Member} for actor {ActorId} : {Action} / {Data}", sender.Friend, packet.ActorId, packet.Action, JsonSerializer.Serialize(packet.Params));
+        logger.LogDebug("received actor_action from {Member} for actor {ActorId} : {Action} / {Data}", sender.SteamId, packet.ActorId, packet.Action, JsonSerializer.Serialize(packet.Params));
 
         var actor = actorManager.GetActor(packet.ActorId);
 
         if (actor == null)
         {
-            logger.LogWarning("actor {ActorId} not found for {Member}", packet.ActorId, sender.Friend);
+            logger.LogWarning("actor {ActorId} not found for {Member}", packet.ActorId, sender.ToString());
             return;
         }
 
         if (actor.CreatorId != sender.SteamId)
         {
-            logger.LogWarning("actor {ActorId} not owned by {Member}", packet.ActorId, sender.Friend);
+            logger.LogWarning("actor {ActorId} not owned by {Member}", packet.ActorId, sender.ToString());
             return;
         }
 
@@ -57,7 +57,7 @@ internal class ActorActionHandler(ILogger<ActorActionHandler> logger, IActorMana
         if (packet.Action != "queue_free") return;
         if (packet.Params.Count != 0)
         {
-            logger.LogError("invalid queue_free packet from {Member} : {Data}", sender.Friend, JsonSerializer.Serialize(packet.Params));
+            logger.LogError("invalid queue_free packet from {Member} : {Data}", sender.ToString(), JsonSerializer.Serialize(packet.Params));
             return;
         }
 
@@ -70,7 +70,7 @@ internal class ActorActionHandler(ILogger<ActorActionHandler> logger, IActorMana
 
         if (packet.Params.Count != 1)
         {
-            logger.LogError("invalid _wipe_actor packet from {Member} : {Data}", sender.Friend, JsonSerializer.Serialize(packet.Params));
+            logger.LogError("invalid _wipe_actor packet from {Member} : {Data}", sender.ToString(), JsonSerializer.Serialize(packet.Params));
             return;
         }
 
@@ -80,7 +80,7 @@ internal class ActorActionHandler(ILogger<ActorActionHandler> logger, IActorMana
         var actor = actorManager.GetActor(actorId);
         if (actor == null) return;
 
-        if (actor.CreatorId == SteamClient.SteamId && actor.CanWipe) actorManager.TryRemoveActor(actorId, ActorRemoveTypes.WipeActor, out _);
+        if (actor.CreatorId == SteamUser.GetSteamID() && actor.CanWipe) actorManager.TryRemoveActor(actorId, ActorRemoveTypes.WipeActor, out _);
     }
 
     private void SetZone(Session sender, ActorActionPacket packet)
@@ -89,7 +89,7 @@ internal class ActorActionHandler(ILogger<ActorActionHandler> logger, IActorMana
 
         if (packet.Params.Count != 2)
         {
-            logger.LogError("invalid _set_zone packet from {Member} : {Data}", sender.Friend, JsonSerializer.Serialize(packet.Params));
+            logger.LogError("invalid _set_zone packet from {Member} : {Data}", sender.ToString(), JsonSerializer.Serialize(packet.Params));
             return;
         }
 
@@ -111,14 +111,14 @@ internal class ActorActionHandler(ILogger<ActorActionHandler> logger, IActorMana
 
         if (packet.Params.Count != 1)
         {
-            logger.LogError("invalid _update_cosmetics packet from {Member} : {Data}", sender.Friend, JsonSerializer.Serialize(packet.Params));
+            logger.LogError("invalid _update_cosmetics packet from {Member} : {Data}", sender.ToString(), JsonSerializer.Serialize(packet.Params));
             return;
         }
 
         var player = actorManager.GetPlayerActor(sender.SteamId);
         if (player == null)
         {
-            logger.LogError("player actor not found for {Member}", sender.Friend);
+            logger.LogError("player actor not found for {Member}", sender.ToString());
             return;
         }
 
@@ -134,14 +134,14 @@ internal class ActorActionHandler(ILogger<ActorActionHandler> logger, IActorMana
 
         if (packet.Params.Count != 1)
         {
-            logger.LogError("invalid _update_held_item packet from {Member} : {Data}", sender.Friend, JsonSerializer.Serialize(packet.Params));
+            logger.LogError("invalid _update_held_item packet from {Member} : {Data}", sender.ToString(), JsonSerializer.Serialize(packet.Params));
             return;
         }
 
         var player = actorManager.GetPlayerActor(sender.SteamId);
         if (player == null)
         {
-            logger.LogError("player actor not found for {Member}", sender.Friend);
+            logger.LogError("player actor not found for {Member}", sender.ToString());
             return;
         }
 
@@ -156,14 +156,14 @@ internal class ActorActionHandler(ILogger<ActorActionHandler> logger, IActorMana
         if (packet.Action != "_sync_create_bubble") return;
         if (packet.Params.Count != 1)
         {
-            logger.LogError("invalid _sync_create_bubble packet from {Member} : {Data}", sender.Friend, JsonSerializer.Serialize(packet.Params));
+            logger.LogError("invalid _sync_create_bubble packet from {Member} : {Data}", sender.ToString(), JsonSerializer.Serialize(packet.Params));
             return;
         }
 
         var player = actorManager.GetPlayerActor(sender.SteamId);
         if (player == null)
         {
-            logger.LogError("player actor not found for {Member}", sender.Friend);
+            logger.LogError("player actor not found for {Member}", sender.ToString());
             return;
         }
 
@@ -176,14 +176,14 @@ internal class ActorActionHandler(ILogger<ActorActionHandler> logger, IActorMana
         if (packet.Action != "_sync_level_bubble") return;
         if (packet.Params.Count != 0)
         {
-            logger.LogError("invalid _sync_level_bubble packet from {Member} : {Data}", sender.Friend, JsonSerializer.Serialize(packet.Params));
+            logger.LogError("invalid _sync_level_bubble packet from {Member} : {Data}", sender.ToString(), JsonSerializer.Serialize(packet.Params));
             return;
         }
 
         var player = actorManager.GetPlayerActor(sender.SteamId);
         if (player == null)
         {
-            logger.LogError("player actor not found for {Member}", sender.Friend);
+            logger.LogError("player actor not found for {Member}", sender.ToString());
             return;
         }
 

@@ -1,9 +1,10 @@
 ﻿using WFDS.Common.Actor;
 using WFDS.Common.Types.Manager;
+using WFDS.Server.Core.Network;
 
 namespace WFDS.Server.Core.Actor;
 
-internal sealed class AmbientSpawnScheduleService(IActorSpawnManager spawn) : IHostedService
+internal sealed class AmbientSpawnScheduleService(IActorSpawnManager spawn, SteamManager steam) : IHostedService
 {
     private static readonly TimeSpan AmbientSpawnTimeoutPeriod = TimeSpan.FromSeconds(10);
     private readonly Random _random = new();
@@ -24,6 +25,11 @@ internal sealed class AmbientSpawnScheduleService(IActorSpawnManager spawn) : IH
     // _on_ambient_spawn_timer_timeout
     private void DoWork(object? state)
     {
+        if (!steam.Initialized)
+        {
+            return;
+        }
+        
         var index = _random.Next() % 3;
 
         if (index == 2)

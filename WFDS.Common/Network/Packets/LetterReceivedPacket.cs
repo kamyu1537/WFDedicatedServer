@@ -61,16 +61,17 @@ public class LetterReceivedPacket : Packet
         data.TryAdd("data", Data.ToDictionary());
     }
     
-    public static LetterReceivedPacket Create(SteamId to, string body, List<GameItem> items)
+    public static LetterReceivedPacket Create(CSteamID to, string body, List<GameItem> items)
     {
+        var steamId = SteamUser.GetSteamID();
         return new LetterReceivedPacket
         {
-            To = to.Value.ToString(CultureInfo.InvariantCulture),
+            To = to.m_SteamID.ToString(CultureInfo.InvariantCulture),
             Data = new LetterData
             {
                 LetterId = new Random().Next(),
-                To = SteamClient.SteamId.Value.ToString(CultureInfo.InvariantCulture),
-                From = SteamClient.SteamId.Value.ToString(CultureInfo.InvariantCulture),
+                To = steamId.m_SteamID.ToString(CultureInfo.InvariantCulture),
+                From = steamId.m_SteamID.ToString(CultureInfo.InvariantCulture),
                 Closing = "From, ",
                 User = "[SERVER]",
                 Header = "Letter",

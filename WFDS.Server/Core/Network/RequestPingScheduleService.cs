@@ -1,13 +1,14 @@
 ﻿using System.Globalization;
 using Steamworks;
 using WFDS.Common.Actor;
+using WFDS.Common.Network;
 using WFDS.Common.Network.Packets;
 using WFDS.Common.Types;
 using WFDS.Common.Types.Manager;
 
 namespace WFDS.Server.Core.Network;
 
-internal class RequestPingScheduleService(ISessionManager sessionManager, IActorManager actorManager) : IHostedService
+internal class RequestPingScheduleService(ILobbyManager lobby, ISessionManager sessionManager, IActorManager actorManager, SteamManager steam) : IHostedService
 {
     private static readonly TimeSpan RequestPingTimeoutPeriod = TimeSpan.FromSeconds(8);
     private Timer? _timer;
@@ -27,9 +28,14 @@ internal class RequestPingScheduleService(ISessionManager sessionManager, IActor
 
     private void DoWork(object? state)
     {
-        sessionManager.BroadcastP2PPacket(NetChannel.GameState, new RequestPingPacket
+        if (!steam.Initialized)
         {
-            Sender = SteamClient.SteamId
+            return;
+        }
+        
+        sessionManager.BroadcastP2PPacket(lobby.GetLobbyId(), NetChannel.GameState, new RequestPingPacket
+        {
+            Sender = SteamUser.GetSteamID()
         });
         
         foreach (var player in actorManager.GetPlayerActors())
@@ -41,7 +47,7 @@ internal class RequestPingScheduleService(ISessionManager sessionManager, IActor
 
             sessionManager.SendP2PPacket(player.CreatorId, NetChannel.GameState, new RequestActorsPacket
             {
-                UserId = SteamClient.SteamId.Value.ToString(CultureInfo.InvariantCulture)
+                UserId = SteamUser.GetSteamID().m_SteamID.ToString(CultureInfo.InvariantCulture)
             });
         }
     }

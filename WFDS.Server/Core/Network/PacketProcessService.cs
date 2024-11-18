@@ -1,4 +1,5 @@
-﻿using Steamworks;
+﻿using System.Buffers;
+using Steamworks;
 using WFDS.Common.Helpers;
 using WFDS.Common.Types;
 using WFDS.Common.Types.Manager;
@@ -6,15 +7,8 @@ using WFDS.Godot.Binary;
 
 namespace WFDS.Server.Core.Network;
 
-internal class PacketProcessService(ILogger<PacketProcessService> logger, PacketHandleManager packetHandleManager, ISessionManager sessionManager) : BackgroundService
+internal class PacketProcessService(ILogger<PacketProcessService> logger, PacketHandleManager packetHandleManager, ISessionManager sessionManager, SteamManager steam) : BackgroundService
 {
-    private static readonly NetChannel[] Channels =
-    {
-        NetChannel.ActorUpdate,
-        NetChannel.ActorAction,
-        NetChannel.GameState
-    };
-
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         logger.LogInformation("PacketProcessService is starting.");
@@ -24,12 +18,6 @@ internal class PacketProcessService(ILogger<PacketProcessService> logger, Packet
             TryProcessChannel(NetChannel.ActorUpdate);
             TryProcessChannel(NetChannel.ActorAction);
             TryProcessChannel(NetChannel.GameState);
-#if false
-            TryProcessChannel(NetChannel.ActorAnimation);
-            TryProcessChannel(NetChannel.Chalk);
-            TryProcessChannel(NetChannel.Guitar);
-            TryProcessChannel(NetChannel.Speech);
-#endif
 
             await Task.Delay(10, stoppingToken);
         }
@@ -49,35 +37,58 @@ internal class PacketProcessService(ILogger<PacketProcessService> logger, Packet
         }
     }
 
+    private bool ValidatePacket(NetChannel channel, in CSteamID steamId, uint msgSize, uint readSize, byte[] bytes)
+    {
+        if (msgSize != readSize)
+        {
+            logger.LogError("failed to read packet from {Channel} (size mismatch {MsgSize}/{ReadSize})", channel, msgSize, readSize);
+            return false;
+        }
+        
+        if (sessionManager.IsBannedPlayer(steamId))
+        {
+            var packetDataBase64 = Convert.ToBase64String(bytes);
+            logger.LogError("banned player {SteamId} tried to send packet: {PacketData}", steamId, packetDataBase64);
+            return false;
+        }
+
+        if (bytes.Length != 0)
+        {
+            return true;
+        }
+        
+        logger.LogError("empty packet from {SteamId}", steamId);
+        return false;
+
+    }
+
     private void ProcessChannel(NetChannel channel)
     {
-        while (SteamNetworking.IsP2PPacketAvailable(channel.Value))
+        if (!steam.Initialized)
         {
-            var packet = SteamNetworking.ReadP2PPacket(channel.Value);
-            if (!packet.HasValue)
+            return;
+        }
+        
+        while (SteamNetworking.IsP2PPacketAvailable(out var size, channel.Value))
+        {
+            var bytes = ArrayPool<byte>.Shared.Rent((int)size);
+            var success = SteamNetworking.ReadP2PPacket(bytes, size, out var readSize, out var steamId, channel.Value);
+            if (!success)
             {
-                break;
-            }
-
-            if (sessionManager.IsBannedPlayer(packet.Value.SteamId))
-            {
-                var steamId = packet.Value.SteamId;
-                var packetDataBase64 = Convert.ToBase64String(packet.Value.Data);
-                logger.LogError("banned player {SteamId} tried to send packet: {PacketData}", steamId, packetDataBase64);
+                logger.LogError("failed to read packet from {Channel}", channel);
                 continue;
             }
-
-            var data = packet.Value.Data;
-            if (data.Length == 0)
+            
+            if (!ValidatePacket(channel, steamId, size, readSize, bytes))
             {
                 continue;
             }
 
             try
             {
-                var decompressed = GZipHelper.Decompress(data);
+                var decompressed = GZipHelper.Decompress(bytes, (int)readSize);
                 var deserialized = GodotBinaryConverter.Deserialize(decompressed);
-                packetHandleManager.OnPacketReceived(packet.Value.SteamId, channel, deserialized);
+                packetHandleManager.OnPacketReceived(steamId, channel, deserialized);
                 break;
             }
             catch (Exception ex)

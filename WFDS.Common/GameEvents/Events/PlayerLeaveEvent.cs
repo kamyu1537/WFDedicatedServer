@@ -2,7 +2,7 @@
 
 namespace WFDS.Common.GameEvents.Events;
 
-public class PlayerLeaveEvent(SteamId playerId) : GameEvent
+public class PlayerLeaveEvent(CSteamID playerId) : GameEvent
 {
-    public SteamId PlayerId { get; init; } = playerId;
+    public CSteamID PlayerId { get; init; } = playerId;
 }

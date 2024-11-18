@@ -12,11 +12,11 @@
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="Facepunch.Steamworks" Version="2.3.3" />
       <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.0" />
       <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.0" />
       <PackageReference Include="Microsoft.Extensions.ObjectPool" Version="9.0.0" />
       <PackageReference Include="Serilog" Version="4.1.0" />
+      <PackageReference Include="Steamworks.NET" Version="2024.8.0" />
       <PackageReference Include="System.Text.Json" Version="9.0.0" />
     </ItemGroup>
 

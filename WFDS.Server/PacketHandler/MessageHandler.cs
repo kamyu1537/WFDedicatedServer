@@ -8,7 +8,7 @@ using Session = WFDS.Common.Network.Session;
 namespace WFDS.Server.PacketHandler;
 
 [PacketType("message")]
-internal class MessageHandler(ILogger<MessageHandler> logger) : PacketHandler<MessagePacket>
+public class MessageHandler(ILogger<MessageHandler> logger) : PacketHandler<MessagePacket>
 {
     protected override void Handle(Session sender, NetChannel channel, MessagePacket packet)
     {

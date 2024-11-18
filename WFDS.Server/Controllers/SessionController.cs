@@ -1,6 +1,8 @@
 ﻿using System.Globalization;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
+using WFDS.Common.Extensions;
+using WFDS.Common.Network;
 using WFDS.Common.Types.Manager;
 
 namespace WFDS.Server.Controllers;
@@ -9,7 +11,7 @@ namespace WFDS.Server.Controllers;
 [Tags("session")]
 [Route("api/v1/session")]
 
-public class SessionController(ISessionManager manager) : Controller
+public class SessionController(ISessionManager manager, ILobbyManager lobby) : Controller
 {
     [HttpGet("info")]
     [SwaggerOperation("get lobby info")]
@@ -17,12 +19,11 @@ public class SessionController(ISessionManager manager) : Controller
     {
         return Json(new
         {
-            Code = manager.GetCode(),
-            Name = manager.GetName(),
-            LobbyType = manager.GetLobbyType(),
-            Public = manager.IsPublic(),
-            Adult = manager.IsAdult(),
-            Capacity = manager.GetCapacity(),
+            Code = lobby.GetCode(),
+            Name = lobby.GetName(),
+            LobbyType = lobby.GetLobbyType(),
+            Adult = lobby.IsAdult(),
+            Capacity = lobby.GetCap(),
             Current = manager.GetSessionCount(),
             BannedPlayers = manager.GetBannedPlayers()
         });
@@ -36,7 +37,7 @@ public class SessionController(ISessionManager manager) : Controller
         return Json(new
         {
             Count = sessions.Length,
-            Sessions = sessions.Select(x => x.Friend.ToString())
+            Sessions = sessions.Select(x => new { x.Name, x.SteamId })
         });
     }
 
@@ -44,7 +45,7 @@ public class SessionController(ISessionManager manager) : Controller
     [SwaggerOperation("get session detail")]
     public IActionResult GetSession(ulong steamId)
     {
-        var session = manager.GetSession(steamId);
+        var session = manager.GetSession(steamId.ToSteamID());
         if (session == null)
         {
             return NotFound();
@@ -52,8 +53,8 @@ public class SessionController(ISessionManager manager) : Controller
         
         return Json(new
         {
-            SteamId = session.SteamId.Value.ToString(CultureInfo.InvariantCulture),
-            session.Friend,
+            SteamId = session.SteamId.m_SteamID.ToString(CultureInfo.InvariantCulture),
+            session.Name,
             session.ConnectTime,
             session.HandshakeReceiveTime,
             session.PingReceiveTime,
@@ -65,7 +66,7 @@ public class SessionController(ISessionManager manager) : Controller
     [SwaggerOperation("kick player")]
     public IActionResult KickPlayer(ulong steamId)
     {
-        manager.KickPlayer(steamId);
+        manager.KickPlayer(steamId.ToSteamID());
         return Ok();
     }
     
@@ -73,7 +74,7 @@ public class SessionController(ISessionManager manager) : Controller
     [SwaggerOperation("ban player")]
     public IActionResult TempBanPlayer(ulong steamId)
     {
-        manager.TempBanPlayer(steamId);
+        manager.TempBanPlayer(lobby.GetLobbyId(), steamId.ToSteamID());
         return Ok();
     }
     
@@ -81,7 +82,7 @@ public class SessionController(ISessionManager manager) : Controller
     [SwaggerOperation("unban player")]
     public IActionResult RemoveBanPlayer(ulong steamId)
     {
-        manager.RemoveBanPlayer(steamId);
+        manager.RemoveBanPlayer(steamId.ToSteamID());
         return Ok();
     }
 }

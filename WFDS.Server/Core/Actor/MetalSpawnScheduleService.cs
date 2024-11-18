@@ -1,9 +1,10 @@
 ﻿using WFDS.Common.Actor;
 using WFDS.Common.Types.Manager;
+using WFDS.Server.Core.Network;
 
 namespace WFDS.Server.Core.Actor;
 
-internal sealed class MetalSpawnScheduleService(ILogger<MetalSpawnScheduleService> logger, IActorSpawnManager spawn) : IHostedService
+internal sealed class MetalSpawnScheduleService(ILogger<MetalSpawnScheduleService> logger, IActorSpawnManager spawn, SteamManager steam) : IHostedService
 {
     private static readonly TimeSpan MetalSpawnTimeoutPeriod = TimeSpan.FromSeconds(20);
     private Timer? _timer;
@@ -22,6 +23,11 @@ internal sealed class MetalSpawnScheduleService(ILogger<MetalSpawnScheduleServic
 
     private void DoWork(object? state)
     {
+        if (!steam.Initialized)
+        {
+            return;
+        }
+        
         var metal = spawn.SpawnMetalActor();
         if (metal != null)
         {

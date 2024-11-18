@@ -1,27 +1,35 @@
 ﻿using System.Collections.Concurrent;
+using Serilog;
 using Steamworks;
+using WFDS.Common.Helpers;
 using WFDS.Common.Types;
 
 namespace WFDS.Common.Network;
 
-public sealed class Session
+public sealed class Session(CSteamID steamId)
 {
-    public Friend Friend { get; set; }
-    public SteamId SteamId { get; set; }
+    private ILogger Logger { get; } = Log.ForContext<Session>();
+    public CSteamID SteamId { get; init; } = steamId;
+    public string Name { get; set; } = SteamFriends.GetFriendPersonaName(steamId);
     public bool HandshakeReceived { get; set; }
 
-    public DateTimeOffset ConnectTime { get; set; }
+    public DateTimeOffset ConnectTime { get; } = DateTimeOffset.UtcNow;
     public DateTimeOffset HandshakeReceiveTime { get; set; }
     public DateTimeOffset PingReceiveTime { get; set; }
     public DateTimeOffset PacketReceiveTime { get; set; }
 
     public ConcurrentQueue<(NetChannel, byte[])> Packets { get; } = [];
-
+    
+    public override string ToString()
+    {
+        return $"{Name} ({SteamId})";
+    }
+    
     public void ProcessPacket()
     {
         if (Packets.TryDequeue(out var packet))
         {
-            SteamNetworking.SendP2PPacket(SteamId, packet.Item2, nChannel: packet.Item1.Value);
+            SteamNetworkingHelper.SendP2PPacket(SteamId, packet.Item1, packet.Item2);
         }
     }
 
@@ -34,7 +42,7 @@ public sealed class Session
     {
         while (Packets.TryDequeue(out var packet))
         {
-            SteamNetworking.SendP2PPacket(SteamId, packet.Item2, nChannel: packet.Item1.Value);
+            SteamNetworkingHelper.SendP2PPacket(SteamId, packet.Item1, packet.Item2);
         }
     }
 }

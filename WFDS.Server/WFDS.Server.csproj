@@ -13,11 +13,11 @@
         <PackageReference Include="LogicLooper" Version="1.6.0" />
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.0"/>
         <PackageReference Include="Serilog" Version="4.1.0"/>
+        <PackageReference Include="Steamworks.NET" Version="2024.8.0" />
         <PackageReference Include="System.Text.Json" Version="9.0.0"/>
         <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.0"/>
         <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="7.0.0"/>
         <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="7.0.0"/>
-        <PackageReference Include="Facepunch.Steamworks" Version="2.3.3"/>
         <PackageReference Include="Serilog.Extensions.Hosting" Version="8.0.0"/>
         <PackageReference Include="Serilog.Sinks.Console" Version="6.0.0"/>
         <PackageReference Include="Serilog.Sinks.File" Version="6.0.0"/>
@@ -27,6 +27,14 @@
     <PropertyGroup>
         <TargetFramework>net9.0</TargetFramework>
         <RazorLangVersion>Latest</RazorLangVersion> <!-- 또는 특정 버전 번호 -->
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+      <DefineConstants>TRACE</DefineConstants>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+      <DefineConstants>TRACE</DefineConstants>
     </PropertyGroup>
 
     <ItemGroup>
@@ -41,37 +49,21 @@
         </None>
     </ItemGroup>
 
-    <ItemGroup>
+    <ItemGroup>        
         <None Update="NativeLibraries\**">
             <Visible>false</Visible>
         </None>
 
         <!-- Windows -->
         <None Update="NativeLibraries\win64\steam_api64.dll">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
             <Link>steam_api64.dll</Link>
-        </None>
-        <None Update="NativeLibraries\win64\steamclient64.dll">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-            <Link>steamclient64.dll</Link>
-        </None>
-        <None Update="NativeLibraries\win64\tier0_s64.dll">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-            <Link>tier0_s64.dll</Link>
-        </None>
-        <None Update="NativeLibraries\win64\vstdlib_s64.dll">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-            <Link>vstdlib_s64.dll</Link>
         </None>
 
         <!-- Linux -->
         <None Update="NativeLibraries\linux64\libsteam_api.so">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
             <Link>libsteam_api.so</Link>
-        </None>
-        <None Update="NativeLibraries\linux64\libsteam_api.so">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-            <Link>steamclient.so</Link>
         </None>
     </ItemGroup>
 </Project>

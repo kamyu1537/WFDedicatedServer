@@ -15,7 +15,7 @@ public class ActorReplicationData : Packet
         {
             ActorType = actor.Type.Name,
             ActorId = actor.ActorId,
-            OwnerId = (long)actor.CreatorId.Value
+            OwnerId = (long)actor.CreatorId.m_SteamID
         };
     }
     

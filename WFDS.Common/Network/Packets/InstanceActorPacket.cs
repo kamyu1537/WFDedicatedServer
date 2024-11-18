@@ -66,7 +66,7 @@ public class InstanceActorPacket : Packet
             {
                 ActorType = actor.Type.Name,
                 ActorId = actor.ActorId,
-                CreatorId = (long)actor.CreatorId.Value,
+                CreatorId = (long)actor.CreatorId.m_SteamID,
                 Zone = actor.Zone,
                 ZoneOwner = actor.ZoneOwner,
                 Position = actor.Position,

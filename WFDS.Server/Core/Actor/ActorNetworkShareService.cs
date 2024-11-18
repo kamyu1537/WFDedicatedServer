@@ -3,10 +3,11 @@ using WFDS.Common.Actor;
 using WFDS.Common.Network.Packets;
 using WFDS.Common.Types;
 using WFDS.Common.Types.Manager;
+using WFDS.Server.Core.Network;
 
 namespace WFDS.Server.Core.Actor;
 
-internal sealed class ActorNetworkShareService(IActorManager actorManager, ISessionManager sessionManager) : BackgroundService
+internal sealed class ActorNetworkShareService(IActorManager actorManager, ISessionManager sessionManager, SteamManager steam) : BackgroundService
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
@@ -19,6 +20,11 @@ internal sealed class ActorNetworkShareService(IActorManager actorManager, ISess
 
     private void Tick()
     {
+        if (!steam.Initialized)
+        {
+            return;
+        }
+        
         var owned = actorManager.GetOwnedActors();
         foreach (var actor in owned)
         {
@@ -32,7 +38,7 @@ internal sealed class ActorNetworkShareService(IActorManager actorManager, ISess
         if (actor.IsDead || actor.IsRemoved)
             return;
         
-        if (actor.CreatorId != SteamClient.SteamId.Value)
+        if (actor.CreatorId != SteamUser.GetSteamID())
             return;
         
         actor.NetworkShareCooldown -= 1;

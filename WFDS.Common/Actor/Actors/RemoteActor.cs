@@ -7,7 +7,7 @@ public sealed class RemoteActor : IActor
 {
     public ActorType Type { get; init; } = ActorType.None;
     public long ActorId { get; init; }
-    public SteamId CreatorId { get; init; }
+    public CSteamID CreatorId { get; init; }
     public string Zone { get; set; } = string.Empty;
     public long ZoneOwner { get; set; }
     public Vector3 Position { get; set; } = Vector3.Zero;

@@ -12,7 +12,7 @@ public static class ActorExtensions
         {
             actor.ActorId,
             Type = actor.Type.ToString(),
-            CreatorId = actor.CreatorId.Value.ToString(CultureInfo.InvariantCulture),
+            CreatorId = actor.CreatorId.m_SteamID.ToString(CultureInfo.InvariantCulture),
             actor.Zone,
             actor.ZoneOwner,
             Position = actor.Position.ToDynamic(),

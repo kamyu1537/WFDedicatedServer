@@ -7,7 +7,6 @@ public interface IServerSetting
     string RoomCode { get; set; }
     int MaxPlayers { get; set; }
     GameLobbyType LobbyType { get; set; }
-    bool Public { get; set; }
     bool Adult { get; set; }
     string[] BannedPlayers { get; set; }
 }

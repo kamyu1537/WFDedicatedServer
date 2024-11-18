@@ -6,18 +6,18 @@ public static class GZipHelper
 {
     public static byte[] Compress(byte[] bytes)
     {
-        using var memoryStream = new MemoryStream();
-        using var gZipStream = new GZipStream(memoryStream, CompressionMode.Compress);
-        gZipStream.Write(bytes, 0, bytes.Length);
-        gZipStream.Close();
-        return memoryStream.ToArray();
+        using var result = new MemoryStream();
+        using var gzip = new GZipStream(result, CompressionMode.Compress);
+        gzip.Write(bytes, 0, bytes.Length);
+        gzip.Close();
+        return result.ToArray();
     }
 
-    public static byte[] Decompress(byte[] bytes)
+    public static byte[] Decompress(byte[] bytes, int size)
     {
-        using var memoryStream = new MemoryStream();
-        using var gZipStream = new GZipStream(new MemoryStream(bytes), CompressionMode.Decompress);
-        gZipStream.CopyTo(memoryStream);
-        return memoryStream.ToArray();
+        using var result = new MemoryStream();
+        using var gzip = new GZipStream(new MemoryStream(bytes, 0, size), CompressionMode.Decompress);
+        gzip.CopyTo(result);
+        return result.ToArray();
     }
 }

@@ -7,7 +7,7 @@ public sealed class MetalSpawnActor : IActor
 {
     public ActorType Type => ActorType.MetalSpawn;
     public long ActorId { get; init; }
-    public SteamId CreatorId { get; init; }
+    public CSteamID CreatorId { get; init; }
     public string Zone { get; set; } = "main_zone";
     public long ZoneOwner { get; set; } = -1;
     public Vector3 Position { get; set; } = Vector3.Zero;

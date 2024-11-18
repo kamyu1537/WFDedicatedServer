@@ -7,7 +7,7 @@ using WFDS.Common.Extensions;
 
 namespace WFDS.Server.EventHandler;
 
-internal class RainCloudTickGameEventHandler(IActorManager actorManager) : GameEventHandler<ActorTickEvent>
+public class RainCloudTickGameEventHandler(IActorManager actorManager) : GameEventHandler<ActorTickEvent>
 {
     protected override void Handle(ActorTickEvent e)
     {

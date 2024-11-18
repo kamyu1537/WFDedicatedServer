@@ -1,6 +1,7 @@
 using System.Text.Json;
 using Serilog;
 using WFDS.Common.Actor;
+using WFDS.Common.Network;
 using WFDS.Common.Plugin;
 using WFDS.Common.Types;
 using WFDS.Common.Types.Manager;
@@ -26,10 +27,10 @@ Log.Logger = new LoggerConfiguration()
 try
 {
     SystemMonitor.Start();
-    
+
     AppDomain.CurrentDomain.UnhandledException += (_, e) => Log.Logger.Fatal(e.ExceptionObject as Exception, "unhandled exception");
     AppDomain.CurrentDomain.ProcessExit += (_, _) => Log.Logger.Information("process exit");
-    
+
     var plugins = PluginManager.LoadPlugins();
     var builder = WebApplication.CreateBuilder(args);
     builder.Host.UseConsoleLifetime();
@@ -40,7 +41,7 @@ try
         .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", true)
         .AddEnvironmentVariables()
         .Build();
-    
+
     builder.Services.AddExceptionHandler<WebExceptionHandler>();
 
     var section = configuration.GetSection("Server");
@@ -51,13 +52,16 @@ try
 
     builder.Services.Configure<ServerSetting>(section);
     builder.Services.AddSingleton<IServerSetting>(setting);
+
+    builder.Services.AddSingleton<SteamManager>();
+    builder.Services.AddSingleton<ILobbyManager, LobbyManager>();
     builder.Services.AddSingleton<PacketHandleManager>();
 
+    builder.Services.AddSingleton<ISessionManager, SessionManager>();
     builder.Services.AddSingleton<IZoneManager, ZoneManager>();
     builder.Services.AddSingleton<IActorIdManager, ActorIdManager>();
     builder.Services.AddSingleton<IActorManager, ActorManager>();
     builder.Services.AddSingleton<IActorSpawnManager, ActorSpawnManager>();
-    builder.Services.AddSingleton<ISessionManager, SessionManager>();
 
     /////////////////////////////////////////////////////////////////
 
@@ -92,7 +96,7 @@ try
     }
 
     builder.Services.AddSerilog(Log.Logger);
-    
+
     builder.Services.AddControllers();
     builder.Services.AddEndpointsApiExplorer();
 
@@ -116,7 +120,7 @@ try
     app.UseRouting();
     app.UseStaticFiles();
     app.MapControllers();
-    
+
     app.UseSwagger();
     app.UseSwaggerUI(options =>
     {

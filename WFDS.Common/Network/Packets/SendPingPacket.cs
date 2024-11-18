@@ -6,11 +6,11 @@ namespace WFDS.Common.Network.Packets;
 
 public class SendPingPacket : Packet
 {
-    public SteamId FromId { get; set; } = 0;
+    public CSteamID FromId { get; set; } = CSteamID.Nil;
 
     public override void Deserialize(Dictionary<object, object> data)
     {
-        FromId = data.GetParseULong("from");
+        FromId = data.GetParseULong("from").ToSteamID();
     }
 
     public override void Serialize(Dictionary<object, object> data)
@@ -18,7 +18,7 @@ public class SendPingPacket : Packet
         var time = DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString(CultureInfo.InvariantCulture);
         
         data.TryAdd("type", "send_ping");
-        data.TryAdd("from", FromId.Value.ToString(CultureInfo.InvariantCulture));
+        data.TryAdd("from", FromId.m_SteamID.ToString(CultureInfo.InvariantCulture));
         data.TryAdd("time", time);
     }
 }

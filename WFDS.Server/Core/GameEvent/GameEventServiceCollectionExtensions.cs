@@ -12,7 +12,7 @@ internal static class GameEventServiceCollectionExtensions
         var gameEventHandlerType = typeof(GameEventHandler);
 
         var gameEventHandlerTypes = allAssemblies
-            .SelectMany(assembly => assembly.GetTypes())
+            .SelectMany(assembly => assembly.ExportedTypes)
             .Distinct()
             .Where(type => gameEventHandlerType.IsAssignableFrom(type) && !type.IsAbstract && !type.IsInterface)
             .ToArray();

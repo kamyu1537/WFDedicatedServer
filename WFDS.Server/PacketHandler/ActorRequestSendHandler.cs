@@ -9,7 +9,7 @@ using Session = WFDS.Common.Network.Session;
 namespace WFDS.Server.PacketHandler;
 
 [PacketType("actor_request_send")]
-internal class ActorRequestSendHandler(ILogger<ActorRequestSendHandler> logger, IActorManager actorManager, ISessionManager sessionManager) : PacketHandler<ActorRequestSendPacket>
+public class ActorRequestSendHandler(ILogger<ActorRequestSendHandler> logger, IActorManager actorManager, ISessionManager sessionManager) : PacketHandler<ActorRequestSendPacket>
 {
     protected override void Handle(Session sender, NetChannel channel, ActorRequestSendPacket packet)
     {
@@ -17,24 +17,24 @@ internal class ActorRequestSendHandler(ILogger<ActorRequestSendHandler> logger, 
         {
             if (actorManager.GetActor(actor.ActorId) != null)
             {
-                logger.LogWarning("actor {Actor} already exists : {Member}", actor.ActorId, sender.Friend);
+                logger.LogWarning("actor {Actor} already exists : {Member}", actor.ActorId, sender.ToString());
                 continue;
             }
 
             if (actor.ActorType == "player") continue; // 여기에서 플레이어는 생성하면 안됨!!
 
-            logger.LogDebug("received actor_request_send from {Member} : {Actor} {ActorType}", sender.Friend, actor.ActorId, actor.ActorType);
+            logger.LogDebug("received actor_request_send from {Member} : {Actor} {ActorType}", sender.ToString(), actor.ActorId, actor.ActorType);
 
             var actorType = ActorType.GetActorType(actor.ActorType);
             if (actorType == null)
             {
-                logger.LogWarning("actor type {ActorType} not found : {Member}", actor.ActorType, sender.Friend);
+                logger.LogWarning("actor type {ActorType} not found : {Member}", actor.ActorType, sender.ToString());
                 continue;
             }
 
             if (actorType.HostOnly)
             {
-                logger.LogWarning("actor type {ActorType} is host only : {Member}", actor.ActorType, sender.Friend);
+                logger.LogWarning("actor type {ActorType} is host only : {Member}", actor.ActorType, sender.ToString());
                 sessionManager.KickPlayer(sender.SteamId);
                 break;
             }

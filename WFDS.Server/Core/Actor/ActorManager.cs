@@ -15,7 +15,7 @@ internal sealed class ActorManager(ILogger<ActorManager> logger, IActorIdManager
 
     private readonly ConcurrentDictionary<long, IActor> _owned = [];
     private readonly ConcurrentDictionary<long, IActor> _actors = [];
-    private readonly ConcurrentDictionary<SteamId, IPlayerActor> _players = [];
+    private readonly ConcurrentDictionary<CSteamID, IPlayerActor> _players = [];
 
     public IActor? GetActor(long actorId)
     {
@@ -60,7 +60,7 @@ internal sealed class ActorManager(ILogger<ActorManager> logger, IActorIdManager
         return _players.Count;
     }
 
-    public IPlayerActor? GetPlayerActor(SteamId playerId)
+    public IPlayerActor? GetPlayerActor(CSteamID playerId)
     {
         return _players.TryGetValue(playerId, out var player) ? player : null;
     }
@@ -83,17 +83,17 @@ internal sealed class ActorManager(ILogger<ActorManager> logger, IActorIdManager
         return _owned.Values.Where(actor => actor.Type == actorType);
     }
 
-    public int GetActorCountByCreatorId(SteamId creatorId)
+    public int GetActorCountByCreatorId(CSteamID creatorId)
     {
         return _actors.Values.Count(actor => actor.CreatorId == creatorId);
     }
 
-    public int GetActorCountByCreatorIdAndType(SteamId creatorId, ActorType actorType)
+    public int GetActorCountByCreatorIdAndType(CSteamID creatorId, ActorType actorType)
     {
         return _actors.Values.Count(actor => actor.CreatorId == creatorId && actor.Type == actorType);
     }
 
-    public void SelectActorsByCreatorId(SteamId creatorId, Action<IActor> action)
+    public void SelectActorsByCreatorId(CSteamID creatorId, Action<IActor> action)
     {
         foreach (var actor in _actors.Values.Where(actor => actor.CreatorId == creatorId))
         {
@@ -135,9 +135,9 @@ internal sealed class ActorManager(ILogger<ActorManager> logger, IActorIdManager
         return _owned.Values.Select(actor => actor.Type).ToList();
     }
 
-    public IEnumerable<IActor> GetActorsByCreatorId(SteamId creatorId)
+    public IEnumerable<IActor> GetActorsByCreatorId(CSteamID creatorId)
     {
-        return _actors.Values.Where(actor => actor.CreatorId.Value == creatorId);
+        return _actors.Values.Where(actor => actor.CreatorId == creatorId);
     }
 
     private bool TryAddActorAndPropagate(IActor actor)
@@ -153,7 +153,7 @@ internal sealed class ActorManager(ILogger<ActorManager> logger, IActorIdManager
             }
         }
 
-        if (actor.CreatorId == SteamClient.SteamId.Value)
+        if (actor.CreatorId == SteamUser.GetSteamID())
         {
             if (!_owned.TryAdd(actor.ActorId, actor))
             {
@@ -220,7 +220,7 @@ internal sealed class ActorManager(ILogger<ActorManager> logger, IActorIdManager
         actor = new T
         {
             ActorId = idManager.Next(),
-            CreatorId = SteamClient.SteamId,
+            CreatorId = SteamUser.GetSteamID(),
             Position = position
         };
 
@@ -228,7 +228,7 @@ internal sealed class ActorManager(ILogger<ActorManager> logger, IActorIdManager
         return TryAddActorAndPropagate(actor);
     }
 
-    public bool TryCreatePlayerActor(SteamId playerId, long actorId, out IPlayerActor actor)
+    public bool TryCreatePlayerActor(CSteamID playerId, long actorId, out IPlayerActor actor)
     {
         actor = null!;
 
@@ -252,7 +252,7 @@ internal sealed class ActorManager(ILogger<ActorManager> logger, IActorIdManager
         return TryAddActorAndPropagate(actor);
     }
 
-    public bool TryCreateRemoteActor(SteamId steamId, long actorId, ActorType actorType, Vector3 position, Vector3 rotation, out IActor actor)
+    public bool TryCreateRemoteActor(CSteamID steamId, long actorId, ActorType actorType, Vector3 position, Vector3 rotation, out IActor actor)
     {
         actor = null!;
         if (!idManager.Add(actorId))
@@ -291,7 +291,7 @@ internal sealed class ActorManager(ILogger<ActorManager> logger, IActorIdManager
         return TryAddActorAndPropagate(actor);
     }
 
-    public void SelectPlayerActor(SteamId steamId, Action<IPlayerActor> action)
+    public void SelectPlayerActor(CSteamID steamId, Action<IPlayerActor> action)
     {
         if (!_players.TryGetValue(steamId, out var player))
         {
@@ -319,7 +319,7 @@ internal sealed class ActorManager(ILogger<ActorManager> logger, IActorIdManager
             }
         }
 
-        if (actor.CreatorId == SteamClient.SteamId.Value)
+        if (actor.CreatorId == SteamUser.GetSteamID())
         {
             _owned.TryRemove(actorId, out _);
         }
