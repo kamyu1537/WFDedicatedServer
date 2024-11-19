@@ -114,8 +114,15 @@ internal class LobbyManager : ILobbyManager, IDisposable
             return false;
         }
 
-        var lobbyOwner = SteamMatchmaking.GetLobbyOwner(_lobbyId);
-        return lobbyOwner == SteamUser.GetSteamID();
+        try
+        {
+            var lobbyOwner = SteamMatchmaking.GetLobbyOwner(_lobbyId);
+            return lobbyOwner == SteamUser.GetSteamID();
+        }
+        catch
+        {
+            return false;
+        }
     }
 
     public CSteamID GetLobbyId()
@@ -192,6 +199,8 @@ internal class LobbyManager : ILobbyManager, IDisposable
 
         SteamMatchmaking.SetLobbyMemberLimit(lobbyId, _cap + 1);
         SteamMatchmaking.SetLobbyJoinable(lobbyId, true);
+
+        WebFishingServer.UpdateConsoleTitle(_name, _code, 0, _cap);
     }
 
     public void UpdateBrowserValue()

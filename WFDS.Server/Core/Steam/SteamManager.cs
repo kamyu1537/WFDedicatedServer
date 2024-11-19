@@ -5,6 +5,7 @@ namespace WFDS.Server.Core.Steam;
 internal class SteamManager(ILogger<SteamManager> logger)
 {
     public bool Initialized { get; private set; }
+    public CSteamID SteamId { get; private set; }
 
     public bool Init()
     {
@@ -19,6 +20,7 @@ internal class SteamManager(ILogger<SteamManager> logger)
         }
         
         Initialized = true;
+        SteamId = SteamUser.GetSteamID();
         logger.LogInformation("SteamAPI.Init success");
         return true;
     }

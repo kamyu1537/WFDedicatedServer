@@ -1,7 +1,6 @@
 using System.Text.Json;
 using Serilog;
 using WFDS.Common.Actor;
-using WFDS.Common.Network;
 using WFDS.Common.Plugin;
 using WFDS.Common.Types;
 using WFDS.Common.Types.Manager;
@@ -140,4 +139,5 @@ catch (Exception ex)
 finally
 {
     await Log.CloseAndFlushAsync();
+    Environment.Exit(0);
 }
