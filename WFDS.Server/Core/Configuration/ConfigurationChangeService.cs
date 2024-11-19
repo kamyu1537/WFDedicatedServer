@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Options;
 using WFDS.Common.GameEvents.Events;
 using WFDS.Common.Network;
+using WFDS.Common.Types;
 using WFDS.Common.Types.Manager;
 using WFDS.Server.Core.GameEvent;
 

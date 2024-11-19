@@ -5,6 +5,7 @@ using WFDS.Common.GameEvents.Events;
 using WFDS.Common.Types.Manager;
 using WFDS.Server.Core.GameEvent;
 using WFDS.Server.Core.Network;
+using WFDS.Server.Core.Steam;
 
 namespace WFDS.Server.Core.Actor;
 

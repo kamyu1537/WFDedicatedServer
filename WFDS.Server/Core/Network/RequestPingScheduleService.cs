@@ -5,6 +5,7 @@ using WFDS.Common.Network;
 using WFDS.Common.Network.Packets;
 using WFDS.Common.Types;
 using WFDS.Common.Types.Manager;
+using WFDS.Server.Core.Steam;
 
 namespace WFDS.Server.Core.Network;
 

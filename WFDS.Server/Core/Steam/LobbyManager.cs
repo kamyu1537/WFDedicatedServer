@@ -4,7 +4,7 @@ using WFDS.Common.Helpers;
 using WFDS.Common.Network;
 using WFDS.Common.Types;
 
-namespace WFDS.Server.Core.Network;
+namespace WFDS.Server.Core.Steam;
 
 internal class LobbyManager : ILobbyManager, IDisposable
 {

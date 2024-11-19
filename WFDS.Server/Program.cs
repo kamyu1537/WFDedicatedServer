@@ -10,6 +10,7 @@ using WFDS.Server.Core.Actor;
 using WFDS.Server.Core.GameEvent;
 using WFDS.Server.Core.Configuration;
 using WFDS.Server.Core.Network;
+using WFDS.Server.Core.Steam;
 using WFDS.Server.Core.Utils;
 using WFDS.Server.Core.Zone;
 

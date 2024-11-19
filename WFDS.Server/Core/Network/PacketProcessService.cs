@@ -4,6 +4,7 @@ using WFDS.Common.Helpers;
 using WFDS.Common.Types;
 using WFDS.Common.Types.Manager;
 using WFDS.Godot.Binary;
+using WFDS.Server.Core.Steam;
 
 namespace WFDS.Server.Core.Network;
 

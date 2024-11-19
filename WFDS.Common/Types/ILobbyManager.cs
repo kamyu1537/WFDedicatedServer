@@ -1,7 +1,6 @@
 ﻿using Steamworks;
-using WFDS.Common.Types;
 
-namespace WFDS.Common.Network;
+namespace WFDS.Common.Types;
 
 public interface ILobbyManager
 {

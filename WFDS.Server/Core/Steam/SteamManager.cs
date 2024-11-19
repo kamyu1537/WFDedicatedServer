@@ -1,6 +1,6 @@
 ﻿using Steamworks;
 
-namespace WFDS.Server.Core.Network;
+namespace WFDS.Server.Core.Steam;
 
 internal class SteamManager(ILogger<SteamManager> logger)
 {
