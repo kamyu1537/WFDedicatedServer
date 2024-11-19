@@ -8,9 +8,9 @@ using WFDS.Server.Core.Network;
 
 namespace WFDS.Server.Core;
 
-internal class WFServer(
+internal class WebFishingServer(
     IHostApplicationLifetime lifetime,
-    ILogger<WFServer> logger,
+    ILogger<WebFishingServer> logger,
     IOptions<ServerSetting> settings,
     ILobbyManager lobby,
     ISessionManager session,
@@ -29,7 +29,7 @@ internal class WFServer(
             return;
         }
 
-        logger.LogInformation("SteamClientService start");
+        logger.LogInformation("WebFishingServer start");
         _ = _looper.RegisterActionAsync(Update).ConfigureAwait(false);
 
         if (!steam.Init())
@@ -62,7 +62,7 @@ internal class WFServer(
         }
 
         // 프로그램을 를 종료한다.
-        logger.LogInformation("WFServer stop");
+        logger.LogInformation("WebFishingServer stop");
         lifetime.StopApplication();
     }
 
@@ -96,6 +96,6 @@ internal class WFServer(
         SteamAPI.Shutdown();
 
         await base.StopAsync(cancellationToken);
-        logger.LogInformation("WFServer stopped");
+        logger.LogInformation("WebFishingServer stopped");
     }
 }

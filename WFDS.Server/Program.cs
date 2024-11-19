@@ -70,7 +70,7 @@ try
 
     /////////////////////////////////////////////////////////////////
 
-    builder.Services.AddHostedService<WFServer>();
+    builder.Services.AddHostedService<WebFishingServer>();
     builder.Services.AddHostedService<ConfigurationChangeService>();
 
     builder.Services.AddHostedService<PacketProcessService>();
