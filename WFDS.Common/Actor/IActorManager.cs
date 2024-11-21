@@ -25,7 +25,7 @@ public interface IActorManager
     int GetActorCountByCreatorIdAndType(CSteamID creatorId, ActorType actorType);
     IEnumerable<IActor> GetActorsByCreatorId(CSteamID creatorId);
     
-    bool TryCreateHostActor<T>(Vector3 position, out T actor) where T : IActor, new();
+    bool TryCreateHostActor<T>(Vector3 position, out T actor) where T : class, IActor, new();
     bool TryCreatePlayerActor(CSteamID steamId, long actorId, out IPlayerActor actor);
     bool TryCreateRemoteActor(CSteamID steamId, long actorId, ActorType actorType, Vector3 position, Vector3 rotation, out IActor actor);
     bool TryRemoveActor(long actorId, ActorRemoveTypes type, out IActor actor);

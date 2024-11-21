@@ -3,23 +3,23 @@ using Steamworks;
 
 namespace WFDS.Common.Actor.Actors;
 
-public sealed class MetalSpawnActor : IActor
+public sealed class MetalSpawnActor : Actor<MetalSpawnActor>
 {
-    public ActorType Type => ActorType.MetalSpawn;
-    public long ActorId { get; init; }
-    public CSteamID CreatorId { get; init; }
-    public string Zone { get; set; } = "main_zone";
-    public long ZoneOwner { get; set; } = -1;
-    public Vector3 Position { get; set; } = Vector3.Zero;
-    public Vector3 Rotation { get; set; } = Vector3.Zero;
-    public bool Decay => true;
-    public bool IsRemoved { get; set; }
+    public override ActorType Type => ActorType.MetalSpawn;
+    public override long ActorId { get; set; }
+    public override CSteamID CreatorId { get; set; }
+    public override string Zone { get; set; } = "main_zone";
+    public override long ZoneOwner { get; set; } = -1;
+    public override Vector3 Position { get; set; } = Vector3.Zero;
+    public override Vector3 Rotation { get; set; } = Vector3.Zero;
+    public override bool Decay => true;
+    public override bool IsRemoved { get; set; }
     
-    public long DecayTimer { get; set; } = 10000;
-    public DateTimeOffset CreateTime { get; set; } = DateTimeOffset.UtcNow;
+    public override long DecayTimer { get; set; } = 10000;
+    public override DateTimeOffset CreateTime { get; set; } = DateTimeOffset.UtcNow;
 
-    public bool CanWipe => true;
-    public bool IsDead { get; set; }
-    public long NetworkShareDefaultCooldown => 32;
-    public long NetworkShareCooldown { get; set; }
+    public override bool CanWipe => true;
+    public override bool IsDead { get; set; }
+    public override long NetworkShareDefaultCooldown => 32;
+    public override long NetworkShareCooldown { get; set; }
 }

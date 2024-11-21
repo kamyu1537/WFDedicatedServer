@@ -6,8 +6,8 @@ namespace WFDS.Common.Actor;
 public interface IActor
 {
     ActorType Type { get; }
-    long ActorId { get; init; }
-    CSteamID CreatorId { get; init; }
+    long ActorId { get; set; }
+    CSteamID CreatorId { get; set; }
     string Zone { get; set; }
     long ZoneOwner { get; set; }
     Vector3 Position { get; set; }
@@ -23,4 +23,7 @@ public interface IActor
     
     long NetworkShareDefaultCooldown { get; }
     long NetworkShareCooldown { get; set; }
+
+    void Reset();
+    void Remove();
 }

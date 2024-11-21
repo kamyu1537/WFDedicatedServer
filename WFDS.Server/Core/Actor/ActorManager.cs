@@ -209,7 +209,7 @@ internal sealed class ActorManager(ILogger<ActorManager> logger, IActorIdManager
         return true;
     }
 
-    public bool TryCreateHostActor<T>(Vector3 position, out T actor) where T : IActor, new()
+    public bool TryCreateHostActor<T>(Vector3 position, out T actor) where T : class, IActor, new()
     {
         actor = default!;
         if (MaxOwnedActorCount <= _owned.Count)
@@ -217,13 +217,11 @@ internal sealed class ActorManager(ILogger<ActorManager> logger, IActorIdManager
             logger.LogError("owned actor limit reached ({Count}/{MaxCount})", _owned.Count, MaxOwnedActorCount);
             return false;
         }
-        
-        actor = new T
-        {
-            ActorId = idManager.Next(),
-            CreatorId = steam.SteamId,
-            Position = position
-        };
+
+        actor = Actor<T>.Get();
+        actor.ActorId = idManager.Next();
+        actor.CreatorId = steam.SteamId;
+        actor.Position = position;
 
         SetActorDefaultValues(actor);
         return TryAddActorAndPropagate(actor);
@@ -239,15 +237,13 @@ internal sealed class ActorManager(ILogger<ActorManager> logger, IActorIdManager
             return false;
         }
 
-        actor = new PlayerActor
-        {
-            ActorId = actorId,
-            CreatorId = playerId,
-            Zone = MainZone,
-            ZoneOwner = -1,
-            Position = Vector3.Zero,
-            Rotation = Vector3.Zero
-        };
+        actor = PlayerActor.Get();
+        actor.ActorId = actorId;
+        actor.CreatorId = playerId;
+        actor.Zone = MainZone;
+        actor.ZoneOwner = -1;
+        actor.Position = Vector3.Zero;
+        actor.Rotation = Vector3.Zero;
 
         SetActorDefaultValues(actor);
         return TryAddActorAndPropagate(actor);
@@ -275,19 +271,18 @@ internal sealed class ActorManager(ILogger<ActorManager> logger, IActorIdManager
             return false;
         }
 
-        actor = new RemoteActor
-        {
-            Type = actorType,
-            ActorId = actorId,
-            CreatorId = steamId,
-            Zone = player.Zone,
-            ZoneOwner = player.ZoneOwner,
-            Position = position,
-            Rotation = rotation,
-            IsDead = true,
-            Decay = false
-        };
+        var remoteActor = RemoteActor.Get();
+        remoteActor.ActorId = actorId;
+        remoteActor.CreatorId = steamId;
+        remoteActor.Zone = player.Zone;
+        remoteActor.ZoneOwner = player.ZoneOwner;
+        remoteActor.Position = position;
+        remoteActor.Rotation = rotation;
+        remoteActor.IsDead = true;
+        remoteActor.SetActorType(actorType);
+        remoteActor.SetDecay(false);
 
+        actor = remoteActor;
         SetActorDefaultValues(actor);
         return TryAddActorAndPropagate(actor);
     }
@@ -326,6 +321,8 @@ internal sealed class ActorManager(ILogger<ActorManager> logger, IActorIdManager
         }
 
         idManager.Return(actorId);
+        actor.Remove();
+        
         logger.LogInformation("actor removed {ActorId} {ActorType} {CreatorId} {Type}", actorId, actor.Type, actor.CreatorId, type);
         GameEventBus.Publish(new ActorRemoveEvent(actorId, actor.Type, actor.CreatorId, type));
         return true;
