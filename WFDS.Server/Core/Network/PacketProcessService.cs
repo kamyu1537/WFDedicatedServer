@@ -45,7 +45,7 @@ internal class PacketProcessService(ILogger<PacketProcessService> logger, Packet
             logger.LogError("failed to read packet from {Channel} (size mismatch {MsgSize}/{ReadSize})", channel, msgSize, readSize);
             return false;
         }
-        
+
         if (sessionManager.IsBannedPlayer(steamId))
         {
             var packetDataBase64 = Convert.ToBase64String(bytes);
@@ -57,7 +57,7 @@ internal class PacketProcessService(ILogger<PacketProcessService> logger, Packet
         {
             return true;
         }
-        
+
         logger.LogError("empty packet from {SteamId}", steamId);
         return false;
 
@@ -69,33 +69,41 @@ internal class PacketProcessService(ILogger<PacketProcessService> logger, Packet
         {
             return;
         }
-        
+
         while (SteamNetworking.IsP2PPacketAvailable(out var size, channel.Value))
         {
-            var bytes = ArrayPool<byte>.Shared.Rent((int)size);
-            var success = SteamNetworking.ReadP2PPacket(bytes, size, out var readSize, out var steamId, channel.Value);
-            if (!success)
-            {
-                logger.LogError("failed to read packet from {Channel}", channel);
-                continue;
-            }
-            
-            if (!ValidatePacket(channel, steamId, size, readSize, bytes))
-            {
-                continue;
-            }
-
+            byte[] bytes = null!;
             try
             {
+                bytes = ArrayPool<byte>.Shared.Rent((int)size);
+                var success = SteamNetworking.ReadP2PPacket(bytes, size, out var readSize, out var steamId, channel.Value);
+                if (!success)
+                {
+                    logger.LogError("failed to read packet from {Channel}", channel);
+                    continue;
+                }
+
+                if (!ValidatePacket(channel, steamId, size, readSize, bytes))
+                {
+                    continue;
+                }
+
                 var decompressed = GZipHelper.Decompress(bytes, (int)readSize);
                 var deserialized = GodotBinaryConverter.Deserialize(decompressed);
                 packetHandleManager.OnPacketReceived(steamId, channel, deserialized);
-                break;
+
             }
             catch (Exception ex)
             {
                 logger.LogError(ex, "failed to packet processing");
                 break;
+            }
+            finally
+            {
+                if (bytes != null)
+                {
+                    ArrayPool<byte>.Shared.Return(bytes);
+                }
             }
         }
     }
