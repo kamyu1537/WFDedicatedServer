@@ -71,10 +71,9 @@ internal class PacketProcessService(ILogger<PacketProcessService> logger, Packet
 
         while (SteamNetworking.IsP2PPacketAvailable(out var size, channel.Value))
         {
-            byte[] bytes = null!;
+            var bytes = ArrayPool<byte>.Shared.Rent((int)size);
             try
             {
-                bytes = ArrayPool<byte>.Shared.Rent((int)size);
                 var success = SteamNetworking.ReadP2PPacket(bytes, size, out var readSize, out var steamId, channel.Value);
                 if (!success)
                 {
