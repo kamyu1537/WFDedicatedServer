@@ -1,6 +1,4 @@
-﻿using System.Buffers;
-
-namespace WFDS.Godot.Binary;
+﻿namespace WFDS.Godot.Binary;
 
 public static class GodotBinaryConverter
 {
