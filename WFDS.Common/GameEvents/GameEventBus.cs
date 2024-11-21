@@ -1,12 +1,12 @@
 using System.Collections.Concurrent;
 
-namespace WFDS.Server.Core.GameEvent;
+namespace WFDS.Common.GameEvents;
 
-internal static class GameEventBus
+public static class GameEventBus
 {
-    private static readonly ConcurrentQueue<Common.GameEvents.GameEvent> Queue = new();
+    private static readonly ConcurrentQueue<GameEvent> Queue = new();
 
-    public static void Publish(Common.GameEvents.GameEvent e)
+    public static void Publish(GameEvent e)
     {
         Queue.Enqueue(e);
     }
@@ -26,7 +26,7 @@ internal static class GameEventBus
         return tcs.Task;
     }
 
-    public static async Task ProcessQueueAsync(Func<Common.GameEvents.GameEvent, Task> action)
+    public static async Task ProcessQueueAsync(Func<GameEvent, Task> action)
     {
         while (Queue.TryDequeue(out var e))
         {

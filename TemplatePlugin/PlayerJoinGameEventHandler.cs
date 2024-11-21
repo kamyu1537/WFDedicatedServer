@@ -4,10 +4,11 @@ using WFDS.Common.GameEvents.Events;
 using WFDS.Common.Network.Packets;
 using WFDS.Common.Types;
 using WFDS.Common.Types.Manager;
+using WFDS.Server.Core.Network;
 
 namespace TemplatePlugin;
 
-public class PlayerJoinGameEventHandler(ISessionManager sessionManager) : GameEventHandler<PlayerJoinedEvent>
+public class PlayerJoinGameEventHandler(SessionManager sessionManager) : GameEventHandler<PlayerJoinedEvent>
 {
     protected override void Handle(PlayerJoinedEvent e)
     {

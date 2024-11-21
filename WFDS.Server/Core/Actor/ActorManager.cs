@@ -3,12 +3,13 @@ using System.Numerics;
 using Steamworks;
 using WFDS.Common.Actor;
 using WFDS.Common.Actor.Actors;
+using WFDS.Common.GameEvents;
 using WFDS.Common.GameEvents.Events;
-using WFDS.Server.Core.GameEvent;
+using WFDS.Common.Steam;
 
 namespace WFDS.Server.Core.Actor;
 
-internal sealed class ActorManager(ILogger<ActorManager> logger, IActorIdManager idManager) : IActorManager
+internal sealed class ActorManager(ILogger<ActorManager> logger, IActorIdManager idManager, SteamManager steam) : IActorManager
 {
     private const string MainZone = "main_zone";
     private const int MaxOwnedActorCount = 32;
@@ -153,7 +154,7 @@ internal sealed class ActorManager(ILogger<ActorManager> logger, IActorIdManager
             }
         }
 
-        if (actor.CreatorId == SteamUser.GetSteamID())
+        if (actor.CreatorId == steam.SteamId)
         {
             if (!_owned.TryAdd(actor.ActorId, actor))
             {
@@ -220,7 +221,7 @@ internal sealed class ActorManager(ILogger<ActorManager> logger, IActorIdManager
         actor = new T
         {
             ActorId = idManager.Next(),
-            CreatorId = SteamUser.GetSteamID(),
+            CreatorId = steam.SteamId,
             Position = position
         };
 
@@ -319,7 +320,7 @@ internal sealed class ActorManager(ILogger<ActorManager> logger, IActorIdManager
             }
         }
 
-        if (actor.CreatorId == SteamUser.GetSteamID())
+        if (actor.CreatorId == steam.SteamId)
         {
             _owned.TryRemove(actorId, out _);
         }

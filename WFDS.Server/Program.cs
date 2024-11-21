@@ -2,6 +2,7 @@ using System.Text.Json;
 using Serilog;
 using WFDS.Common.Actor;
 using WFDS.Common.Plugin;
+using WFDS.Common.Steam;
 using WFDS.Common.Types;
 using WFDS.Common.Types.Manager;
 using WFDS.Server.Core;
@@ -9,7 +10,6 @@ using WFDS.Server.Core.Actor;
 using WFDS.Server.Core.GameEvent;
 using WFDS.Server.Core.Configuration;
 using WFDS.Server.Core.Network;
-using WFDS.Server.Core.Steam;
 using WFDS.Server.Core.Utils;
 using WFDS.Server.Core.Zone;
 
@@ -53,11 +53,11 @@ try
     builder.Services.Configure<ServerSetting>(section);
     builder.Services.AddSingleton<IServerSetting>(setting);
 
-    builder.Services.AddSingleton<SteamManager>();
-    builder.Services.AddSingleton<ILobbyManager, LobbyManager>();
+    builder.Services.AddSingleton(SteamManager.Inst);
+    builder.Services.AddSingleton(LobbyManager.Inst);
+    builder.Services.AddSingleton(SessionManager.Inst);
     builder.Services.AddSingleton<PacketHandleManager>();
 
-    builder.Services.AddSingleton<ISessionManager, SessionManager>();
     builder.Services.AddSingleton<IZoneManager, ZoneManager>();
     builder.Services.AddSingleton<IActorIdManager, ActorIdManager>();
     builder.Services.AddSingleton<IActorManager, ActorManager>();

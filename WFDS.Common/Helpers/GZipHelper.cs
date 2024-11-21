@@ -1,23 +1,29 @@
-﻿using System.IO.Compression;
+﻿using System.Diagnostics;
+using System.IO.Compression;
+using System.Runtime.InteropServices;
 
 namespace WFDS.Common.Helpers;
 
 public static class GZipHelper
 {
-    public static byte[] Compress(byte[] bytes)
+    public static Memory<byte> Compress(ReadOnlySpan<byte> bytes)
     {
         using var result = new MemoryStream();
         using var gzip = new GZipStream(result, CompressionMode.Compress);
-        gzip.Write(bytes, 0, bytes.Length);
-        gzip.Close();
-        return result.ToArray();
+        gzip.Write(bytes);
+        return new Memory<byte>(result.GetBuffer(), 0, (int)result.Length);
     }
 
-    public static byte[] Decompress(byte[] bytes, int size)
+    public static unsafe Memory<byte> Decompress(ReadOnlySpan<byte> bytes)
     {
         using var result = new MemoryStream();
-        using var gzip = new GZipStream(new MemoryStream(bytes, 0, size), CompressionMode.Decompress);
-        gzip.CopyTo(result);
-        return result.ToArray();
+
+        fixed (byte* ptr = bytes)
+        {
+            using var input = new UnmanagedMemoryStream(ptr, bytes.Length);
+            using var gzip = new GZipStream(input, CompressionMode.Decompress);
+            gzip.CopyTo(result);
+        }
+        return new Memory<byte>(result.GetBuffer(), 0, (int)result.Length);
     }
 }

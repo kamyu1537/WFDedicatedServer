@@ -3,8 +3,10 @@ using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 using WFDS.Common.Extensions;
 using WFDS.Common.Network;
+using WFDS.Common.Steam;
 using WFDS.Common.Types;
 using WFDS.Common.Types.Manager;
+using WFDS.Server.Core.Network;
 
 namespace WFDS.Server.Controllers;
 
@@ -12,7 +14,7 @@ namespace WFDS.Server.Controllers;
 [Tags("session")]
 [Route("api/v1/session")]
 
-public class SessionController(ISessionManager manager, ILobbyManager lobby) : Controller
+public class SessionController(SessionManager manager, LobbyManager lobby) : Controller
 {
     [HttpGet("info")]
     [SwaggerOperation("get lobby info")]

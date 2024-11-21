@@ -1,15 +1,13 @@
 ﻿using Cysharp.Threading;
-using Steamworks;
 using WFDS.Common.Actor;
+using WFDS.Common.GameEvents;
 using WFDS.Common.GameEvents.Events;
-using WFDS.Common.Types.Manager;
-using WFDS.Server.Core.GameEvent;
+using WFDS.Common.Steam;
 using WFDS.Server.Core.Network;
-using WFDS.Server.Core.Steam;
 
 namespace WFDS.Server.Core.Actor;
 
-internal sealed class ActorTickService(ILogger<ActorTickService> logger, IActorManager manager, ISessionManager session, SteamManager steam) : IHostedService
+internal sealed class ActorTickService(ILogger<ActorTickService> logger, IActorManager manager, SteamManager steam, SessionManager session) : IHostedService
 {
     private readonly LogicLooper _looper = new(60);
 
@@ -52,7 +50,7 @@ internal sealed class ActorTickService(ILogger<ActorTickService> logger, IActorM
 
     private bool Decay(IActor actor)
     {
-        if (actor.CreatorId != SteamUser.GetSteamID())
+        if (actor.CreatorId != steam.SteamId)
         {
             if (!session.IsSessionValid(actor.CreatorId))
             {

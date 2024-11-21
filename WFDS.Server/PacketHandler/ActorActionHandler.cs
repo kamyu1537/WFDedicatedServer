@@ -1,18 +1,18 @@
 ﻿using System.Text.Json;
-using Steamworks;
 using WFDS.Common.Actor;
 using WFDS.Common.GameEvents.Events;
 using WFDS.Common.Extensions;
+using WFDS.Common.GameEvents;
 using WFDS.Common.Network;
 using WFDS.Common.Network.Packets;
+using WFDS.Common.Steam;
 using WFDS.Common.Types;
-using WFDS.Server.Core.GameEvent;
 using Session = WFDS.Common.Network.Session;
 
 namespace WFDS.Server.PacketHandler;
 
 [PacketType("actor_action")]
-public class ActorActionHandler(ILogger<ActorActionHandler> logger, IActorManager actorManager) : PacketHandler<ActorActionPacket>
+public class ActorActionHandler(ILogger<ActorActionHandler> logger, IActorManager actorManager, SteamManager steam) : PacketHandler<ActorActionPacket>
 {
     private static readonly string[] AllowedActions =
     [
@@ -80,7 +80,7 @@ public class ActorActionHandler(ILogger<ActorActionHandler> logger, IActorManage
         var actor = actorManager.GetActor(actorId);
         if (actor == null) return;
 
-        if (actor.CreatorId == SteamUser.GetSteamID() && actor.CanWipe) actorManager.TryRemoveActor(actorId, ActorRemoveTypes.WipeActor, out _);
+        if (actor.CreatorId == steam.SteamId && actor.CanWipe) actorManager.TryRemoveActor(actorId, ActorRemoveTypes.WipeActor, out _);
     }
 
     private void SetZone(Session sender, ActorActionPacket packet)

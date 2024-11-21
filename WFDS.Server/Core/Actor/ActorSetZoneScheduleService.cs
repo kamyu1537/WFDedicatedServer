@@ -2,14 +2,14 @@
 using WFDS.Common.Actor;
 using WFDS.Common.Network;
 using WFDS.Common.Network.Packets;
+using WFDS.Common.Steam;
 using WFDS.Common.Types;
 using WFDS.Common.Types.Manager;
 using WFDS.Server.Core.Network;
-using WFDS.Server.Core.Steam;
 
 namespace WFDS.Server.Core.Actor;
 
-internal class ActorSetZoneScheduleService(IActorManager actorManager, ISessionManager sessionManager, ILobbyManager lobby, SteamManager steam) : IHostedService
+internal class ActorSetZoneScheduleService(IActorManager actorManager, SteamManager steam, LobbyManager lobby, SessionManager session) : IHostedService
 {
     private static readonly TimeSpan SetZoneTimeoutPeriod = TimeSpan.FromSeconds(5);
     private Timer? _timer;
@@ -39,7 +39,7 @@ internal class ActorSetZoneScheduleService(IActorManager actorManager, ISessionM
             if (actor.IsDead) continue;
             if (actor.IsRemoved) continue;
             
-            sessionManager.BroadcastP2PPacket(lobby.GetLobbyId(), NetChannel.GameState, ActorActionPacket.CreateSetZonePacket(actor.ActorId, actor.Zone, actor.ZoneOwner));
+            session.BroadcastP2PPacket(lobby.GetLobbyId(), NetChannel.GameState, ActorActionPacket.CreateSetZonePacket(actor.ActorId, actor.Zone, actor.ZoneOwner));
         }
     }
 }

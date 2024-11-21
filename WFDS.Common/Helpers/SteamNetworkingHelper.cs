@@ -1,32 +1,74 @@
-﻿using Steamworks;
+﻿using System.Buffers;
+using Serilog;
+using Steamworks;
+using WFDS.Common.Steam;
 using WFDS.Common.Types;
 
 namespace WFDS.Common.Helpers;
 
 public static class SteamNetworkingHelper
 {
-    public static bool SendP2PPacket(CSteamID steamId, NetChannel channel, byte[] data)
+    public static bool SendP2PPacket(CSteamID steamId, NetChannel channel, Memory<byte> data)
     {
-        if (steamId == SteamUser.GetSteamID())
+        if (steamId == SteamManager.Inst.SteamId)
         {
             return false;
         }
-        
-        return SteamNetworking.SendP2PPacket(steamId, data, (uint)data.Length, channel.SendType, channel.Value);
+
+        byte[] bytes = null!;
+        try
+        {
+            bytes = ArrayPool<byte>.Shared.Rent(data.Length);
+            data.CopyTo(bytes);
+            var length = (uint)bytes.Length;
+            var sendType = channel.SendType;
+            var channelValue = channel.Value;
+
+            return SteamNetworking.SendP2PPacket(steamId, bytes, length, sendType, channelValue);
+        }
+        catch (Exception ex)
+        {
+            Log.Logger.Error(ex, "Failed to send P2P packet");
+            return false;
+        }
+        finally
+        {
+            ArrayPool<byte>.Shared.Return(bytes);
+        }
     }
-    
-    public static void BroadcastP2PPacket(CSteamID lobbyId, NetChannel channel, byte[] data)
+
+    public static void BroadcastP2PPacket(CSteamID lobbyId, NetChannel channel, Memory<byte> data)
     {
         var memberCount = SteamMatchmaking.GetNumLobbyMembers(lobbyId);
-        for (var i = 0; i < memberCount; ++i)
+        if (memberCount <= 1) return;
+
+        byte[] bytes = null!;
+        try
         {
-            var member = SteamMatchmaking.GetLobbyMemberByIndex(lobbyId, i);
-            if (member == SteamUser.GetSteamID()) // 자기 자신에게는 보내지 않는다.
+            bytes = ArrayPool<byte>.Shared.Rent(data.Length);
+            data.CopyTo(bytes);
+            var length = (uint)bytes.Length;
+            var sendType = channel.SendType;
+            var channelValue = channel.Value;
+
+            for (var i = 0; i < memberCount; ++i)
             {
-                return;
+                var member = SteamMatchmaking.GetLobbyMemberByIndex(lobbyId, i);
+                if (member == SteamManager.Inst.SteamId) // 자기 자신에게는 보내지 않는다.
+                {
+                    continue;
+                }
+
+                SteamNetworking.SendP2PPacket(member, bytes, length, sendType, channelValue);
             }
-            
-            SendP2PPacket(member, channel, data);
+        }
+        catch (Exception ex)
+        {
+            Log.Logger.Error(ex, "Failed to rent bytes for broadcast P2P packet");
+        }
+        finally
+        {
+            ArrayPool<byte>.Shared.Return(bytes);
         }
     }
 }

@@ -1,17 +1,20 @@
 ﻿using Microsoft.Extensions.Options;
+using WFDS.Common.GameEvents;
 using WFDS.Common.GameEvents.Events;
 using WFDS.Common.Network;
+using WFDS.Common.Steam;
 using WFDS.Common.Types;
 using WFDS.Common.Types.Manager;
 using WFDS.Server.Core.GameEvent;
+using WFDS.Server.Core.Network;
 
 namespace WFDS.Server.Core.Configuration;
 
 internal class ConfigurationChangeService(
     ILogger<ConfigurationChangeService> logger,
     IOptionsMonitor<ServerSetting> optionsMonitor,
-    ILobbyManager lobby,
-    ISessionManager session
+    LobbyManager lobby,
+    SessionManager session
 ) : IHostedService
 {
     public Task StartAsync(CancellationToken cancellationToken)

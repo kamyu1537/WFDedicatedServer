@@ -1,6 +1,7 @@
 ﻿using WFDS.Common.Network;
 using WFDS.Common.Types;
 using WFDS.Common.Types.Manager;
+using WFDS.Server.Core.Network;
 
 namespace WFDS.Common.Actor;
 
@@ -19,7 +20,7 @@ public static class ActorExtensions
         return actorZone == zone && (zoneOwner == -1 || actorZoneOwner == zoneOwner);
     }
     
-    public static void BroadcastInZone(this IActor actor, NetChannel channel, Packet packet, IActorManager actorManager, ISessionManager sessionManager)
+    public static void BroadcastInZone(this IActor actor, NetChannel channel, Packet packet, IActorManager actorManager, SessionManager session)
     {
         var players = actorManager.GetPlayerActors().ToArray();
         if (players.Length == 0) return;
@@ -28,7 +29,7 @@ public static class ActorExtensions
         {
             if (player.IsInZone(actor.Zone, actor.ZoneOwner))
             {
-                sessionManager.SendP2PPacket(player.CreatorId, channel, packet);
+                session.SendP2PPacket(player.CreatorId, channel, packet);
             }
         }
     }

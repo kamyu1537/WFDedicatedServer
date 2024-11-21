@@ -1,6 +1,7 @@
 ﻿using System.Globalization;
 using Steamworks;
 using WFDS.Common.Extensions;
+using WFDS.Common.Steam;
 using WFDS.Common.Types;
 
 namespace WFDS.Common.Network.Packets;
@@ -63,7 +64,7 @@ public class LetterReceivedPacket : Packet
     
     public static LetterReceivedPacket Create(CSteamID to, string body, List<GameItem> items)
     {
-        var steamId = SteamUser.GetSteamID();
+        var steamId = SteamManager.Inst.SteamId;
         return new LetterReceivedPacket
         {
             To = to.m_SteamID.ToString(CultureInfo.InvariantCulture),

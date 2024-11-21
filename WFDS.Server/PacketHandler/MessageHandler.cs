@@ -1,4 +1,5 @@
-﻿using WFDS.Common.GameEvents.Events;
+﻿using WFDS.Common.GameEvents;
+using WFDS.Common.GameEvents.Events;
 using WFDS.Common.Network;
 using WFDS.Common.Network.Packets;
 using WFDS.Common.Types;

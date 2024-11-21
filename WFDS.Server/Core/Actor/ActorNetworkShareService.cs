@@ -1,14 +1,12 @@
-﻿using Steamworks;
-using WFDS.Common.Actor;
+﻿using WFDS.Common.Actor;
 using WFDS.Common.Network.Packets;
+using WFDS.Common.Steam;
 using WFDS.Common.Types;
-using WFDS.Common.Types.Manager;
 using WFDS.Server.Core.Network;
-using WFDS.Server.Core.Steam;
 
 namespace WFDS.Server.Core.Actor;
 
-internal sealed class ActorNetworkShareService(IActorManager actorManager, ISessionManager sessionManager, SteamManager steam) : BackgroundService
+internal sealed class ActorNetworkShareService(IActorManager actorManager, SteamManager steam, SessionManager sessionManager) : BackgroundService
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
@@ -39,7 +37,7 @@ internal sealed class ActorNetworkShareService(IActorManager actorManager, ISess
         if (actor.IsDead || actor.IsRemoved)
             return;
         
-        if (actor.CreatorId != SteamUser.GetSteamID())
+        if (actor.CreatorId != steam.SteamId)
             return;
         
         actor.NetworkShareCooldown -= 1;

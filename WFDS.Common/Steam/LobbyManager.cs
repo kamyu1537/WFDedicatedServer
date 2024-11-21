@@ -1,20 +1,19 @@
 ﻿using System.Globalization;
+using Serilog;
 using Steamworks;
 using WFDS.Common.Helpers;
-using WFDS.Common.Network;
 using WFDS.Common.Types;
 
-namespace WFDS.Server.Core.Steam;
+namespace WFDS.Common.Steam;
 
-internal class LobbyManager : ILobbyManager, IDisposable
+public class LobbyManager : Singleton<LobbyManager>, IDisposable
 {
     private const int RoomCodeLength = 6;
     private const string LobbyMode = "GodotsteamLobby";
     private const string LobbyRef = "webfishing_gamelobby";
     private const string GameVersion = "1.1";
 
-    private readonly ILogger<LobbyManager> _logger;
-
+    private readonly ILogger _logger;
     private CSteamID _lobbyId = CSteamID.Nil;
 
     private bool _initialized;
@@ -28,9 +27,9 @@ internal class LobbyManager : ILobbyManager, IDisposable
     private readonly Callback<LobbyCreated_t> _lobbyCreatedCallback;
     private readonly Callback<LobbyDataUpdate_t> _lobbyDataUpdateCallback;
 
-    public LobbyManager(ILogger<LobbyManager> logger)
+    public LobbyManager()
     {
-        _logger = logger;
+        _logger = Log.ForContext<LobbyManager>();
 
         _lobbyEnterCallback = Callback<LobbyEnter_t>.Create(OnLobbyEntered);
         _lobbyCreatedCallback = Callback<LobbyCreated_t>.Create(OnLobbyCreated);
@@ -65,7 +64,7 @@ internal class LobbyManager : ILobbyManager, IDisposable
             _code = RandomHelper.RandomRoomCode(RoomCodeLength);
         }
         
-        _logger.LogInformation("lobby initialized: {Name} {LobbyType} {Cap} {Adult} {Code}", _name, _lobbyType, _cap, _adult, _code);
+        _logger.Information("lobby initialized: {Name} {LobbyType} {Cap} {Adult} {Code}", _name, _lobbyType, _cap, _adult, _code);
     }
 
     public bool LeaveLobby(out CSteamID lobbyId)
@@ -117,7 +116,7 @@ internal class LobbyManager : ILobbyManager, IDisposable
         try
         {
             var lobbyOwner = SteamMatchmaking.GetLobbyOwner(_lobbyId);
-            return lobbyOwner == SteamUser.GetSteamID();
+            return lobbyOwner == SteamManager.Inst.SteamId;
         }
         catch
         {
@@ -183,7 +182,7 @@ internal class LobbyManager : ILobbyManager, IDisposable
     private void UpdateLobbyData(in CSteamID lobbyId)
     {
         SteamMatchmaking.SetLobbyJoinable(lobbyId, false);
-        SteamMatchmaking.SetLobbyOwner(lobbyId, SteamUser.GetSteamID());
+        SteamMatchmaking.SetLobbyOwner(lobbyId, SteamManager.Inst.SteamId);
 
         SteamMatchmaking.SetLobbyData(lobbyId, "mode", LobbyMode);
         SteamMatchmaking.SetLobbyData(lobbyId, "ref", LobbyRef);
@@ -200,7 +199,7 @@ internal class LobbyManager : ILobbyManager, IDisposable
         SteamMatchmaking.SetLobbyMemberLimit(lobbyId, _cap + 1);
         SteamMatchmaking.SetLobbyJoinable(lobbyId, true);
 
-        WebFishingServer.UpdateConsoleTitle(_name, _code, 0, _cap);
+        ConsoleHelper.UpdateConsoleTitle(_name, _code, 0, _cap);
     }
 
     public void UpdateBrowserValue()
@@ -224,12 +223,12 @@ internal class LobbyManager : ILobbyManager, IDisposable
     {
         if (param.m_eResult != EResult.k_EResultOK)
         {
-            _logger.LogError("failed to create lobby: {Result}", param.m_eResult);
+            _logger.Error("failed to create lobby: {Result}", param.m_eResult);
             return;
         }
 
         var lobbyId = new CSteamID(param.m_ulSteamIDLobby);
-        _logger.LogInformation("lobby created: {LobbyId}", param.m_ulSteamIDLobby);
+        _logger.Information("lobby created: {LobbyId}", param.m_ulSteamIDLobby);
         UpdateLobbyData(lobbyId);
     }
 
@@ -237,18 +236,18 @@ internal class LobbyManager : ILobbyManager, IDisposable
     {
         if (param.m_EChatRoomEnterResponse != 1) // not success
         {
-            _logger.LogError("failed to enter lobby: {Result}", param.m_EChatRoomEnterResponse);
+            _logger.Error("failed to enter lobby: {Result}", param.m_EChatRoomEnterResponse);
             return;
         }
 
         _lobbyId = new CSteamID(param.m_ulSteamIDLobby);
-        _logger.LogInformation("lobby entered: {LobbyId}", _lobbyId);
+        _logger.Information("lobby entered: {LobbyId}", _lobbyId);
     }
 
     private void OnLobbyDataChanged(LobbyDataUpdate_t param)
     {
         var lobbyId = new CSteamID(param.m_ulSteamIDLobby);
-        _logger.LogDebug("lobby data updated: {LobbyId}", lobbyId);
+        _logger.Debug("lobby data updated: {LobbyId}", lobbyId);
     }
 
     #endregion

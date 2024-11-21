@@ -3,12 +3,13 @@ using WFDS.Common.Network;
 using WFDS.Common.Network.Packets;
 using WFDS.Common.Types;
 using WFDS.Common.Types.Manager;
+using WFDS.Server.Core.Network;
 using Session = WFDS.Common.Network.Session;
 
 namespace WFDS.Server.PacketHandler;
 
 [PacketType("request_actors")]
-public class RequestActorsHandler(ILogger<RequestActorsHandler> logger, IActorManager actorManager, ISessionManager sessionManager) : PacketHandler<RequestActorsPacket>
+public class RequestActorsHandler(ILogger<RequestActorsHandler> logger, IActorManager actorManager, SessionManager sessionManager) : PacketHandler<RequestActorsPacket>
 {
     protected override void Handle(Session sender, NetChannel channel, RequestActorsPacket _)
     {

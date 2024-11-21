@@ -1,20 +1,21 @@
-﻿using System.Collections.Concurrent;
+﻿using Serilog;
+using System.Collections.Concurrent;
 using System.Globalization;
 using Steamworks;
+using WFDS.Common.GameEvents;
 using WFDS.Common.GameEvents.Events;
 using WFDS.Common.Helpers;
 using WFDS.Common.Network;
 using WFDS.Common.Network.Packets;
+using WFDS.Common.Steam;
 using WFDS.Common.Types;
-using WFDS.Common.Types.Manager;
 using WFDS.Godot.Binary;
-using WFDS.Server.Core.GameEvent;
 
 namespace WFDS.Server.Core.Network;
 
-internal sealed class SessionManager : ISessionManager, IDisposable
+public sealed class SessionManager : Singleton<SessionManager>, IDisposable
 {
-    private readonly ILogger<SessionManager> _logger;
+    private readonly ILogger _logger;
 
     private bool _closed;
     private readonly HashSet<string> _banned = [];
@@ -23,10 +24,9 @@ internal sealed class SessionManager : ISessionManager, IDisposable
     private readonly Callback<LobbyChatUpdate_t> _lobbyChatUpdateCallback;
     private readonly Callback<P2PSessionRequest_t> _p2pSessionRequestCallback;
 
-    public SessionManager(ILogger<SessionManager> logger)
+    public SessionManager()
     {
-        _logger = logger;
-
+        _logger = Log.ForContext<SessionManager>();
         _lobbyChatUpdateCallback = Callback<LobbyChatUpdate_t>.Create(OnLobbyChatUpdate);
         _p2pSessionRequestCallback = Callback<P2PSessionRequest_t>.Create(OnP2PSessionRequest);
     }
@@ -61,12 +61,12 @@ internal sealed class SessionManager : ISessionManager, IDisposable
 
     public void ServerClose(CSteamID target)
     {
-        if (target == SteamUser.GetSteamID())
+        if (target == SteamManager.Inst.SteamId)
         {
             return;
         }
 
-        _logger.LogInformation("try server close player: {SteamId}", target);
+        _logger.Information("try server close player: {SteamId}", target);
         SendP2PPacket(target, NetChannel.GameState, new ServerClosePacket(), false);
     }
 
@@ -91,32 +91,39 @@ internal sealed class SessionManager : ISessionManager, IDisposable
         return _sessions.ContainsKey(steamId.m_SteamID);
     }
 
-    private bool CreateSession(CSteamID steamId, out Session session)
+    private bool TryCreateSession(CSteamID steamId)
     {
-        if (_sessions.TryGetValue(steamId.m_SteamID, out session!))
+        if (_sessions.TryGetValue(steamId.m_SteamID, out _))
         {
-            _logger.LogWarning("session already exists: {Member}", steamId);
-            return false;
-        }
-        
-        _logger.LogInformation("try create session: {Member}", steamId);
-        session = new Session(steamId);
-        if (!_sessions.TryAdd(steamId.m_SteamID, session))
-        {
-            _logger.LogWarning("failed to create session: {Member}", steamId);
+            _logger.Warning("session already exists: {Member}", steamId);
             return false;
         }
 
-        return true;
+        if (_banned.Contains(steamId.m_SteamID.ToString(CultureInfo.InvariantCulture)))
+        {
+            _logger.Warning("banned player: {Member}", steamId);
+            return false;
+        }
+        
+        _logger.Information("try create session: {Member}", steamId);
+        var session = new Session(steamId);
+        if (_sessions.TryAdd(steamId.m_SteamID, session))
+        {
+            return true;
+        }
+        
+        _logger.Warning("failed to create session: {Member}", steamId);
+        return false;
+
     }
     private void RemoveSession(CSteamID steamId)
     {
-        _logger.LogWarning("try remove session: {Member}", steamId);
+        _logger.Warning("try remove session: {Member}", steamId);
         SteamNetworking.CloseP2PSessionWithUser(steamId);
 
         if (!_sessions.TryRemove(steamId.m_SteamID, out _))
         {
-            _logger.LogWarning("failed to remove session: {Member}", steamId);
+            _logger.Warning("failed to remove session: {Member}", steamId);
             return;
         }
 
@@ -126,12 +133,12 @@ internal sealed class SessionManager : ISessionManager, IDisposable
 
     public void KickPlayer(CSteamID target)
     {
-        if (target == SteamUser.GetSteamID())
+        if (target == SteamManager.Inst.SteamId)
         {
             return;
         }
 
-        _logger.LogInformation("try kick player: {Member}", target);
+        _logger.Information("try kick player: {Member}", target);
         SendP2PPacket(target, NetChannel.GameState, new KickPacket(), false);
     }
 
@@ -143,7 +150,7 @@ internal sealed class SessionManager : ISessionManager, IDisposable
 
     public void TempBanPlayer(CSteamID lobbyId, CSteamID target)
     {
-        _logger.LogInformation("try ban player: {Member}", target);
+        _logger.Information("try ban player: {Member}", target);
         SendP2PPacket(target, NetChannel.GameState, new BanPacket(), false);
         BroadcastP2PPacket(lobbyId, NetChannel.GameState, new ForceDisconnectPlayerPacket { UserId = target }, false);
 
@@ -252,11 +259,11 @@ internal sealed class SessionManager : ISessionManager, IDisposable
         var makingChange = new CSteamID(param.m_ulSteamIDMakingChange);
 
         var stateChange = (EChatMemberStateChange)param.m_rgfChatMemberStateChange;
-        _logger.LogDebug("lobby member state changed: {LobbyId} {ChangedUser} {MakingChange} {StateChange}", lobbyId, changedUser, makingChange, stateChange);
+        _logger.Debug("lobby member state changed: {LobbyId} {ChangedUser} {MakingChange} {StateChange}", lobbyId, changedUser, makingChange, stateChange);
 
         if (stateChange == EChatMemberStateChange.k_EChatMemberStateChangeEntered)
         {
-            if (CreateSession(changedUser, out _))
+            if (TryCreateSession(changedUser))
             {
                 GameEventBus.Publish(new CreateSessionEvent(changedUser));   
             }
@@ -273,18 +280,18 @@ internal sealed class SessionManager : ISessionManager, IDisposable
 
     private void OnP2PSessionRequest(P2PSessionRequest_t param)
     {
-        _logger.LogWarning("p2p session request: {SteamId}", param.m_steamIDRemote);
+        _logger.Warning("p2p session request: {SteamId}", param.m_steamIDRemote);
 
         if (_banned.Contains(param.m_steamIDRemote.m_SteamID.ToString(CultureInfo.InvariantCulture)))
         {
-            _logger.LogWarning("banned player request: {SteamId}", param.m_steamIDRemote);
+            _logger.Warning("banned player request: {SteamId}", param.m_steamIDRemote);
             SteamNetworking.CloseP2PSessionWithUser(param.m_steamIDRemote);
             return;
         }
 
         if (IsServerClosed())
         {
-            _logger.LogWarning("server closed: {SteamId}", param.m_steamIDRemote);
+            _logger.Warning("server closed: {SteamId}", param.m_steamIDRemote);
             ServerClose(param.m_steamIDRemote);
             return;
         }

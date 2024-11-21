@@ -2,7 +2,7 @@
 
 namespace WFDS.Server.Core.Network;
 
-internal class PacketSendService(ISessionManager sessionManager) : BackgroundService
+internal class PacketSendService(SessionManager sessionManager) : BackgroundService
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {

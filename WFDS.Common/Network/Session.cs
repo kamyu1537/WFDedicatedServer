@@ -18,7 +18,7 @@ public sealed class Session(CSteamID steamId)
     public DateTimeOffset PingReceiveTime { get; set; }
     public DateTimeOffset PacketReceiveTime { get; set; }
 
-    public ConcurrentQueue<(NetChannel, byte[])> Packets { get; } = [];
+    public ConcurrentQueue<(NetChannel, Memory<byte>)> Packets { get; } = [];
     
     public override string ToString()
     {

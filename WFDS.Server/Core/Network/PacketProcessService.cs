@@ -1,14 +1,14 @@
 ﻿using System.Buffers;
 using Steamworks;
 using WFDS.Common.Helpers;
+using WFDS.Common.Steam;
 using WFDS.Common.Types;
 using WFDS.Common.Types.Manager;
 using WFDS.Godot.Binary;
-using WFDS.Server.Core.Steam;
 
 namespace WFDS.Server.Core.Network;
 
-internal class PacketProcessService(ILogger<PacketProcessService> logger, PacketHandleManager packetHandleManager, ISessionManager sessionManager, SteamManager steam) : BackgroundService
+internal class PacketProcessService(ILogger<PacketProcessService> logger, PacketHandleManager packetHandleManager, SessionManager sessionManager, SteamManager steam) : BackgroundService
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
@@ -88,8 +88,8 @@ internal class PacketProcessService(ILogger<PacketProcessService> logger, Packet
                     continue;
                 }
 
-                var decompressed = GZipHelper.Decompress(bytes, (int)readSize);
-                var deserialized = GodotBinaryConverter.Deserialize(decompressed);
+                var decompressed = GZipHelper.Decompress(bytes.AsSpan(0, (int)readSize));
+                var deserialized = GodotBinaryConverter.Deserialize(decompressed.ToArray());
                 packetHandleManager.OnPacketReceived(steamId, channel, deserialized);
 
             }

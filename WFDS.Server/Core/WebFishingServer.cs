@@ -1,11 +1,8 @@
 using Cysharp.Threading;
 using Microsoft.Extensions.Options;
-using Serilog;
-using Steamworks;
-using WFDS.Common.Types;
-using WFDS.Common.Types.Manager;
+using WFDS.Common.Steam;
 using WFDS.Server.Core.Configuration;
-using WFDS.Server.Core.Steam;
+using WFDS.Server.Core.Network;
 
 namespace WFDS.Server.Core;
 
@@ -13,9 +10,9 @@ internal class WebFishingServer(
     IHostApplicationLifetime lifetime,
     ILogger<WebFishingServer> logger,
     IOptions<ServerSetting> settings,
-    ILobbyManager lobby,
-    ISessionManager session,
-    SteamManager steam
+    SteamManager steam,
+    LobbyManager lobby,
+    SessionManager session
 ) : BackgroundService
 {
     private readonly Mutex _mutex = new(false, "WFDS.Server");
@@ -80,7 +77,7 @@ internal class WebFishingServer(
             return true;
         }
 
-        SteamAPI.RunCallbacks();
+        steam.RunCallbacks();
         return true;
     }
 
@@ -94,16 +91,9 @@ internal class WebFishingServer(
         session.ServerClose();
 
         logger.LogInformation("steam api shutdown");
-        SteamAPI.Shutdown();
+        steam.Shutdown();
 
         await base.StopAsync(cancellationToken);
         logger.LogInformation("WebFishingServer stopped");
-    }
-
-    public static void UpdateConsoleTitle(string name, string code, int cur, int cap)
-    {
-        var title = $"[{cur}/{cap - 1}] {name} [{code}]";
-        Console.Title = title;
-        Log.Logger.Information("update console title : {0}", title);
     }
 }

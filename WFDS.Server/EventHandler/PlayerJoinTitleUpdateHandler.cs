@@ -1,15 +1,18 @@
 using WFDS.Common.GameEvents;
 using WFDS.Common.GameEvents.Events;
+using WFDS.Common.Helpers;
+using WFDS.Common.Steam;
 using WFDS.Common.Types;
 using WFDS.Common.Types.Manager;
 using WFDS.Server.Core;
+using WFDS.Server.Core.Network;
 
 namespace WFDS.Server.EventHandler;
 
-public class PlayerJoinTitleUpdateHandler(ILobbyManager lobby, ISessionManager session) : GameEventHandler<PlayerJoinedEvent>
+public class PlayerJoinTitleUpdateHandler(LobbyManager lobby, SessionManager session) : GameEventHandler<PlayerJoinedEvent>
 {
     protected override void Handle(PlayerJoinedEvent e)
     {
-        WebFishingServer.UpdateConsoleTitle(lobby.GetName(), lobby.GetCode(), session.GetSessionCount(), lobby.GetCap());
+        ConsoleHelper.UpdateConsoleTitle(lobby.GetName(), lobby.GetCode(), session.GetSessionCount(), lobby.GetCap());
     }
 }

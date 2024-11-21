@@ -1,10 +1,11 @@
 ﻿using WFDS.Common.Network;
+using WFDS.Common.Steam;
 using WFDS.Common.Types;
 using WFDS.Common.Types.Manager;
 
 namespace WFDS.Server.Core.Network;
 
-internal class LobbyUpdateScheduleService(ILobbyManager lobby) : IHostedService
+internal class LobbyUpdateScheduleService(LobbyManager lobby) : IHostedService
 {
     private static readonly TimeSpan LobbyUpdateTimeoutPeriod = TimeSpan.FromSeconds(30);
     private Timer? _timer;

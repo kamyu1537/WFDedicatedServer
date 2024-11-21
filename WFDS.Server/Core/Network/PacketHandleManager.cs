@@ -10,12 +10,12 @@ namespace WFDS.Server.Core.Network;
 internal class PacketHandleManager
 {
     private readonly ILogger<PacketHandleManager> _logger;
-    private readonly ISessionManager _sessionManager;
     private readonly IServiceProvider _provider;
+    private readonly SessionManager _sessionManager;
 
     private readonly Dictionary<string, Type[]> _handlerTypes;
 
-    public PacketHandleManager(ILogger<PacketHandleManager> logger, IServiceProvider provider, ISessionManager sessionManager)
+    public PacketHandleManager(ILogger<PacketHandleManager> logger, IServiceProvider provider, SessionManager sessionManager)
     {
         _logger = logger;
         _provider = provider;
