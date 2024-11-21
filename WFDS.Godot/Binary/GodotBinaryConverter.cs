@@ -2,30 +2,28 @@
 
 public static class GodotBinaryConverter
 {
-    public static Memory<byte> Serialize(object? value)
+    public static byte[] Serialize(object? value)
     {
         return Serialize(value, GodotBinaryWriterOptions.Default);
     }
 
-    private static Memory<byte> Serialize(object? value, GodotBinaryWriterOptions options)
+    private static byte[] Serialize(object? value, GodotBinaryWriterOptions options)
     {
         using var stream = new MemoryStream();
         using var writer = new GodotBinaryWriter(stream, options);
         writer.Write(value);
-        return new Memory<byte>(stream.GetBuffer(), 0, (int)stream.Position);
+        return stream.ToArray();
     }
 
-    public static unsafe object? Deserialize(Memory<byte> input)
+    public static object? Deserialize(byte[] bytes)
     {
-        fixed (byte* ptr = input.Span)
+        using var stream = new MemoryStream(bytes);
+        using var reader = new GodotBinaryReader(stream);
+        if (!reader.TryRead(out var data))
         {
-            using var stream = new UnmanagedMemoryStream(ptr, input.Length);
-            using var reader = new GodotBinaryReader(stream);
-            if (!reader.TryRead(out var data))
-            {
-                throw new InvalidDataException("Failed to read Godot binary data.");
-            }
-            return data;
+            throw new InvalidDataException("Failed to read Godot binary data.");
         }
+
+        return data;
     }
 }

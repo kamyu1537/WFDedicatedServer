@@ -4,24 +4,20 @@ namespace WFDS.Common.Helpers;
 
 public static class GZipHelper
 {
-    public static Memory<byte> Compress(Memory<byte> bytes)
+    public static byte[] Compress(byte[] bytes)
     {
         using var result = new MemoryStream();
         using var gzip = new GZipStream(result, CompressionMode.Compress);
-        gzip.Write(bytes.Span);
-        gzip.Flush();
-        return new Memory<byte>(result.GetBuffer(), 0, (int)result.Position);
+        gzip.Write(bytes);
+        return result.ToArray();
     }
 
-    public static unsafe Memory<byte> Decompress(Memory<byte> bytes)
+    public static byte[] Decompress(byte[] bytes)
     {
         using var result = new MemoryStream();
-        fixed (byte* ptr = bytes.Span)
-        {
-            using var input = new UnmanagedMemoryStream(ptr, bytes.Length);
-            using var gzip = new GZipStream(input, CompressionMode.Decompress);
-            gzip.CopyTo(result);
-        }
-        return new Memory<byte>(result.GetBuffer(), 0, (int)result.Position);
+        using var input = new MemoryStream(bytes);
+        using var gzip = new GZipStream(input, CompressionMode.Decompress);
+        gzip.CopyTo(result);
+        return result.ToArray();
     }
 }

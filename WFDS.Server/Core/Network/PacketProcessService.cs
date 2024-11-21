@@ -99,10 +99,7 @@ internal class PacketProcessService(ILogger<PacketProcessService> logger, Packet
             }
             finally
             {
-                if (bytes != null)
-                {
-                    ArrayPool<byte>.Shared.Return(bytes);
-                }
+                ArrayPool<byte>.Shared.Return(bytes);
             }
         }
     }

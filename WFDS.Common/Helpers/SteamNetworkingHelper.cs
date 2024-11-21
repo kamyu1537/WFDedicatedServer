@@ -1,5 +1,4 @@
-﻿using System.Buffers;
-using Serilog;
+﻿using Serilog;
 using Steamworks;
 using WFDS.Common.Steam;
 using WFDS.Common.Types;
@@ -9,21 +8,20 @@ namespace WFDS.Common.Helpers;
 
 public static class SteamNetworkingHelper
 {
-    public static bool SendP2PPacket(CSteamID steamId, NetChannel channel, Memory<byte> data)
+    public static bool SendP2PPacket(CSteamID steamId, NetChannel channel, byte[] bytes)
     {
         if (steamId == SteamManager.Inst.SteamId)
         {
             return false;
         }
 
-        byte[] bytes = null!;
         try
         {
-            bytes = ArrayPool<byte>.Shared.Rent(data.Length);
-            data.CopyTo(bytes);
-            var length = (uint)data.Length;
+            var length = (uint)bytes.Length;
             var sendType = channel.SendType;
             var channelValue = channel.Value;
+
+            if (length == 0) return false;
             
             return SteamNetworking.SendP2PPacket(steamId, bytes, length, sendType, channelValue);
         }
@@ -32,29 +30,23 @@ public static class SteamNetworkingHelper
             Log.Logger.Error(ex, "Failed to send P2P packet");
             return false;
         }
-        finally
-        {
-            ArrayPool<byte>.Shared.Return(bytes);
-        }
     }
 
     public static void BroadcastP2PPacket(CSteamID lobbyId, NetChannel channel, object data)
     {
         var memberCount = SteamMatchmaking.GetNumLobbyMembers(lobbyId);
         if (memberCount <= 1) return;
-        
+
         var serialized = GodotBinaryConverter.Serialize(data);
-        var compressed = GZipHelper.Compress(serialized);
-        
-        byte[] bytes = null!;
+        var bytes = GZipHelper.Compress(serialized);
+
         try
         {
-            bytes = ArrayPool<byte>.Shared.Rent(compressed.Length);
-            compressed.CopyTo(bytes);
-            var length = (uint)compressed.Length;
+            var length = (uint)bytes.Length;
             var sendType = channel.SendType;
             var channelValue = channel.Value;
 
+            if (length == 0) return;
             for (var i = 0; i < memberCount; ++i)
             {
                 var member = SteamMatchmaking.GetLobbyMemberByIndex(lobbyId, i);
@@ -69,10 +61,6 @@ public static class SteamNetworkingHelper
         catch (Exception ex)
         {
             Log.Logger.Error(ex, "Failed to rent bytes for broadcast P2P packet");
-        }
-        finally
-        {
-            ArrayPool<byte>.Shared.Return(bytes);
         }
     }
 }
