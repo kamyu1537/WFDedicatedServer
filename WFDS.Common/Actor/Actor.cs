@@ -57,7 +57,6 @@ public abstract class Actor<T> : IActor where T : class, IActor, new()
     private static void Return(T? actor)
     {
         if (actor == null) return;
-        Console.WriteLine("Return Actor: " + actor.GetType());
         Pool.Return(actor);
     }
     
