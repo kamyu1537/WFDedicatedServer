@@ -18,6 +18,7 @@ public static class ActorExtensions
             Position = actor.Position.ToDynamic(),
             Rotation = actor.Rotation.ToDynamic(),
             actor.Decay,
+            actor.DefaultDecayTimer,
             actor.DecayTimer,
             actor.CreateTime,
             actor.IsDead,

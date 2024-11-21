@@ -14,7 +14,7 @@ public sealed class PlayerActor : Actor<PlayerActor>, IPlayerActor
     public override Vector3 Position { get; set; } = Vector3.Zero;
     public override Vector3 Rotation { get; set; } = Vector3.Zero;
     public override bool Decay => false;
-    public override long DecayTimer { get; set; }
+    public override long DefaultDecayTimer => 0;
     public override DateTimeOffset CreateTime { get; set; } = DateTimeOffset.UtcNow;
     
     public override bool CanWipe => false;

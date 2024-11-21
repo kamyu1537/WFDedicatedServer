@@ -15,7 +15,7 @@ public sealed class FishSpawnAlienActor : Actor<FishSpawnAlienActor>
     public override bool Decay => true;
     public override bool IsRemoved { get; set; }
     
-    public override long DecayTimer { get; set; } = 14400;
+    public override long DefaultDecayTimer => 14400;
     public override DateTimeOffset CreateTime { get; set; } = DateTimeOffset.UtcNow;
 
     public override bool CanWipe => true;
