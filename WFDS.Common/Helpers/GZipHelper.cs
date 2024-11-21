@@ -1,4 +1,5 @@
-﻿using System.IO.Compression;
+﻿using System.Diagnostics;
+using System.IO.Compression;
 
 namespace WFDS.Common.Helpers;
 
@@ -9,6 +10,7 @@ public static class GZipHelper
         using var result = new MemoryStream();
         using var gzip = new GZipStream(result, CompressionMode.Compress);
         gzip.Write(bytes);
+        gzip.Close();
         return result.ToArray();
     }
 
@@ -18,6 +20,7 @@ public static class GZipHelper
         using var input = new MemoryStream(bytes);
         using var gzip = new GZipStream(input, CompressionMode.Decompress);
         gzip.CopyTo(result);
+        gzip.Close();
         return result.ToArray();
     }
 }
