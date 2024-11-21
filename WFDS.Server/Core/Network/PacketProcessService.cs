@@ -88,7 +88,7 @@ internal class PacketProcessService(ILogger<PacketProcessService> logger, Packet
                 }
 
                 var decompressed = GZipHelper.Decompress(bytes.AsSpan(0, (int)readSize));
-                var deserialized = GodotBinaryConverter.Deserialize(decompressed.ToArray());
+                var deserialized = GodotBinaryConverter.Deserialize(decompressed.Span);
                 packetHandleManager.OnPacketReceived(steamId, channel, deserialized);
 
             }
