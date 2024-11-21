@@ -1,9 +1,9 @@
 using System.Numerics;
 using WFDS.Common.Actor;
 using WFDS.Common.Actor.Actors;
+using WFDS.Common.Extensions;
 using WFDS.Common.GameEvents;
 using WFDS.Common.GameEvents.Events;
-using WFDS.Common.Extensions;
 
 namespace WFDS.Server.EventHandler;
 

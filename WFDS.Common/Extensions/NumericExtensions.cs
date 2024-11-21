@@ -1,5 +1,4 @@
-﻿using System.Globalization;
-using System.Numerics;
+﻿using System.Numerics;
 using Steamworks;
 
 namespace WFDS.Common.Extensions;

@@ -1,7 +1,5 @@
 ﻿using WFDS.Common.Actor;
 using WFDS.Common.Steam;
-using WFDS.Common.Types.Manager;
-using WFDS.Server.Core.Network;
 
 namespace WFDS.Server.Core.Actor;
 

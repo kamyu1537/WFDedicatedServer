@@ -1,6 +1,6 @@
-﻿using Serilog;
-using System.Collections.Concurrent;
+﻿using System.Collections.Concurrent;
 using System.Globalization;
+using Serilog;
 using Steamworks;
 using WFDS.Common.GameEvents;
 using WFDS.Common.GameEvents.Events;

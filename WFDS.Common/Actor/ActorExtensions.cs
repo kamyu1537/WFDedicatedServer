@@ -1,6 +1,5 @@
 ﻿using WFDS.Common.Network;
 using WFDS.Common.Types;
-using WFDS.Common.Types.Manager;
 using WFDS.Server.Core.Network;
 
 namespace WFDS.Common.Actor;

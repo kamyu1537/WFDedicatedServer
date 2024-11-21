@@ -1,9 +1,7 @@
-﻿using Steamworks;
-using WFDS.Common.Network;
+﻿using WFDS.Common.Network;
 using WFDS.Common.Network.Packets;
 using WFDS.Common.Steam;
 using WFDS.Common.Types;
-using WFDS.Common.Types.Manager;
 using WFDS.Server.Core.Network;
 using Session = WFDS.Common.Network.Session;
 

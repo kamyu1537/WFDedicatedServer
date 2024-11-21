@@ -3,7 +3,6 @@ using WFDS.Common.GameEvents;
 using WFDS.Common.GameEvents.Events;
 using WFDS.Common.Network.Packets;
 using WFDS.Common.Types;
-using WFDS.Common.Types.Manager;
 using WFDS.Server.Core.Network;
 
 namespace TemplatePlugin;

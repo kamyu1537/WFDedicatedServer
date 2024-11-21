@@ -1,11 +1,8 @@
 ﻿using System.Globalization;
-using Steamworks;
 using WFDS.Common.Actor;
-using WFDS.Common.Network;
 using WFDS.Common.Network.Packets;
 using WFDS.Common.Steam;
 using WFDS.Common.Types;
-using WFDS.Common.Types.Manager;
 
 namespace WFDS.Server.Core.Network;
 

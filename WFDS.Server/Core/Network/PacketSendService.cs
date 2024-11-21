@@ -1,6 +1,4 @@
-﻿using WFDS.Common.Types.Manager;
-
-namespace WFDS.Server.Core.Network;
+﻿namespace WFDS.Server.Core.Network;
 
 internal class PacketSendService(SessionManager sessionManager) : BackgroundService
 {
