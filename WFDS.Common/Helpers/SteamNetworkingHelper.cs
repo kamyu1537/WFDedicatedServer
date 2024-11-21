@@ -3,6 +3,7 @@ using Serilog;
 using Steamworks;
 using WFDS.Common.Steam;
 using WFDS.Common.Types;
+using WFDS.Godot.Binary;
 
 namespace WFDS.Common.Helpers;
 
@@ -20,10 +21,10 @@ public static class SteamNetworkingHelper
         {
             bytes = ArrayPool<byte>.Shared.Rent(data.Length);
             data.CopyTo(bytes);
-            var length = (uint)bytes.Length;
+            var length = (uint)data.Length;
             var sendType = channel.SendType;
             var channelValue = channel.Value;
-
+            
             return SteamNetworking.SendP2PPacket(steamId, bytes, length, sendType, channelValue);
         }
         catch (Exception ex)
@@ -37,17 +38,20 @@ public static class SteamNetworkingHelper
         }
     }
 
-    public static void BroadcastP2PPacket(CSteamID lobbyId, NetChannel channel, Memory<byte> data)
+    public static void BroadcastP2PPacket(CSteamID lobbyId, NetChannel channel, object data)
     {
         var memberCount = SteamMatchmaking.GetNumLobbyMembers(lobbyId);
         if (memberCount <= 1) return;
-
+        
+        var serialized = GodotBinaryConverter.Serialize(data);
+        var compressed = GZipHelper.Compress(serialized);
+        
         byte[] bytes = null!;
         try
         {
-            bytes = ArrayPool<byte>.Shared.Rent(data.Length);
-            data.CopyTo(bytes);
-            var length = (uint)bytes.Length;
+            bytes = ArrayPool<byte>.Shared.Rent(compressed.Length);
+            compressed.CopyTo(bytes);
+            var length = (uint)compressed.Length;
             var sendType = channel.SendType;
             var channelValue = channel.Value;
 

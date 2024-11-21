@@ -9,7 +9,8 @@ public static class GZipHelper
         using var result = new MemoryStream();
         using var gzip = new GZipStream(result, CompressionMode.Compress);
         gzip.Write(bytes.Span);
-        return new Memory<byte>(result.GetBuffer(), 0, (int)result.Length);
+        gzip.Flush();
+        return new Memory<byte>(result.GetBuffer(), 0, (int)result.Position);
     }
 
     public static unsafe Memory<byte> Decompress(Memory<byte> bytes)
@@ -21,6 +22,6 @@ public static class GZipHelper
             using var gzip = new GZipStream(input, CompressionMode.Decompress);
             gzip.CopyTo(result);
         }
-        return new Memory<byte>(result.GetBuffer(), 0, (int)result.Length);
+        return new Memory<byte>(result.GetBuffer(), 0, (int)result.Position);
     }
 }

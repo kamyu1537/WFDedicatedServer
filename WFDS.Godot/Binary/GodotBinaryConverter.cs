@@ -14,7 +14,7 @@ public static class GodotBinaryConverter
         using var stream = new MemoryStream();
         using var writer = new GodotBinaryWriter(stream, options);
         writer.Write(value);
-        return new Memory<byte>(stream.GetBuffer(), 0, (int)stream.Length);
+        return new Memory<byte>(stream.GetBuffer(), 0, (int)stream.Position);
     }
 
     public static unsafe object? Deserialize(Memory<byte> input)

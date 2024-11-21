@@ -30,6 +30,7 @@ public sealed class SessionManager : Singleton<SessionManager>, IDisposable
         _lobbyChatUpdateCallback = Callback<LobbyChatUpdate_t>.Create(OnLobbyChatUpdate);
         _p2pSessionRequestCallback = Callback<P2PSessionRequest_t>.Create(OnP2PSessionRequest);
     }
+
     public void Dispose()
     {
         ServerClose();
@@ -38,7 +39,7 @@ public sealed class SessionManager : Singleton<SessionManager>, IDisposable
         _p2pSessionRequestCallback.Dispose();
     }
 
-    
+
     public bool IsServerClosed()
     {
         return _closed;
@@ -104,18 +105,18 @@ public sealed class SessionManager : Singleton<SessionManager>, IDisposable
             _logger.Warning("banned player: {Member}", steamId);
             return false;
         }
-        
+
         _logger.Information("try create session: {Member}", steamId);
         var session = new Session(steamId);
         if (_sessions.TryAdd(steamId.m_SteamID, session))
         {
             return true;
         }
-        
+
         _logger.Warning("failed to create session: {Member}", steamId);
         return false;
-
     }
+
     private void RemoveSession(CSteamID steamId)
     {
         _logger.Warning("try remove session: {Member}", steamId);
@@ -197,7 +198,7 @@ public sealed class SessionManager : Singleton<SessionManager>, IDisposable
         {
             return;
         }
-        
+
         if (useSession)
         {
             if (!_sessions.TryGetValue(steamId.m_SteamID, out var session))
@@ -229,20 +230,23 @@ public sealed class SessionManager : Singleton<SessionManager>, IDisposable
         {
             return;
         }
-        
-        var bytes = GodotBinaryConverter.Serialize(data);
-        var compressed = GZipHelper.Compress(bytes);
 
         if (useSession)
         {
-            foreach (var session in _sessions.Values)
+            if (_sessions.Count > 0)
             {
-                session.Packets.Enqueue((channel, compressed));
+                var bytes = GodotBinaryConverter.Serialize(data);
+                var compressed = GZipHelper.Compress(bytes);
+
+                foreach (var session in _sessions.Values)
+                {
+                    session.Packets.Enqueue((channel, compressed));
+                }
             }
         }
         else
         {
-            SteamNetworkingHelper.BroadcastP2PPacket(lobbyId, channel, compressed);
+            SteamNetworkingHelper.BroadcastP2PPacket(lobbyId, channel, data);
         }
     }
 
@@ -265,7 +269,7 @@ public sealed class SessionManager : Singleton<SessionManager>, IDisposable
         {
             if (TryCreateSession(changedUser))
             {
-                GameEventBus.Publish(new CreateSessionEvent(changedUser));   
+                GameEventBus.Publish(new CreateSessionEvent(changedUser));
             }
         }
         else if (stateChange == EChatMemberStateChange.k_EChatMemberStateChangeLeft)
