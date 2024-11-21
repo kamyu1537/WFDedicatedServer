@@ -4,22 +4,22 @@ namespace WFDS.Godot.Binary;
 
 public static class GodotBinaryConverter
 {
-    public static ReadOnlySpan<byte> Serialize(object? value)
+    public static Memory<byte> Serialize(object? value)
     {
         return Serialize(value, GodotBinaryWriterOptions.Default);
     }
 
-    private static ReadOnlySpan<byte> Serialize(object? value, GodotBinaryWriterOptions options)
+    private static Memory<byte> Serialize(object? value, GodotBinaryWriterOptions options)
     {
         using var stream = new MemoryStream();
         using var writer = new GodotBinaryWriter(stream, options);
         writer.Write(value);
-        return new ReadOnlySpan<byte>(stream.GetBuffer(), 0, (int)stream.Length);
+        return new Memory<byte>(stream.GetBuffer(), 0, (int)stream.Length);
     }
 
-    public static unsafe object? Deserialize(ReadOnlySpan<byte> input)
+    public static unsafe object? Deserialize(Memory<byte> input)
     {
-        fixed (byte* ptr = input)
+        fixed (byte* ptr = input.Span)
         {
             using var stream = new UnmanagedMemoryStream(ptr, input.Length);
             using var reader = new GodotBinaryReader(stream);
