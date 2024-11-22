@@ -13,7 +13,7 @@ A simple dedicated server for hosting games of WebFishing.
 ## How to Run the Server
 
 > [!WARNING]  
-> To operate the server properly, you must purchase the WebFishing game on a separate account. Log in with this account on a different computer with Steam running.
+> To operate the server, you must run the server on a separate computer using a dedicated account where Webfishing has been purchased.
 
 Start the server using one of the following commands:
 - `dotnet WFDS.Server.dll`
