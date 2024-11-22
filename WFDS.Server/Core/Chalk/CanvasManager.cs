@@ -3,14 +3,16 @@ using Microsoft.Extensions.Options;
 using Serilog;
 using WFDS.Common.Extensions;
 using WFDS.Common.Network.Packets;
+using WFDS.Common.Steam;
 using WFDS.Common.Types;
 using WFDS.Godot.Binary;
 using WFDS.Server.Core.Configuration;
+using WFDS.Server.Core.Network;
 using ILogger = Serilog.ILogger;
 
 namespace WFDS.Server.Core.Chalk;
 
-internal class CanvasManager(IOptions<ServerSetting> setting) : ICanvasManager
+internal class CanvasManager(IOptions<ServerSetting> setting, SessionManager session, LobbyManager lobby) : ICanvasManager
 {
     private static readonly TimeSpan UpdateInterval = TimeSpan.FromSeconds(10);
     private static readonly TimeSpan ForceUpdateInterval = TimeSpan.FromSeconds(30);
@@ -99,5 +101,19 @@ internal class CanvasManager(IOptions<ServerSetting> setting) : ICanvasManager
         }
         
         Logger.Information($"loaded {files.Length} canvas");
+    }
+
+    public void ClearAll()
+    {
+        foreach (var canvas in Canvases.Values)
+        {
+            var packet = canvas.ToClearPacket();
+            session.BroadcastP2PPacket(lobby.GetLobbyId(), NetChannel.Chalk, packet);
+            canvas.Clear();
+        }
+        
+        UpdateTime = DateTimeOffset.UtcNow.Subtract(UpdateInterval);
+        Updated = false; // 바로 업데이트 하도록
+        SaveChanges();
     }
 }

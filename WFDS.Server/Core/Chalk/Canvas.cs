@@ -6,8 +6,8 @@ namespace WFDS.Server.Core.Chalk;
 
 public class Canvas
 {
-    public long CanvasId { get; set; }
-    private Dictionary<(int, int), long> Data { get; set; } = [];
+    public long CanvasId { get; init; }
+    private Dictionary<(int, int), long> Data { get; } = [];
 
     private static (int, int) GetKey(Vector2 pos) => ((int)Math.Floor(pos.X), (int)Math.Floor(pos.Y));
     private static Vector2 GetVector2((int, int) key) => new(key.Item1, key.Item2);
@@ -28,6 +28,11 @@ public class Canvas
         }
     }
 
+    public void Clear()
+    {
+        Data.Clear();
+    }
+
     public ChalkPacket ToPacket()
     {
         return new ChalkPacket
@@ -39,6 +44,21 @@ public class Canvas
                 {
                     GetVector2(x.Key),
                     x.Value
+                }).ToList()
+        };
+    }
+
+    public ChalkPacket ToClearPacket()
+    {
+        return new ChalkPacket
+        {
+            CanvasId = CanvasId,
+            Data = Data
+                .ToImmutableArray()
+                .Select(object (x) => new List<object>
+                {
+                    GetVector2(x.Key),
+                    -1
                 }).ToList()
         };
     }

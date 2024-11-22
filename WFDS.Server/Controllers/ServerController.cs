@@ -6,7 +6,7 @@ namespace WFDS.Server.Controllers;
 [ApiController]
 [Tags("server")]
 [Route("api/v1/server")]
-public class ServerController : Controller
+public class ServerController(IHostApplicationLifetime lifetime) : Controller
 {
     [HttpGet("status")]
     public IActionResult GetStatus()
@@ -23,5 +23,12 @@ public class ServerController : Controller
             PeakVirtualMemorySizeMB = SystemMonitor.PeakVirtualMemorySize / (1024 * 1024),
             TotalHeapMemoryMB = SystemMonitor.TotalHeapMemory / (1024 * 1024)
         });
+    }
+
+    [HttpDelete("shutdown")]
+    public IActionResult Shutdown()
+    {
+        lifetime.StopApplication();
+        return Ok();
     }
 }

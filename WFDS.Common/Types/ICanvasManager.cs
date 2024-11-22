@@ -8,4 +8,5 @@ public interface ICanvasManager
     void Draw(ChalkPacket packet);
     void LoadAll();
     void SaveChanges();
+    void ClearAll();
 }
