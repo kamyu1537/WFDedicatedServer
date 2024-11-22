@@ -2,14 +2,6 @@
 
 A simple dedicated server for hosting games of WebFishing.
 
-
-## Features
-- **Host Actor Management**: Manage player hosts and connections.
-- **Game Events**: Includes meteor strikes, rainclouds, and other in-game events.
-- **Server Management**: Easy-to-use server interface.
-- **Plugins**: Extend functionality with plugins.
-
-
 ## How to Run the Server
 
 > [!WARNING]  
