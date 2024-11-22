@@ -83,15 +83,15 @@ internal class WebFishingServer(
 
     public override async Task StopAsync(CancellationToken cancellationToken)
     {
-        logger.LogInformation("try steam looper is stopping");
-        await _looper.ShutdownAsync(TimeSpan.Zero);
-        _looper.Dispose();
-
         logger.LogInformation("try session close");
         session.ServerClose();
 
         logger.LogInformation("steam api shutdown");
         steam.Shutdown();
+
+        logger.LogInformation("try steam looper is stopping");
+        await _looper.ShutdownAsync(TimeSpan.Zero);
+        _looper.Dispose();
 
         await base.StopAsync(cancellationToken);
         logger.LogInformation("WebFishingServer stopped");
