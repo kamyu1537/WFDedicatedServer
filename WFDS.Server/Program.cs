@@ -63,6 +63,8 @@ try
     builder.Services.AddSingleton<IActorManager, ActorManager>();
     builder.Services.AddSingleton<IActorSpawnManager, ActorSpawnManager>();
 
+    builder.Services.AddSingleton<CanvasManager>();
+
     /////////////////////////////////////////////////////////////////
 
     builder.Services.AddPacketHandlers();

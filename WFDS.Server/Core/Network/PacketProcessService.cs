@@ -1,4 +1,5 @@
 ﻿using System.Buffers;
+using System.Text.Json;
 using Steamworks;
 using WFDS.Common.Helpers;
 using WFDS.Common.Steam;
@@ -18,6 +19,7 @@ internal class PacketProcessService(ILogger<PacketProcessService> logger, Packet
             TryProcessChannel(NetChannel.ActorUpdate);
             TryProcessChannel(NetChannel.ActorAction);
             TryProcessChannel(NetChannel.GameState);
+            TryProcessChannel(NetChannel.Chalk);
 
             await Task.Delay(10, stoppingToken);
         }

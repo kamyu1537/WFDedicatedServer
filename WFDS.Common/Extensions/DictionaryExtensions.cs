@@ -67,6 +67,19 @@ public static class DictionaryExtensions
 
         return Vector3.Zero;
     }
+    
+    public static Vector2 GetVector2(this Dictionary<object, object> dic, string key)
+    {
+        if (!dic.TryGetValue(key, out var value))
+            return Vector2.Zero;
+
+        if (value is Vector2 vector2)
+        {
+            return vector2;
+        }
+
+        return Vector2.Zero;
+    }
 
     public static string GetString(this Dictionary<object, object> dic, string key)
     {

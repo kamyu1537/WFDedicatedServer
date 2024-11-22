@@ -75,7 +75,7 @@ public class ActorActionHandler(ILogger<ActorActionHandler> logger, IActorManage
         }
 
         var param = packet.Params[0];
-        var actorId = param.GetNumber();
+        var actorId = param.GetInt();
 
         var actor = actorManager.GetActor(actorId);
         if (actor == null) return;
@@ -100,7 +100,7 @@ public class ActorActionHandler(ILogger<ActorActionHandler> logger, IActorManage
                 return;
 
             var zone = packet.Params[0].GetString();
-            var zoneOwner = packet.Params[1].GetNumber();
+            var zoneOwner = packet.Params[1].GetInt();
             GameEventBus.Publish(new ActorZoneUpdateEvent(actor.ActorId, zone, zoneOwner));
         }
     }
