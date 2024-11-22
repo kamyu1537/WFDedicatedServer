@@ -29,12 +29,6 @@ Start the server using one of the following commands:
 
 ---
 
-## Configuration
-
-Please refer to the `CONFIGURATION.md` file for detailed configuration instructions.
-
----
-
 ## Contributing
 We welcome contributions!  
 Submit a **Pull Request** or create an **Issue** for review.
