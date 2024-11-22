@@ -23,9 +23,9 @@ public sealed class ActorType
     public static ActorType? GetActorType(string name) => ActorTypes.GetValueOrDefault(name);
     
     public static ActorType None { get; } = new("none", true, 0);
-    public static ActorType FishSpawn { get; } = new("fish_spawn", true, 12, true);
+    public static ActorType FishSpawn { get; } = new("fish_spawn", true, 13, true);
     public static ActorType FishSpawnAlien { get; } = new("fish_spawn_alien", true, 1, true);
-    public static ActorType RainCloud { get; } = new("raincloud", true, 2);
+    public static ActorType RainCloud { get; } = new("raincloud", true, 1);
     public static ActorType MetalSpawn { get; } = new("metal_spawn", true, 8);
     public static ActorType AmbientBird { get; } = new("ambient_bird", true, 8, true);
     public static ActorType VoidPortal { get; } = new("void_portal", true, 1, true);
