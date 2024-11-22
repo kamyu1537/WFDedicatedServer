@@ -19,14 +19,3 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-
----
-
-This project uses the following third-party packages licensed under Apache License 2.0:
-- Serilog
-- Serilog.Extensions.Hosting
-- Serilog.Sinks.Console
-- Serilog.Sinks.File
-- Serilog.AspNetCore
-
-For details, see the LICENSE files of these packages in their respective repositories.
