@@ -9,7 +9,7 @@ public class Canvas
     public long CanvasId { get; set; }
     private Dictionary<(int, int), long> Data { get; set; } = [];
 
-    private static (int, int) GetKey(Vector2 pos) => ((int)pos.X, (int)pos.Y);
+    private static (int, int) GetKey(Vector2 pos) => ((int)Math.Floor(pos.X), (int)Math.Floor(pos.Y));
     private static Vector2 GetVector2((int, int) key) => new(key.Item1, key.Item2);
 
     public void Draw(IEnumerable<(Vector2 pos, long color)> data)
