@@ -3,14 +3,13 @@ using WFDS.Common.GameEvents.Events;
 using WFDS.Common.Network;
 using WFDS.Common.Network.Packets;
 using WFDS.Common.Types;
-using WFDS.Server.Core.Actor;
 using WFDS.Server.Core.Network;
 using Session = WFDS.Common.Network.Session;
 
 namespace WFDS.Server.PacketHandler;
 
 [PacketType("new_player_join")]
-public class NewPlayerJoinHandler(ILogger<NewPlayerJoinHandler> logger, CanvasManager canvas, SessionManager session) : PacketHandler<NewPlayerJoinPacket>
+public class NewPlayerJoinHandler(ILogger<NewPlayerJoinHandler> logger, ICanvasManager canvas, SessionManager session) : PacketHandler<NewPlayerJoinPacket>
 {
     protected override void Handle(Session sender, NetChannel channel, NewPlayerJoinPacket packet)
     {

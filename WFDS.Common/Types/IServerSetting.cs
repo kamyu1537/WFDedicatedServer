@@ -9,4 +9,5 @@ public interface IServerSetting
     GameLobbyType LobbyType { get; set; }
     bool Adult { get; set; }
     string[] BannedPlayers { get; set; }
+    bool SaveChalkData { get; set; }
 }

@@ -1,6 +1,7 @@
 using Cysharp.Threading;
 using Microsoft.Extensions.Options;
 using WFDS.Common.Steam;
+using WFDS.Common.Types;
 using WFDS.Server.Core.Configuration;
 using WFDS.Server.Core.Network;
 
@@ -12,7 +13,8 @@ internal class WebFishingServer(
     IOptions<ServerSetting> settings,
     SteamManager steam,
     LobbyManager lobby,
-    SessionManager session
+    SessionManager session,
+    ICanvasManager canvas
 ) : BackgroundService
 {
     private readonly Mutex _mutex = new(false, "WFDS.Server");
@@ -36,13 +38,8 @@ internal class WebFishingServer(
             return;
         }
 
-        lobby.Initialize(
-            settings.Value.ServerName,
-            settings.Value.LobbyType,
-            settings.Value.MaxPlayers,
-            settings.Value.Adult,
-            settings.Value.RoomCode
-        );
+        canvas.LoadAll();
+        lobby.Initialize(settings.Value.ServerName, settings.Value.LobbyType, settings.Value.MaxPlayers, settings.Value.Adult, settings.Value.RoomCode);
         lobby.CreateLobby();
 
         session.BanPlayers(lobby.GetLobbyId(), settings.Value.BannedPlayers);
@@ -56,6 +53,7 @@ internal class WebFishingServer(
                 }
             }
 
+            canvas.SaveChanges();
             await Task.Delay(1000, stoppingToken);
         }
 

@@ -7,6 +7,7 @@ using WFDS.Common.Types;
 using WFDS.Common.Types.Manager;
 using WFDS.Server.Core;
 using WFDS.Server.Core.Actor;
+using WFDS.Server.Core.Chalk;
 using WFDS.Server.Core.Configuration;
 using WFDS.Server.Core.GameEvent;
 using WFDS.Server.Core.Network;
@@ -51,7 +52,6 @@ try
     builder.Services.AddSerilog();
 
     builder.Services.Configure<ServerSetting>(section);
-    builder.Services.AddSingleton<IServerSetting>(setting);
 
     builder.Services.AddSingleton(SteamManager.Inst);
     builder.Services.AddSingleton(LobbyManager.Inst);
@@ -63,7 +63,7 @@ try
     builder.Services.AddSingleton<IActorManager, ActorManager>();
     builder.Services.AddSingleton<IActorSpawnManager, ActorSpawnManager>();
 
-    builder.Services.AddSingleton<CanvasManager>();
+    builder.Services.AddSingleton<ICanvasManager, CanvasManager>();
 
     /////////////////////////////////////////////////////////////////
 

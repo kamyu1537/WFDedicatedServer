@@ -2,13 +2,12 @@
 using WFDS.Common.Network;
 using WFDS.Common.Steam;
 using WFDS.Common.Types;
-using WFDS.Server.Core.Actor;
 using WFDS.Server.Core.Network;
 
 namespace WFDS.Server.PacketHandler;
 
 [PacketType("chalk_packet")]
-public class ChalkPacketHandler(CanvasManager canvas, LobbyManager lobby, SessionManager session) : PacketHandler<ChalkPacket>
+public class ChalkPacketHandler(ICanvasManager canvas, LobbyManager lobby, SessionManager session) : PacketHandler<ChalkPacket>
 {
     protected override void Handle(Session sender, NetChannel channel, ChalkPacket packet)
     {

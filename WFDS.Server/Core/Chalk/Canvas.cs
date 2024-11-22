@@ -1,9 +1,8 @@
-﻿using System.Collections.Concurrent;
-using System.Collections.Immutable;
+﻿using System.Collections.Immutable;
 using System.Numerics;
 using WFDS.Common.Network.Packets;
 
-namespace WFDS.Server.Core.Actor;
+namespace WFDS.Server.Core.Chalk;
 
 public class Canvas
 {
@@ -42,26 +41,5 @@ public class Canvas
                     x.Value
                 }).ToList()
         };
-    }
-}
-
-public class CanvasManager
-{
-    private ConcurrentDictionary<long, Canvas> Canvases { get; set; } = [];
-
-    public void Draw(ChalkPacket packet)
-    {
-        var canvas = GetCanvas(packet.CanvasId);
-        canvas.Draw(packet.GetData());
-    }
-
-    private Canvas GetCanvas(long canvasId) => Canvases.GetOrAdd(canvasId, new Canvas
-    {
-        CanvasId = canvasId
-    });
-
-    public ChalkPacket[] GetCanvasPackets()
-    {
-        return Canvases.Select(x => x.Value.ToPacket()).ToArray();
     }
 }
