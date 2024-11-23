@@ -1,4 +1,5 @@
 using System.Text.Json;
+using Cysharp.Threading;
 using Serilog;
 using WFDS.Common.Actor;
 using WFDS.Common.Plugin;
@@ -28,6 +29,7 @@ Log.Logger = new LoggerConfiguration()
 try
 {
     SystemMonitor.Start();
+    LogicLooperPool.InitializeSharedPool(100, Environment.ProcessorCount, RoundRobinLogicLooperPoolBalancer.Instance);
 
     AppDomain.CurrentDomain.UnhandledException += (_, e) => Log.Logger.Fatal(e.ExceptionObject as Exception, "unhandled exception");
     AppDomain.CurrentDomain.ProcessExit += (_, _) => Log.Logger.Information("process exit");
@@ -117,6 +119,14 @@ try
 
     // server start
     var app = builder.Build();
+    app.Services.GetRequiredService<IHostApplicationLifetime>()
+        .ApplicationStopped
+        .Register(() => LogicLooperPool.Shared.ShutdownAsync(TimeSpan.Zero).Wait());
+    
+    app.Services.GetRequiredService<IHostApplicationLifetime>()
+        .ApplicationStopped
+        .Register(() => LogicLooperPool.Shared.ShutdownAsync(TimeSpan.Zero).Wait());
+    
     app.LoadZones();
 
     app.UseRouting();

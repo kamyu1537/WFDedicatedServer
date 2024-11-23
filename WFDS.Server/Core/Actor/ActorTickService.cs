@@ -9,19 +9,16 @@ namespace WFDS.Server.Core.Actor;
 
 internal sealed class ActorTickService(ILogger<ActorTickService> logger, IActorManager manager, SteamManager steam, SessionManager session) : IHostedService
 {
-    private readonly LogicLooper _looper = new(60);
-
     public Task StartAsync(CancellationToken cancellationToken)
     {
-        _ = _looper.RegisterActionAsync(Update).ConfigureAwait(false);
+        _ = LogicLooperPool.Shared.RegisterActionAsync(Update).ConfigureAwait(false);
         return Task.CompletedTask;
     }
 
-    public async Task StopAsync(CancellationToken cancellationToken)
+    public Task StopAsync(CancellationToken cancellationToken)
     {
-        await _looper.ShutdownAsync(TimeSpan.Zero);
-        _looper.Dispose();
         logger.LogInformation("ActorTickService stopped");
+        return Task.CompletedTask;
     }
 
     private bool Update(in LogicLooperActionContext ctx)

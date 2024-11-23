@@ -18,7 +18,6 @@ internal class WebFishingServer(
 ) : BackgroundService
 {
     private readonly Mutex _mutex = new(false, "WFDS.Server");
-    private readonly LogicLooper _looper = new(100);
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
@@ -30,7 +29,7 @@ internal class WebFishingServer(
         }
 
         logger.LogInformation("WebFishingServer start");
-        _ = _looper.RegisterActionAsync(Update).ConfigureAwait(false);
+        _ = LogicLooperPool.Shared.RegisterActionAsync(Update).ConfigureAwait(false);
 
         if (!steam.Init())
         {
@@ -89,8 +88,6 @@ internal class WebFishingServer(
         steam.Shutdown();
 
         logger.LogInformation("try steam looper is stopping");
-        await _looper.ShutdownAsync(TimeSpan.Zero);
-        _looper.Dispose();
 
         await base.StopAsync(cancellationToken);
         logger.LogInformation("WebFishingServer stopped");
