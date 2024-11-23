@@ -7,6 +7,9 @@ A simple dedicated server for hosting games of WebFishing.
 > [!WARNING]  
 > To operate the server, you must run the server on a separate computer using a dedicated account where Webfishing has been purchased.
 
+> [!IMPORTANT]  
+> Before starting the server, create a Zones folder and extract the main_zone.tcsn file from the game.
+
 Start the server using one of the following commands:
 - `dotnet WFDS.Server.dll`
 - Execute `WFDS.Server.exe`.
