@@ -191,12 +191,12 @@ public class LobbyManager : Singleton<LobbyManager>, IDisposable
         SteamMatchmaking.SetLobbyData(lobbyId, "name", _name);
         SteamMatchmaking.SetLobbyData(lobbyId, "adult", _adult ? "true" : "false");
         SteamMatchmaking.SetLobbyData(lobbyId, "code", _code);
-        SteamMatchmaking.SetLobbyData(lobbyId, "cap", (_cap + 1).ToString());
+        SteamMatchmaking.SetLobbyData(lobbyId, "cap", _cap.ToString());
         SteamMatchmaking.SetLobbyData(lobbyId, "banned_players", "");
 
         SetLobbyType(lobbyId, _lobbyType);
 
-        SteamMatchmaking.SetLobbyMemberLimit(lobbyId, _cap + 1);
+        SteamMatchmaking.SetLobbyMemberLimit(lobbyId, _cap);
         SteamMatchmaking.SetLobbyJoinable(lobbyId, true);
 
         ConsoleHelper.UpdateConsoleTitle(_name, _code, 0, _cap);
