@@ -58,6 +58,7 @@ internal class WebFishingServer(
         }
 
         // 프로그램을 를 종료한다.
+        lobby.LeaveLobby(out _);
         logger.LogInformation("WebFishingServer stop");
         lifetime.StopApplication();
     }

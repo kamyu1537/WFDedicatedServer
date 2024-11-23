@@ -38,8 +38,6 @@ public class LobbyManager : Singleton<LobbyManager>, IDisposable
 
     public void Dispose()
     {
-        LeaveLobby(out _);
-
         _lobbyEnterCallback.Dispose();
         _lobbyCreatedCallback.Dispose();
         _lobbyDataUpdateCallback.Dispose();
@@ -102,8 +100,8 @@ public class LobbyManager : Singleton<LobbyManager>, IDisposable
         }
 
         lobbyId = _lobbyId;
-        SteamMatchmaking.LeaveLobby(_lobbyId);
         _lobbyId = CSteamID.Nil;
+        // SteamMatchmaking.LeaveLobby(_lobbyId);
         return true;
     }
 
@@ -183,6 +181,7 @@ public class LobbyManager : Singleton<LobbyManager>, IDisposable
     private void UpdateLobbyData(in CSteamID lobbyId)
     {
         SteamMatchmaking.SetLobbyJoinable(lobbyId, false);
+        SteamMatchmaking.SetLobbyGameServer(lobbyId, 0, 0, SteamManager.Inst.SteamId);
         SteamMatchmaking.SetLobbyOwner(lobbyId, SteamManager.Inst.SteamId);
 
         SteamMatchmaking.SetLobbyData(lobbyId, "mode", LobbyMode);
