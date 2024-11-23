@@ -37,7 +37,11 @@ public class SessionController(SessionManager manager, LobbyManager lobby) : Con
         return Json(new
         {
             Count = sessions.Length,
-            Sessions = sessions.Select(x => new { x.Name, x.SteamId })
+            Sessions = sessions.Select(x => new
+            {
+                x.Name,
+                SteamId = x.SteamId.m_SteamID.ToString(CultureInfo.InvariantCulture)
+            })
         });
     }
 
