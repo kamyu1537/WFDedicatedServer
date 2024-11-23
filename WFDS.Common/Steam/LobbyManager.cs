@@ -86,7 +86,8 @@ public class LobbyManager : Singleton<LobbyManager>, IDisposable
         SteamMatchmaking.DeleteLobbyData(_lobbyId, "version");
         SteamMatchmaking.DeleteLobbyData(_lobbyId, "server_browser_value");
         SteamMatchmaking.DeleteLobbyData(_lobbyId, "name");
-        SteamMatchmaking.DeleteLobbyData(_lobbyId, "adult");
+        SteamMatchmaking.DeleteLobbyData(_lobbyId, "lobby_name");
+        SteamMatchmaking.DeleteLobbyData(_lobbyId, "age_limit");
         SteamMatchmaking.DeleteLobbyData(_lobbyId, "code");
         SteamMatchmaking.DeleteLobbyData(_lobbyId, "cap");
         SteamMatchmaking.DeleteLobbyData(_lobbyId, "banned_players");
@@ -189,7 +190,8 @@ public class LobbyManager : Singleton<LobbyManager>, IDisposable
         SteamMatchmaking.SetLobbyData(lobbyId, "version", GameVersion);
         SteamMatchmaking.SetLobbyData(lobbyId, "server_browser_value", "0");
         SteamMatchmaking.SetLobbyData(lobbyId, "name", _name);
-        SteamMatchmaking.SetLobbyData(lobbyId, "adult", _adult ? "true" : "false");
+        SteamMatchmaking.SetLobbyData(lobbyId, "lobby_name", _name);
+        SteamMatchmaking.SetLobbyData(lobbyId, "age_limit", _adult ? "true" : "false");
         SteamMatchmaking.SetLobbyData(lobbyId, "code", _code);
         SteamMatchmaking.SetLobbyData(lobbyId, "cap", _cap.ToString());
         SteamMatchmaking.SetLobbyData(lobbyId, "banned_players", "");
