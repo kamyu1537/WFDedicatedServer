@@ -11,7 +11,7 @@ internal sealed class ActorTickService(ILogger<ActorTickService> logger, IActorM
 {
     public Task StartAsync(CancellationToken cancellationToken)
     {
-        _ = LogicLooperPool.Shared.RegisterActionAsync(Update).ConfigureAwait(false);
+        _ = LogicLooperPool.Shared.RegisterActionAsync(Update, LooperActionOptions.Default with { TargetFrameRateOverride = 60 }).ConfigureAwait(false);
         return Task.CompletedTask;
     }
 
