@@ -181,7 +181,6 @@ public class LobbyManager : Singleton<LobbyManager>, IDisposable
     private void UpdateLobbyData(in CSteamID lobbyId)
     {
         SteamMatchmaking.SetLobbyJoinable(lobbyId, false);
-        SteamMatchmaking.SetLobbyGameServer(lobbyId, 0, 0, SteamManager.Inst.SteamId);
         SteamMatchmaking.SetLobbyOwner(lobbyId, SteamManager.Inst.SteamId);
 
         SteamMatchmaking.SetLobbyData(lobbyId, "mode", LobbyMode);
