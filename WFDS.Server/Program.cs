@@ -1,6 +1,7 @@
 using System.Text.Json;
 using Cysharp.Threading;
-using Serilog;
+using Steamworks;
+using WFDS.Common;
 using WFDS.Common.Actor;
 using WFDS.Common.Plugin;
 using WFDS.Common.Steam;
@@ -14,25 +15,15 @@ using WFDS.Server.Core.GameEvent;
 using WFDS.Server.Core.Network;
 using WFDS.Server.Core.Utils;
 using WFDS.Server.Core.Zone;
-
-Log.Logger = new LoggerConfiguration()
-    .Enrich.FromLogContext()
-    .WriteTo.File("Logs/log-.txt", rollingInterval: RollingInterval.Day, retainedFileCountLimit: 3)
-    .WriteTo.Console(outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level:u3}] [{SourceContext}] {Message:lj}{NewLine}{Exception}")
-#if DEBUG
-    .MinimumLevel.Debug()
-#else
-    .MinimumLevel.Information()
-#endif
-    .CreateLogger();
+using ZLogger;
 
 try
 {
     SystemMonitor.Start();
     LogicLooperPool.InitializeSharedPool(100, Environment.ProcessorCount, RoundRobinLogicLooperPoolBalancer.Instance);
 
-    AppDomain.CurrentDomain.UnhandledException += (_, e) => Log.Logger.Fatal(e.ExceptionObject as Exception, "unhandled exception");
-    AppDomain.CurrentDomain.ProcessExit += (_, _) => Log.Logger.Information("process exit");
+    AppDomain.CurrentDomain.UnhandledException += (_, e) => Log.Logger.ZLogCritical(e.ExceptionObject as Exception, $"unhandled exception");
+    AppDomain.CurrentDomain.ProcessExit += (_, _) => Log.Logger.ZLogInformation($"process exit");
 
     var plugins = PluginManager.LoadPlugins();
     var builder = WebApplication.CreateBuilder(args);
@@ -51,7 +42,9 @@ try
     var setting = section.Get<ServerSetting>();
     ArgumentNullException.ThrowIfNull(setting, nameof(setting));
 
-    builder.Services.AddSerilog();
+    builder.Logging.ClearProviders();
+    // builder.Logging.AddZLoggerLogProcessor(new LogProcessor());
+    builder.Services.AddSingleton(Log.Factory);
 
     builder.Services.Configure<ServerSetting>(section);
 
@@ -99,8 +92,6 @@ try
         plugin.PacketHandlers.ToList().ForEach(x => builder.Services.AddTransient(x));
     }
 
-    builder.Services.AddSerilog(Log.Logger);
-
     builder.Services.AddControllers();
     builder.Services.AddEndpointsApiExplorer();
 
@@ -119,6 +110,7 @@ try
 
     // server start
     var app = builder.Build();
+    
     app.Services.GetRequiredService<IHostApplicationLifetime>()
         .ApplicationStopped
         .Register(() => LogicLooperPool.Shared.ShutdownAsync(TimeSpan.Zero).Wait());
@@ -146,10 +138,10 @@ try
 }
 catch (Exception ex)
 {
-    Log.Logger.Fatal(ex, "Host terminated unexpectedly");
+    Log.Logger.ZLogCritical(ex, $"host terminated unexpectedly");
 }
 finally
 {
-    await Log.CloseAndFlushAsync();
+    Log.Factory.Dispose();
     Environment.Exit(0);
 }

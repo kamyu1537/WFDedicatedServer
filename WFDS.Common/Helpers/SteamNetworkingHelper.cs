@@ -1,13 +1,16 @@
-﻿using Serilog;
+﻿using Microsoft.Extensions.Logging;
 using Steamworks;
 using WFDS.Common.Steam;
 using WFDS.Common.Types;
 using WFDS.Godot.Binary;
+using ZLogger;
 
 namespace WFDS.Common.Helpers;
 
 public static class SteamNetworkingHelper
 {
+    private static readonly ILogger Logger = Log.Factory.CreateLogger(typeof(SteamNetworkingHelper).FullName ?? nameof(SteamNetworkingHelper));
+    
     public static bool SendP2PPacket(CSteamID steamId, NetChannel channel, byte[] bytes)
     {
         if (steamId == SteamManager.Inst.SteamId)
@@ -27,7 +30,7 @@ public static class SteamNetworkingHelper
         }
         catch (Exception ex)
         {
-            Log.Logger.Error(ex, "Failed to send P2P packet");
+            Logger.ZLogError(ex, $"failed to rent bytes for P2P packet");
             return false;
         }
     }
@@ -60,7 +63,7 @@ public static class SteamNetworkingHelper
         }
         catch (Exception ex)
         {
-            Log.Logger.Error(ex, "Failed to rent bytes for broadcast P2P packet");
+            Logger.ZLogError($"failed to rent bytes for broadcast P2P packet : \n{ex}");
         }
     }
 }

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Concurrent;
 using System.Globalization;
-using Serilog;
+using Microsoft.Extensions.Logging;
 using Steamworks;
 using WFDS.Common.GameEvents;
 using WFDS.Common.GameEvents.Events;
@@ -9,6 +9,7 @@ using WFDS.Common.Network;
 using WFDS.Common.Network.Packets;
 using WFDS.Common.Types;
 using WFDS.Godot.Binary;
+using ZLogger;
 
 namespace WFDS.Common.Steam;
 
@@ -25,7 +26,7 @@ public sealed class SessionManager : Singleton<SessionManager>, IDisposable
 
     public SessionManager()
     {
-        _logger = Log.ForContext<SessionManager>();
+        _logger = Log.Factory.CreateLogger<SessionManager>();
         _lobbyChatUpdateCallback = Callback<LobbyChatUpdate_t>.Create(OnLobbyChatUpdate);
         _p2pSessionRequestCallback = Callback<P2PSessionRequest_t>.Create(OnP2PSessionRequest);
     }
@@ -66,7 +67,7 @@ public sealed class SessionManager : Singleton<SessionManager>, IDisposable
             return;
         }
 
-        _logger.Information("try server close player: {SteamId}", target);
+        _logger.ZLogInformation($"try server close player: {target.m_SteamID.ToString(CultureInfo.InvariantCulture)}");
         SendP2PPacket(target, NetChannel.GameState, new ServerClosePacket(), false);
     }
 
@@ -95,35 +96,35 @@ public sealed class SessionManager : Singleton<SessionManager>, IDisposable
     {
         if (_sessions.TryGetValue(steamId.m_SteamID, out _))
         {
-            _logger.Warning("session already exists: {Member}", steamId);
+            _logger.ZLogWarning($"session already exists: {steamId.m_SteamID.ToString(CultureInfo.InvariantCulture)}");
             return false;
         }
 
         if (_banned.Contains(steamId.m_SteamID.ToString(CultureInfo.InvariantCulture)))
         {
-            _logger.Warning("banned player: {Member}", steamId);
+            _logger.ZLogWarning($"banned player: {steamId.m_SteamID.ToString(CultureInfo.InvariantCulture)}");
             return false;
         }
 
-        _logger.Information("try create session: {Member}", steamId);
+        _logger.ZLogInformation($"try create session: {steamId.m_SteamID.ToString(CultureInfo.InvariantCulture)}");
         var session = new Session(steamId);
         if (_sessions.TryAdd(steamId.m_SteamID, session))
         {
             return true;
         }
 
-        _logger.Warning("failed to create session: {Member}", steamId);
+        _logger.ZLogWarning($"failed to create session: {steamId.m_SteamID.ToString(CultureInfo.InvariantCulture)}");
         return false;
     }
 
     private void RemoveSession(CSteamID steamId)
     {
-        _logger.Warning("try remove session: {Member}", steamId);
+        _logger.ZLogWarning($"try remove session: {steamId.m_SteamID.ToString(CultureInfo.InvariantCulture)}");
         SteamNetworking.CloseP2PSessionWithUser(steamId);
 
         if (!_sessions.TryRemove(steamId.m_SteamID, out _))
         {
-            _logger.Warning("failed to remove session: {Member}", steamId);
+            _logger.ZLogWarning($"failed to remove session: {steamId.m_SteamID.ToString(CultureInfo.InvariantCulture)}");
             return;
         }
 
@@ -138,7 +139,7 @@ public sealed class SessionManager : Singleton<SessionManager>, IDisposable
             return;
         }
 
-        _logger.Information("try kick player: {Member}", target);
+        _logger.ZLogInformation($"try kick player: {target.m_SteamID.ToString(CultureInfo.InvariantCulture)}");
         SendP2PPacket(target, NetChannel.GameState, new KickPacket(), false);
     }
 
@@ -150,7 +151,7 @@ public sealed class SessionManager : Singleton<SessionManager>, IDisposable
 
     public void TempBanPlayer(CSteamID lobbyId, CSteamID target)
     {
-        _logger.Information("try ban player: {Member}", target);
+        _logger.ZLogInformation($"try ban player: {target.m_SteamID.ToString(CultureInfo.InvariantCulture)}");
         SendP2PPacket(target, NetChannel.GameState, new BanPacket(), false);
         BroadcastP2PPacket(lobbyId, NetChannel.GameState, new ForceDisconnectPlayerPacket { UserId = target }, false);
 
@@ -262,7 +263,7 @@ public sealed class SessionManager : Singleton<SessionManager>, IDisposable
         var makingChange = new CSteamID(param.m_ulSteamIDMakingChange);
 
         var stateChange = (EChatMemberStateChange)param.m_rgfChatMemberStateChange;
-        _logger.Debug("lobby member state changed: {LobbyId} {ChangedUser} {MakingChange} {StateChange}", lobbyId, changedUser, makingChange, stateChange);
+        _logger.ZLogDebug($"lobby member state changed: {lobbyId} {changedUser} {makingChange} {stateChange}");
 
         if (stateChange == EChatMemberStateChange.k_EChatMemberStateChangeEntered)
         {
@@ -283,18 +284,18 @@ public sealed class SessionManager : Singleton<SessionManager>, IDisposable
 
     private void OnP2PSessionRequest(P2PSessionRequest_t param)
     {
-        _logger.Warning("p2p session request: {SteamId}", param.m_steamIDRemote);
+        _logger.ZLogWarning($"p2p session request: {param.m_steamIDRemote}");
 
         if (_banned.Contains(param.m_steamIDRemote.m_SteamID.ToString(CultureInfo.InvariantCulture)))
         {
-            _logger.Warning("banned player request: {SteamId}", param.m_steamIDRemote);
+            _logger.ZLogWarning($"banned player request: {param.m_steamIDRemote}");
             SteamNetworking.CloseP2PSessionWithUser(param.m_steamIDRemote);
             return;
         }
 
         if (IsServerClosed())
         {
-            _logger.Warning("server closed: {SteamId}", param.m_steamIDRemote);
+            _logger.ZLogWarning($"server closed: {param.m_steamIDRemote}");
             ServerClose(param.m_steamIDRemote);
             return;
         }

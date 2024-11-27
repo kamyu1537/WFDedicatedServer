@@ -1,11 +1,14 @@
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Serilog;
+using WFDS.Common;
 using WFDS.Common.GameEvents;
+using ZLogger;
 
 namespace WFDS.Server.Core.GameEvent;
 
 internal static class GameEventServiceCollectionExtensions
 {
+    private static readonly ILogger Logger = Log.Factory.CreateLogger(typeof(GameEventServiceCollectionExtensions).FullName ?? nameof(GameEventServiceCollectionExtensions));
+    
     public static void AddGameEventHandlers(this IServiceCollection services)
     {
         var allAssemblies = AppDomain.CurrentDomain.GetAssemblies();
@@ -17,7 +20,7 @@ internal static class GameEventServiceCollectionExtensions
             .Where(type => gameEventHandlerType.IsAssignableFrom(type) && !type.IsAbstract && !type.IsInterface)
             .ToArray();
 
-        Log.Logger.Information("added {Count} game event handlers", gameEventHandlerTypes.Length);
+        Logger.ZLogInformation($"added {gameEventHandlerTypes.Length} game event handlers");
         services.TryAddEnumerable(gameEventHandlerTypes.Select(CreateServiceDescriptor));
     }
 

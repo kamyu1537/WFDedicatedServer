@@ -1,6 +1,7 @@
-﻿using Serilog;
+﻿using Microsoft.Extensions.Logging;
 using Steamworks;
 using WFDS.Common.Types;
+using ZLogger;
 
 namespace WFDS.Common.Steam;
 
@@ -9,7 +10,7 @@ public class SteamManager : Singleton<SteamManager>
     public bool Initialized { get; private set; }
     public CSteamID SteamId => Initialized ? _steamId : CSteamID.Nil;
     
-    private readonly ILogger _logger = Log.ForContext<SteamManager>();
+    private readonly ILogger _logger = Log.Factory.CreateLogger<SteamManager>();
     private CSteamID _steamId;
 
     public bool Init()
@@ -19,13 +20,13 @@ public class SteamManager : Singleton<SteamManager>
         var result = SteamAPI.InitEx(out var errMsg);
         if (result != ESteamAPIInitResult.k_ESteamAPIInitResult_OK)
         {
-            _logger.Error("SteamAPI.Init failed: {Result} {Error}", result, errMsg);
+            _logger.ZLogError($"SteamAPI.Init failed: {result} {errMsg}");
             return false;
         }
         
         Initialized = true;
         _steamId = SteamUser.GetSteamID();
-        _logger.Information("SteamAPI.Init success");
+        _logger.ZLogInformation($"SteamAPI.Init success");
         return true;
     }
 

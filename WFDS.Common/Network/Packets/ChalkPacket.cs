@@ -1,12 +1,13 @@
 ﻿using System.Numerics;
-using Serilog;
+using Microsoft.Extensions.Logging;
 using WFDS.Common.Extensions;
+using ZLogger;
 
 namespace WFDS.Common.Network.Packets;
 
 public class ChalkPacket : Packet
 {
-    private static readonly ILogger Logger = Log.ForContext<ChalkPacket>();
+    private static readonly ILogger Logger = Log.Factory.CreateLogger<ChalkPacket>();
     
     public long CanvasId { get; set; }
     public List<object> Data { get; set; } = [];
@@ -31,7 +32,7 @@ public class ChalkPacket : Packet
         {
             if (item.Count != 2)
             {
-                Logger.Error("invalid chalk packet data");
+                Logger.ZLogError($"Invalid chalk data item");
                 continue;
             }
 

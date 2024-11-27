@@ -1,14 +1,13 @@
 ﻿using System.Collections.Concurrent;
 using Microsoft.Extensions.Options;
-using Serilog;
+using WFDS.Common;
 using WFDS.Common.Extensions;
 using WFDS.Common.Network.Packets;
 using WFDS.Common.Steam;
 using WFDS.Common.Types;
 using WFDS.Godot.Binary;
 using WFDS.Server.Core.Configuration;
-using WFDS.Server.Core.Network;
-using ILogger = Serilog.ILogger;
+using ZLogger;
 
 namespace WFDS.Server.Core.Chalk;
 
@@ -17,7 +16,7 @@ internal class CanvasManager(IOptions<ServerSetting> setting, SessionManager ses
     private static readonly TimeSpan UpdateInterval = TimeSpan.FromSeconds(10);
     private static readonly TimeSpan ForceUpdateInterval = TimeSpan.FromSeconds(30);
     
-    private static readonly ILogger Logger = Log.ForContext<CanvasManager>();
+    private static readonly ILogger Logger = Log.Factory.CreateLogger<CanvasManager>();
     private ConcurrentDictionary<long, Canvas> Canvases { get; set; } = [];
     private bool Updated { get; set; } = true;
     private DateTimeOffset UpdateTime { get; set; } = DateTimeOffset.UtcNow;
@@ -72,7 +71,7 @@ internal class CanvasManager(IOptions<ServerSetting> setting, SessionManager ses
         {
             var fileName = Path.Join(CanvasPath, $"canvas_{item.Key}.bin");
             File.WriteAllBytes(fileName, GodotBinaryConverter.Serialize(item.Value.ToPacket().ToDictionary()));
-            Logger.Information($"saved canvas {item.Key}");
+            Logger.ZLogInformation($"saved canvas {item.Key}");
         }
     }
 
@@ -100,7 +99,7 @@ internal class CanvasManager(IOptions<ServerSetting> setting, SessionManager ses
             Canvases[canvasId] = canvas;
         }
         
-        Logger.Information($"loaded {files.Length} canvas");
+        Logger.ZLogInformation($"loaded {files.Length} canvas");
     }
 
     public void ClearAll()

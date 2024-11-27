@@ -1,8 +1,9 @@
 ﻿using System.Globalization;
-using Serilog;
+using Microsoft.Extensions.Logging;
 using Steamworks;
 using WFDS.Common.Helpers;
 using WFDS.Common.Types;
+using ZLogger;
 
 namespace WFDS.Common.Steam;
 
@@ -29,7 +30,7 @@ public class LobbyManager : Singleton<LobbyManager>, IDisposable
 
     public LobbyManager()
     {
-        _logger = Log.ForContext<LobbyManager>();
+        _logger = Log.Factory.CreateLogger<LobbyManager>();
 
         _lobbyEnterCallback = Callback<LobbyEnter_t>.Create(OnLobbyEntered);
         _lobbyCreatedCallback = Callback<LobbyCreated_t>.Create(OnLobbyCreated);
@@ -62,7 +63,7 @@ public class LobbyManager : Singleton<LobbyManager>, IDisposable
             _code = RandomHelper.RandomRoomCode(RoomCodeLength);
         }
         
-        _logger.Information("lobby initialized: {Name} {LobbyType} {Cap} {Adult} {Code}", _name, _lobbyType, _cap, _adult, _code);
+        _logger.ZLogInformation($"lobby initialized: {_name}, {_lobbyType}, {_cap}, {_adult}, {_code}");
     }
 
     public bool LeaveLobby(out CSteamID lobbyId)
@@ -223,12 +224,12 @@ public class LobbyManager : Singleton<LobbyManager>, IDisposable
     {
         if (param.m_eResult != EResult.k_EResultOK)
         {
-            _logger.Error("failed to create lobby: {Result}", param.m_eResult);
+            _logger.ZLogError($"failed to create lobby: {param.m_eResult}");
             return;
         }
 
         var lobbyId = new CSteamID(param.m_ulSteamIDLobby);
-        _logger.Information("lobby created: {LobbyId}", param.m_ulSteamIDLobby);
+        _logger.ZLogInformation($"lobby created: {param.m_ulSteamIDLobby}");
         UpdateLobbyData(lobbyId);
     }
 
@@ -236,18 +237,18 @@ public class LobbyManager : Singleton<LobbyManager>, IDisposable
     {
         if (param.m_EChatRoomEnterResponse != 1) // not success
         {
-            _logger.Error("failed to enter lobby: {Result}", param.m_EChatRoomEnterResponse);
+            _logger.ZLogError($"failed to enter lobby: {param.m_EChatRoomEnterResponse}");
             return;
         }
 
         _lobbyId = new CSteamID(param.m_ulSteamIDLobby);
-        _logger.Information("lobby entered: {LobbyId}", _lobbyId);
+        _logger.ZLogInformation($"lobby entered: {_lobbyId}");
     }
 
     private void OnLobbyDataChanged(LobbyDataUpdate_t param)
     {
         var lobbyId = new CSteamID(param.m_ulSteamIDLobby);
-        _logger.Debug("lobby data updated: {LobbyId}", lobbyId);
+        _logger.ZLogDebug($"lobby data updated: {lobbyId}");
     }
 
     #endregion

@@ -1,5 +1,5 @@
 ﻿using System.Collections.Concurrent;
-using Serilog;
+using Microsoft.Extensions.Logging;
 using Steamworks;
 using WFDS.Common.Helpers;
 using WFDS.Common.Types;
@@ -8,7 +8,7 @@ namespace WFDS.Common.Network;
 
 public sealed class Session(CSteamID steamId)
 {
-    private ILogger Logger { get; } = Log.ForContext<Session>();
+    private ILogger Logger { get; } = Log.Factory.CreateLogger<Session>();
     public CSteamID SteamId { get; init; } = steamId;
     public string Name { get; set; } = SteamFriends.GetFriendPersonaName(steamId);
     public bool HandshakeReceived { get; set; }

@@ -1,10 +1,13 @@
 ﻿using System.Reflection;
-using Serilog;
+using Microsoft.Extensions.Logging;
+using ZLogger;
 
 namespace WFDS.Common.Plugin;
 
 public static class PluginManager
 {
+    private static readonly ILogger Logger = Log.Factory.CreateLogger("PluginManager"); 
+    
     private static void MakeDirectory()
     {
         var path = Path.Join(Directory.GetCurrentDirectory(), "Plugins");
@@ -48,7 +51,7 @@ public static class PluginManager
         var instance = Activator.CreateInstance(type);
         if (instance is not Plugin plugin) return null;
         
-        Log.Logger.Information("loading plugin {Name} {Version} by {Author}", plugin.Name, plugin.Version, plugin.Author);
+        Logger.ZLogInformation($"loading plugin {plugin.Name} {plugin.Version} by {plugin.Author}");
         plugin.Load();
 
         return plugin;
