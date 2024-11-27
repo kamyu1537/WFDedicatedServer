@@ -2,7 +2,6 @@
 using WFDS.Common.GameEvents;
 using WFDS.Common.GameEvents.Events;
 using WFDS.Common.Steam;
-using WFDS.Server.Core.Network;
 using ZLogger;
 
 namespace WFDS.Server.Core.Configuration;

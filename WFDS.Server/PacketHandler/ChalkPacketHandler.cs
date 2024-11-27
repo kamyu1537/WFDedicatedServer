@@ -1,8 +1,7 @@
-﻿using WFDS.Common.Network.Packets;
-using WFDS.Common.Network;
+﻿using WFDS.Common.Network;
+using WFDS.Common.Network.Packets;
 using WFDS.Common.Steam;
 using WFDS.Common.Types;
-using WFDS.Server.Core.Network;
 
 namespace WFDS.Server.PacketHandler;
 

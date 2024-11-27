@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 using WFDS.Common.Extensions;
 using WFDS.Common.Steam;
-using WFDS.Server.Core.Network;
 
 namespace WFDS.Server.Controllers;
 

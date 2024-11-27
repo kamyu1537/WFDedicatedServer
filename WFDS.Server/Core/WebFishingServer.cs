@@ -3,7 +3,6 @@ using Microsoft.Extensions.Options;
 using WFDS.Common.Steam;
 using WFDS.Common.Types;
 using WFDS.Server.Core.Configuration;
-using WFDS.Server.Core.Network;
 using ZLogger;
 
 namespace WFDS.Server.Core;

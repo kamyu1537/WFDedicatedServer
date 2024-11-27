@@ -1,5 +1,5 @@
-﻿using System.Globalization;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
+using Utf8StringInterpolation;
 using ZLogger;
 using ZLogger.Providers;
 
@@ -21,7 +21,7 @@ public static class Log
             options.UsePlainTextFormatter(formatter =>
             {
                 formatter.SetPrefixFormatter($"[{0}] [{1:short}] [{2}] [{3}:{4}] ", (in MessageTemplate template, in LogInfo info) => template.Format(info.Timestamp.Utc.ToString("O"), info.LogLevel, info.Category, info.MemberName, info.LineNumber));
-                formatter.SetExceptionFormatter((writer, ex) => Utf8StringInterpolation.Utf8String.Format(writer, $"{ex.Message}"));
+                formatter.SetExceptionFormatter((writer, ex) => Utf8String.Format(writer, $"{ex.Message}"));
             });
         });
         
