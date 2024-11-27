@@ -263,7 +263,7 @@ public sealed class SessionManager : Singleton<SessionManager>, IDisposable
         var makingChange = new CSteamID(param.m_ulSteamIDMakingChange);
 
         var stateChange = (EChatMemberStateChange)param.m_rgfChatMemberStateChange;
-        _logger.ZLogDebug($"lobby member state changed: {lobbyId} {changedUser} {makingChange} {stateChange}");
+        _logger.ZLogInformation($"lobby member state changed: {lobbyId} {changedUser} {makingChange} {stateChange}");
 
         if (stateChange == EChatMemberStateChange.k_EChatMemberStateChangeEntered)
         {
@@ -274,10 +274,12 @@ public sealed class SessionManager : Singleton<SessionManager>, IDisposable
         }
         else if (stateChange == EChatMemberStateChange.k_EChatMemberStateChangeLeft)
         {
+            _logger.ZLogInformation($"lobby member left: {changedUser}");
             RemoveSession(changedUser);
         }
         else if (stateChange == EChatMemberStateChange.k_EChatMemberStateChangeDisconnected)
         {
+            _logger.ZLogWarning($"lobby member disconnected: {changedUser}");
             RemoveSession(changedUser);
         }
     }
