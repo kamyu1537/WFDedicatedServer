@@ -1,4 +1,5 @@
 using WFDS.Common.GameEvents;
+using ZLogger;
 
 namespace WFDS.Server.Core.GameEvent;
 
@@ -15,15 +16,15 @@ internal sealed class GameEventService(IServiceProvider provider, ILogger<GameEv
             }
             catch (TaskCanceledException)
             {
-                logger.LogInformation("task canceled");
+                logger.ZLogInformation($"task canceled");
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "failed to receive event");
+                logger.ZLogError(ex, $"failed to receive event");
             }
         }
         
-        logger.LogInformation("game event service stopped");
+        logger.ZLogInformation($"game event service stopped");
     }
 
     private async Task HandleEventAsync(Common.GameEvents.GameEvent e)
@@ -39,7 +40,7 @@ internal sealed class GameEventService(IServiceProvider provider, ILogger<GameEv
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "failed to handle event");
+            logger.ZLogError(ex, $"failed to handle event");
         }
     }
 }

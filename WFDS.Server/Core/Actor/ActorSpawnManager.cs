@@ -2,6 +2,7 @@
 using WFDS.Common.Actor;
 using WFDS.Common.Types;
 using WFDS.Common.Types.Manager;
+using ZLogger;
 
 namespace WFDS.Server.Core.Actor;
 
@@ -26,7 +27,7 @@ internal sealed class ActorSpawnManager(ILogger<ActorSpawnManager> logger, IZone
             }
             else
             {
-                logger.LogError("no fish spawn point found");
+                logger.ZLogError($"no fish spawn point found");
             }
         }
     }
@@ -39,7 +40,7 @@ internal sealed class ActorSpawnManager(ILogger<ActorSpawnManager> logger, IZone
             return actor.SpawnFishSpawnActor(point.Transform.Origin);
         }
         
-        logger.LogError("no fish spawn point found");
+        logger.ZLogError($"no fish spawn point found");
         return null;
     }
 
@@ -51,7 +52,7 @@ internal sealed class ActorSpawnManager(ILogger<ActorSpawnManager> logger, IZone
             return actor.SpawnFishSpawnAlienActor(point.Transform.Origin);
         }
 
-        logger.LogError("no fish spawn point found");
+        logger.ZLogError($"no fish spawn point found");
         return null;
     }
 
@@ -76,7 +77,7 @@ internal sealed class ActorSpawnManager(ILogger<ActorSpawnManager> logger, IZone
             return actor.SpawnVoidPortalActor(pos);
         }
 
-        logger.LogError("no hidden spot found");
+        logger.ZLogError($"no hidden spot found");
         return null;
     }
 
@@ -85,7 +86,7 @@ internal sealed class ActorSpawnManager(ILogger<ActorSpawnManager> logger, IZone
         var point = RandomPickMetalPoint();
         if (point == null)
         {
-            logger.LogError("no metal point found");
+            logger.ZLogError($"no metal point found");
             return null;
         }
 
@@ -122,7 +123,7 @@ internal sealed class ActorSpawnManager(ILogger<ActorSpawnManager> logger, IZone
         point = default!;
         if (nodes.Count == 0)
         {
-            logger.LogError("no node found");
+            logger.ZLogError($"no node found");
             return false;
         }
 

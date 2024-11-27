@@ -5,6 +5,7 @@ using WFDS.Common.Network.Packets;
 using WFDS.Common.Steam;
 using WFDS.Common.Types;
 using WFDS.Server.Core.Network;
+using ZLogger;
 using Session = WFDS.Common.Network.Session;
 
 namespace WFDS.Server.PacketHandler;
@@ -18,24 +19,24 @@ public class ActorRequestSendHandler(ILogger<ActorRequestSendHandler> logger, IA
         {
             if (actorManager.GetActor(actor.ActorId) != null)
             {
-                logger.LogWarning("actor {Actor} already exists : {Member}", actor.ActorId, sender.ToString());
+                logger.ZLogWarning($"actor {actor.ActorId} already exists : {sender}");
                 continue;
             }
 
             if (actor.ActorType == "player") continue; // 여기에서 플레이어는 생성하면 안됨!!
 
-            logger.LogDebug("received actor_request_send from {Member} : {Actor} {ActorType}", sender.ToString(), actor.ActorId, actor.ActorType);
+            logger.LogDebug($"received actor_request_send from {sender} : {actor.ActorId} {actor.ActorType}");
 
             var actorType = ActorType.GetActorType(actor.ActorType);
             if (actorType == null)
             {
-                logger.LogWarning("actor type {ActorType} not found : {Member}", actor.ActorType, sender.ToString());
+                logger.ZLogWarning($"actor type {actor.ActorType} not found : {sender}");
                 continue;
             }
 
             if (actorType.HostOnly)
             {
-                logger.LogWarning("actor type {ActorType} is host only : {Member}", actor.ActorType, sender.ToString());
+                logger.ZLogWarning($"actor type {actor.ActorType} is host only : {sender}");
                 sessionManager.KickPlayer(sender.SteamId);
                 break;
             }

@@ -7,6 +7,7 @@ using WFDS.Common.Network;
 using WFDS.Common.Network.Packets;
 using WFDS.Common.Steam;
 using WFDS.Common.Types;
+using ZLogger;
 using Session = WFDS.Common.Network.Session;
 
 namespace WFDS.Server.PacketHandler;
@@ -14,17 +15,6 @@ namespace WFDS.Server.PacketHandler;
 [PacketType("actor_action")]
 public class ActorActionHandler(ILogger<ActorActionHandler> logger, IActorManager actorManager, SteamManager steam) : PacketHandler<ActorActionPacket>
 {
-    private static readonly string[] AllowedActions =
-    [
-        "queue_free",
-        "_wipe_actor",
-        "_set_zone",
-        "_update_cosmetics",
-        "_update_held_item",
-        "_sync_create_bubble",
-        "_sync_level_bubble"
-    ];
-
     protected override void Handle(Session sender, NetChannel channel, ActorActionPacket packet)
     {
         logger.LogDebug("received actor_action from {Member} for actor {ActorId} : {Action} / {Data}", sender.SteamId, packet.ActorId, packet.Action, JsonSerializer.Serialize(packet.Params));
@@ -33,13 +23,13 @@ public class ActorActionHandler(ILogger<ActorActionHandler> logger, IActorManage
 
         if (actor == null)
         {
-            logger.LogWarning("actor {ActorId} not found for {Member}", packet.ActorId, sender.ToString());
+            logger.ZLogWarning($"actor {packet.ActorId} not found for {sender}");
             return;
         }
 
         if (actor.CreatorId != sender.SteamId)
         {
-            logger.LogWarning("actor {ActorId} not owned by {Member}", packet.ActorId, sender.ToString());
+            logger.ZLogWarning($"actor {packet.ActorId} not owned by {sender}");
             return;
         }
 
@@ -57,7 +47,7 @@ public class ActorActionHandler(ILogger<ActorActionHandler> logger, IActorManage
         if (packet.Action != "queue_free") return;
         if (packet.Params.Count != 0)
         {
-            logger.LogError("invalid queue_free packet from {Member} : {Data}", sender.ToString(), JsonSerializer.Serialize(packet.Params));
+            logger.ZLogError($"invalid queue_free packet from {sender} : {JsonSerializer.Serialize(packet.Params)}");
             return;
         }
 
@@ -70,7 +60,7 @@ public class ActorActionHandler(ILogger<ActorActionHandler> logger, IActorManage
 
         if (packet.Params.Count != 1)
         {
-            logger.LogError("invalid _wipe_actor packet from {Member} : {Data}", sender.ToString(), JsonSerializer.Serialize(packet.Params));
+            logger.ZLogError($"invalid _wipe_actor packet from {sender} : {JsonSerializer.Serialize(packet.Params)}");
             return;
         }
 
@@ -89,7 +79,7 @@ public class ActorActionHandler(ILogger<ActorActionHandler> logger, IActorManage
 
         if (packet.Params.Count != 2)
         {
-            logger.LogError("invalid _set_zone packet from {Member} : {Data}", sender.ToString(), JsonSerializer.Serialize(packet.Params));
+            logger.ZLogError($"invalid _set_zone packet from {sender} : {JsonSerializer.Serialize(packet.Params)}");
             return;
         }
 
@@ -111,14 +101,14 @@ public class ActorActionHandler(ILogger<ActorActionHandler> logger, IActorManage
 
         if (packet.Params.Count != 1)
         {
-            logger.LogError("invalid _update_cosmetics packet from {Member} : {Data}", sender.ToString(), JsonSerializer.Serialize(packet.Params));
+            logger.ZLogError($"invalid _update_cosmetics packet from {sender} : {JsonSerializer.Serialize(packet.Params)}");
             return;
         }
 
         var player = actorManager.GetPlayerActor(sender.SteamId);
         if (player == null)
         {
-            logger.LogError("player actor not found for {Member}", sender.ToString());
+            logger.ZLogError($"player actor not found for {sender}");
             return;
         }
 
@@ -134,14 +124,14 @@ public class ActorActionHandler(ILogger<ActorActionHandler> logger, IActorManage
 
         if (packet.Params.Count != 1)
         {
-            logger.LogError("invalid _update_held_item packet from {Member} : {Data}", sender.ToString(), JsonSerializer.Serialize(packet.Params));
+            logger.ZLogError($"invalid _update_held_item packet from {sender} : {JsonSerializer.Serialize(packet.Params)}");
             return;
         }
 
         var player = actorManager.GetPlayerActor(sender.SteamId);
         if (player == null)
         {
-            logger.LogError("player actor not found for {Member}", sender.ToString());
+            logger.ZLogError($"player actor not found for {sender}");
             return;
         }
 
@@ -156,14 +146,14 @@ public class ActorActionHandler(ILogger<ActorActionHandler> logger, IActorManage
         if (packet.Action != "_sync_create_bubble") return;
         if (packet.Params.Count != 1)
         {
-            logger.LogError("invalid _sync_create_bubble packet from {Member} : {Data}", sender.ToString(), JsonSerializer.Serialize(packet.Params));
+            logger.ZLogError($"invalid _sync_create_bubble packet from {sender} : {JsonSerializer.Serialize(packet.Params)}");
             return;
         }
 
         var player = actorManager.GetPlayerActor(sender.SteamId);
         if (player == null)
         {
-            logger.LogError("player actor not found for {Member}", sender.ToString());
+            logger.ZLogError($"player actor not found for {sender}", sender.ToString());
             return;
         }
 
@@ -176,14 +166,14 @@ public class ActorActionHandler(ILogger<ActorActionHandler> logger, IActorManage
         if (packet.Action != "_sync_level_bubble") return;
         if (packet.Params.Count != 0)
         {
-            logger.LogError("invalid _sync_level_bubble packet from {Member} : {Data}", sender.ToString(), JsonSerializer.Serialize(packet.Params));
+            logger.ZLogError($"invalid _sync_level_bubble packet from {sender} : {JsonSerializer.Serialize(packet.Params)}");
             return;
         }
 
         var player = actorManager.GetPlayerActor(sender.SteamId);
         if (player == null)
         {
-            logger.LogError("player actor not found for {Member}", sender.ToString());
+            logger.ZLogError($"player actor not found for {sender}");
             return;
         }
 

@@ -4,6 +4,7 @@ using WFDS.Common.Steam;
 using WFDS.Common.Types;
 using WFDS.Server.Core.Configuration;
 using WFDS.Server.Core.Network;
+using ZLogger;
 
 namespace WFDS.Server.Core;
 
@@ -23,12 +24,12 @@ internal class WebFishingServer(
     {
         if (!_mutex.WaitOne(0, false))
         {
-            logger.LogError("WFDS.Server is already running");
+            logger.ZLogError($"WFDS.Server is already running");
             lifetime.StopApplication();
             return;
         }
 
-        logger.LogInformation("WebFishingServer start");
+        logger.ZLogInformation($"WebFishingServer start");
         _ = LogicLooperPool.Shared.RegisterActionAsync(Update).ConfigureAwait(false);
 
         if (!steam.Init())
@@ -58,7 +59,7 @@ internal class WebFishingServer(
 
         // 프로그램을 를 종료한다.
         lobby.LeaveLobby(out _);
-        logger.LogInformation("WebFishingServer stop");
+        logger.ZLogInformation($"WebFishingServer stop");
         lifetime.StopApplication();
     }
 
@@ -66,7 +67,7 @@ internal class WebFishingServer(
     {
         if (ctx.CancellationToken.IsCancellationRequested)
         {
-            logger.LogError("update canceled");
+            logger.ZLogError($"update canceled");
             return false;
         }
 
@@ -81,15 +82,15 @@ internal class WebFishingServer(
 
     public override async Task StopAsync(CancellationToken cancellationToken)
     {
-        logger.LogInformation("try session close");
+        logger.ZLogInformation($"try session close");
         session.ServerClose();
 
-        logger.LogInformation("steam api shutdown");
+        logger.ZLogInformation($"steam api shutdown");
         steam.Shutdown();
 
-        logger.LogInformation("try steam looper is stopping");
+        logger.ZLogInformation($"try steam looper is stopping");
 
         await base.StopAsync(cancellationToken);
-        logger.LogInformation("WebFishingServer stopped");
+        logger.ZLogInformation($"WebFishingServer stopped");
     }
 }

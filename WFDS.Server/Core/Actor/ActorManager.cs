@@ -6,6 +6,7 @@ using WFDS.Common.Actor.Actors;
 using WFDS.Common.GameEvents;
 using WFDS.Common.GameEvents.Events;
 using WFDS.Common.Steam;
+using ZLogger;
 
 namespace WFDS.Server.Core.Actor;
 
@@ -143,13 +144,13 @@ internal sealed class ActorManager(ILogger<ActorManager> logger, IActorIdManager
 
     private bool TryAddActorAndPropagate(IActor actor)
     {
-        logger.LogInformation("try add actor {ActorId} {ActorType} - {Position}", actor.ActorId, actor.Type, actor.Position);
+        logger.ZLogInformation($"try add actor {actor.ActorId} {actor.Type} - {actor.Position}");
 
         if (actor is IPlayerActor player)
         {
             if (!_players.TryAdd(player.CreatorId, player))
             {
-                logger.LogError("player already exists");
+                logger.ZLogError($"player already exists");
                 return false;
             }
         }
@@ -158,14 +159,14 @@ internal sealed class ActorManager(ILogger<ActorManager> logger, IActorIdManager
         {
             if (!_owned.TryAdd(actor.ActorId, actor))
             {
-                logger.LogError("owned actor already exists");
+                logger.ZLogError($"owned actor already exists");
                 return false;
             }
         }
 
         if (!_actors.TryAdd(actor.ActorId, actor))
         {
-            logger.LogError("actor already exists");
+            logger.ZLogError($"actor already exists");
             return false;
         }
 
@@ -184,7 +185,7 @@ internal sealed class ActorManager(ILogger<ActorManager> logger, IActorIdManager
     {
         if (actorType.MaxCount < 0)
         {
-            logger.LogWarning("{Type} actor spawn disallow", actorType);
+            logger.ZLogWarning($"{actorType} actor spawn disallow");
             return false;
         }
 
@@ -202,7 +203,7 @@ internal sealed class ActorManager(ILogger<ActorManager> logger, IActorIdManager
                 return TryRemoveActorFirstByType(actorType, ActorRemoveTypes.ActorCountOver, out _);
             }
 
-            logger.LogWarning("{Type} actor limit reached ({MaxCount})", ActorType.RainCloud, ActorType.RainCloud.MaxCount);
+            logger.ZLogWarning($"{ActorType.RainCloud} actor limit reached ({ActorType.RainCloud.MaxCount})");
             return false;
         }
 
@@ -214,7 +215,7 @@ internal sealed class ActorManager(ILogger<ActorManager> logger, IActorIdManager
         actor = default!;
         if (MaxOwnedActorCount <= _owned.Count)
         {
-            logger.LogError("owned actor limit reached ({Count}/{MaxCount})", _owned.Count, MaxOwnedActorCount);
+            logger.ZLogError($"owned actor limit reached ({_owned.Count}/{MaxOwnedActorCount})");
             return false;
         }
 
@@ -233,7 +234,7 @@ internal sealed class ActorManager(ILogger<ActorManager> logger, IActorIdManager
 
         if (!idManager.Add(actorId))
         {
-            logger.LogError("actor id already exists {ActorId} {ActorType}", actorId, "player");
+            logger.ZLogError($"actor id already exists {actorId} {ActorType.Player}");
             return false;
         }
 
@@ -254,7 +255,7 @@ internal sealed class ActorManager(ILogger<ActorManager> logger, IActorIdManager
         actor = null!;
         if (!idManager.Add(actorId))
         {
-            logger.LogError("actor id already exists {ActorId} {ActorType}", actorId, actorType);
+            logger.ZLogError($"actor id already exists {actorId} {actorType}");
             return false;
         }
 
@@ -267,7 +268,7 @@ internal sealed class ActorManager(ILogger<ActorManager> logger, IActorIdManager
         var ownedActors = GetActorsByCreatorId(steamId);
         if (ownedActors.Count() >= MaxOwnedActorCount)
         {
-            logger.LogError("owned actor limit reached ({MaxCount})", MaxOwnedActorCount);
+            logger.ZLogError($"owned actor limit reached ({MaxOwnedActorCount})");
             return false;
         }
 
@@ -311,7 +312,7 @@ internal sealed class ActorManager(ILogger<ActorManager> logger, IActorIdManager
         {
             if (!_players.TryRemove(actor.CreatorId, out _))
             {
-                logger.LogError("player not found {SteamId}", actor.CreatorId);
+                logger.ZLogError($"player not found {actor.CreatorId}");
             }
         }
 
@@ -323,7 +324,7 @@ internal sealed class ActorManager(ILogger<ActorManager> logger, IActorIdManager
         idManager.Return(actorId);
         actor.Remove();
         
-        logger.LogInformation("actor removed {ActorId} {ActorType} {CreatorId} {Type}", actorId, actor.Type, actor.CreatorId, type);
+        logger.ZLogInformation($"actor removed {actorId} {actor.Type} {actor.CreatorId} {type}");
         GameEventBus.Publish(new ActorRemoveEvent(actorId, actor.Type, actor.CreatorId, type));
         return true;
     }

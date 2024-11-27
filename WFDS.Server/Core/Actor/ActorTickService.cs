@@ -4,6 +4,7 @@ using WFDS.Common.GameEvents;
 using WFDS.Common.GameEvents.Events;
 using WFDS.Common.Steam;
 using WFDS.Server.Core.Network;
+using ZLogger;
 
 namespace WFDS.Server.Core.Actor;
 
@@ -17,7 +18,7 @@ internal sealed class ActorTickService(ILogger<ActorTickService> logger, IActorM
 
     public Task StopAsync(CancellationToken cancellationToken)
     {
-        logger.LogInformation("ActorTickService stopped");
+        logger.ZLogInformation($"ActorTickService stopped");
         return Task.CompletedTask;
     }
 
@@ -54,7 +55,7 @@ internal sealed class ActorTickService(ILogger<ActorTickService> logger, IActorM
                 actor.IsDead = true;
                 actor.IsRemoved = true;
 
-                logger.LogInformation("remove actor {ActorId} {ActorType} (owner not found)", actor.ActorId, actor.Type);
+                logger.ZLogInformation($"remove actor {actor.ActorId} {actor.Type} (owner not found)");
                 manager.TryRemoveActor(actor.ActorId, ActorRemoveTypes.OwnerNotFound, out _);
                 return false;
             }
@@ -70,7 +71,7 @@ internal sealed class ActorTickService(ILogger<ActorTickService> logger, IActorM
             actor.IsDead = true;
             actor.IsRemoved = true;
 
-            logger.LogInformation("decay actor {ActorId} {ActorType}", actor.ActorId, actor.Type);
+            logger.ZLogInformation($"decay actor {actor.ActorId} {actor.Type}");
             manager.TryRemoveActor(actor.ActorId, ActorRemoveTypes.Decay, out _);
             return true;
         }

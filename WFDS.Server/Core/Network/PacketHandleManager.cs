@@ -4,6 +4,7 @@ using Steamworks;
 using WFDS.Common.Network;
 using WFDS.Common.Steam;
 using WFDS.Common.Types;
+using ZLogger;
 
 namespace WFDS.Server.Core.Network;
 
@@ -38,7 +39,7 @@ internal class PacketHandleManager
         {
             if (!dic.TryGetValue("type", out var type))
             {
-                _logger.LogError("received packet without type from {Sender} on channel {Channel}", sender.m_SteamID, channel);
+                _logger.ZLogError($"received packet without type from {sender} on channel {channel}");
                 return;
             }
 
@@ -51,7 +52,7 @@ internal class PacketHandleManager
             var session = _sessionManager.GetSession(sender);
             if (session == null)
             {
-                _logger.LogWarning("received packet from {Sender} on channel {Channel} without session", sender.m_SteamID, channel);
+                _logger.ZLogWarning($"received packet from {sender} on channel {channel} without session");
                 _sessionManager.KickPlayer(sender);
                 return;
             }
@@ -67,7 +68,7 @@ internal class PacketHandleManager
         }
         else
         {
-            _logger.LogWarning("received invalid packet from {Sender} on channel {Channel}", sender, channel);
+            _logger.ZLogWarning($"received invalid packet from {sender} on channel {channel}");
         }
     }
 
