@@ -7,11 +7,10 @@ using WFDS.Common.GameEvents.Events;
 using WFDS.Common.Helpers;
 using WFDS.Common.Network;
 using WFDS.Common.Network.Packets;
-using WFDS.Common.Steam;
 using WFDS.Common.Types;
 using WFDS.Godot.Binary;
 
-namespace WFDS.Server.Core.Network;
+namespace WFDS.Common.Steam;
 
 public sealed class SessionManager : Singleton<SessionManager>, IDisposable
 {

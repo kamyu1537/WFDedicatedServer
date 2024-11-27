@@ -1,6 +1,6 @@
 ﻿using WFDS.Common.Network;
+using WFDS.Common.Steam;
 using WFDS.Common.Types;
-using WFDS.Server.Core.Network;
 
 namespace WFDS.Common.Actor;
 

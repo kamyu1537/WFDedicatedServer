@@ -1,4 +1,6 @@
-﻿namespace WFDS.Server.Core.Network;
+﻿using WFDS.Common.Steam;
+
+namespace WFDS.Server.Core.Network;
 
 internal class PacketSendService(SessionManager sessionManager) : BackgroundService
 {
