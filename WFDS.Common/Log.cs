@@ -25,12 +25,9 @@ public static class Log
             });
         });
         
-        logging.AddZLoggerFile("Logs/latest.log", options =>
-        {
-            options.UseJsonFormatter();
-        });
         logging.AddZLoggerRollingFile(options =>
         {
+            options.UseJsonFormatter();
             options.FilePathSelector = (DateTimeOffset timestamp, int sequenceNumber) => $"logs/{timestamp.ToLocalTime():yyyyMMdd}_{sequenceNumber:000}.log";
             options.RollingInterval = RollingInterval.Day;
             options.RollingSizeKB = 1024;
