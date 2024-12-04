@@ -5,25 +5,69 @@
     Layout = "_Layout";
 }
 
-<h1 class="ui header">Sessions</h1>
-Session Count: @Model.SessionCount / @Model.MaxSessionCount
+@if (!string.IsNullOrEmpty(Request.Query["message"]))
+{
+    <script>
+        alert('@Request.Query["message"]');
+        window.location.href = window.location.pathname;
+    </script>
+}
+else
+{
+    <div class="ui relaxed grid one column row">
+        <div class="column">
+            <h1 class="ui header">Sessions</h1>
+            Session Count: @Model.SessionCount / @Model.MaxSessionCount
 
-<table class="ui celled table">
-    <thead>
-    <tr>
-        <th>SteamId</th>
-        <th>Username</th>
-        <th>ConnectTime</th>
-    </tr>
-    </thead>
-    <tbody>
-    @foreach (var session in Model.GetSessions())
-    {
-        <tr>
-            <td>@session.SteamId</td>
-            <td>@session.Name</td>
-            <td>@session.ConnectTime</td>
-        </tr>
-    }
-    </tbody>
-</table>
+            <table class="ui celled table">
+                <thead>
+                <tr>
+                    <th>SteamId</th>
+                    <th>Username</th>
+                    <th>ConnectTime</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                @foreach (var session in Model.GetSessions())
+                {
+                    <tr>
+                        <td>@session.SteamId</td>
+                        <td>@session.Name</td>
+                        <td>@session.ConnectTime</td>
+                        <td>
+                            <form method="post" style="display: inline;">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="steamId" value="@session.SteamId"/>
+                                <button class="ui button orange tiny" type="submit" asp-page-handler="kick">kick
+                                </button>
+                                <button class="ui button red tiny" type="submit" asp-page-handler="ban">ban</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+
+        <form method="post" class="column">
+            <h1>Banned Players</h1>
+
+            <table class="ui table celled">
+                <thead>
+                <tr>
+                    <th>SteamId</th>
+                </tr>
+                </thead>
+                <tbody>
+                @foreach (var steamId in Model.GetBannedPlayers())
+                {
+                    <tr>
+                        <td>@steamId</td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </form>
+    </div>
+}
