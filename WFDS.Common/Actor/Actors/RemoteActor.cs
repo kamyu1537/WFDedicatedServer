@@ -13,7 +13,6 @@ public sealed class RemoteActor : Actor<RemoteActor>
     public override Vector3 Position { get; set; } = Vector3.Zero;
     public override Vector3 Rotation { get; set; } = Vector3.Zero;
     public override bool Decay => _decay;
-    public override long DefaultDecayTimer => 600;
     public override DateTimeOffset CreateTime { get; set; } = DateTimeOffset.UtcNow;
 
     public override bool CanWipe => false;

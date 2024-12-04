@@ -13,7 +13,6 @@ public sealed class AmbientBirdActor : Actor<AmbientBirdActor>
     public override Vector3 Position { get; set; } = Vector3.Zero;
     public override Vector3 Rotation { get; set; } = Vector3.Zero;
     public override bool Decay => true;
-    public override long DefaultDecayTimer => 600;
     public override DateTimeOffset CreateTime { get; set; } = DateTimeOffset.UtcNow;
 
     public override bool CanWipe => true;

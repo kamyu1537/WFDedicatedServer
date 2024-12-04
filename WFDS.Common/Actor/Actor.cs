@@ -16,7 +16,6 @@ public abstract class Actor<T> : IActor where T : class, IActor, new()
     public abstract Vector3 Position { get; set; }
     public abstract Vector3 Rotation { get; set; }
     public abstract bool Decay { get; }
-    public abstract long DefaultDecayTimer { get; }
     public long DecayTimer { get; set; } = 0;
     public abstract DateTimeOffset CreateTime { get; set; }
     public abstract bool CanWipe { get; }
@@ -40,13 +39,14 @@ public abstract class Actor<T> : IActor where T : class, IActor, new()
 
         Zone = string.Empty;
         ZoneOwner = -1;
-        
+
+        DecayTimer = -1;
         Position = Vector3.Zero;
         Rotation = Vector3.Zero;
         
-        DecayTimer = DefaultDecayTimer;
         IsRemoved = false;
         IsDead = false;
+        
         OnReset();
     }
     

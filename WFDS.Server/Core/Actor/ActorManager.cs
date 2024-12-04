@@ -10,7 +10,7 @@ using ZLogger;
 
 namespace WFDS.Server.Core.Actor;
 
-internal sealed class ActorManager(ILogger<ActorManager> logger, IActorIdManager idManager, SteamManager steam) : IActorManager
+internal sealed class ActorManager(ILogger<ActorManager> logger, IActorIdManager idManager, SteamManager steam, IActorSettingManager actorSettingManager) : IActorManager
 {
     private const string MainZone = "main_zone";
     private const int MaxOwnedActorCount = 32;
@@ -179,24 +179,26 @@ internal sealed class ActorManager(ILogger<ActorManager> logger, IActorIdManager
         actor.Zone = MainZone;
         actor.ZoneOwner = -1;
         actor.CreateTime = DateTimeOffset.UtcNow;
+        actor.DecayTimer = actorSettingManager.GetDecayTimer(actor.Type.Name);
     }
 
     private bool CheckAndRemoveActor(ActorType actorType)
     {
-        if (actorType.MaxCount < 0)
+        var maxCount = actorSettingManager.GetMaxCount(actorType.Name);
+        
+        if (maxCount < 0)
         {
             logger.ZLogWarning($"{actorType} actor spawn disallow");
             return false;
         }
 
-        // unlimited
-        if (actorType.MaxCount == 0)
+        if (maxCount == 0) // unlimited
         {
             return true;
         }
 
         var actorCount = GetActorCountByType(actorType);
-        if (actorType.MaxCount <= actorCount)
+        if (maxCount <= actorCount)
         {
             if (actorType.DeleteOver)
             {

@@ -15,7 +15,6 @@ public sealed class MetalSpawnActor : Actor<MetalSpawnActor>
     public override bool Decay => true;
     public override bool IsRemoved { get; set; }
     
-    public override long DefaultDecayTimer => 10000;
     public override DateTimeOffset CreateTime { get; set; } = DateTimeOffset.UtcNow;
 
     public override bool CanWipe => true;

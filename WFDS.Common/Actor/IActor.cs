@@ -14,7 +14,6 @@ public interface IActor
     Vector3 Rotation { get; set; }
 
     bool Decay { get; }
-    long DefaultDecayTimer { get; }
     long DecayTimer { get; set; }
     DateTimeOffset CreateTime { get; set; }
 

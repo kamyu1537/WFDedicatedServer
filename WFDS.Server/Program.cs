@@ -39,19 +39,21 @@ try
 
     var section = configuration.GetSection("Server");
     var setting = section.Get<ServerSetting>();
+
     ArgumentNullException.ThrowIfNull(setting, nameof(setting));
 
     builder.Logging.ClearProviders();
-    // builder.Logging.AddZLoggerLogProcessor(new LogProcessor());
     builder.Services.AddSingleton(Log.Factory);
 
     builder.Services.Configure<ServerSetting>(section);
+    builder.UseActorSettings();
 
     builder.Services.AddSingleton(SteamManager.Inst);
     builder.Services.AddSingleton(LobbyManager.Inst);
     builder.Services.AddSingleton(SessionManager.Inst);
     builder.Services.AddSingleton<PacketHandleManager>();
 
+    builder.Services.AddSingleton<IActorSettingManager, ActorSettingManager>();
     builder.Services.AddSingleton<IZoneManager, ZoneManager>();
     builder.Services.AddSingleton<IActorIdManager, ActorIdManager>();
     builder.Services.AddSingleton<IActorManager, ActorManager>();
