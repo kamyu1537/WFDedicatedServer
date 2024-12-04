@@ -101,8 +101,9 @@ try
         options.SupportNonNullableReferenceTypes();
         options.EnableAnnotations();
     });
-
+    
     builder.Services.Configure<RouteOptions>(x => x.LowercaseUrls = true);
+    builder.Services.AddRazorPages();
     builder.Services.AddMvc().AddJsonOptions(x =>
     {
         x.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower;

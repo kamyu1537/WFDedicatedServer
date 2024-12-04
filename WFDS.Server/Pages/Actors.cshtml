@@ -6,8 +6,11 @@
     Layout = "_Layout";
 }
 
+
 <h1 class="ui header">Actors</h1>
-<div class="ui relaxed grid one column row">
+<form method="post" class="ui relaxed grid one column row">
+    @Html.AntiForgeryToken()
+
     <div class="column">
         <h2>Owned</h2>
         Count: @Model.GetOwnedActorCount()
@@ -31,7 +34,9 @@
                     <td>@actor.DecayTimer</td>
                     <td>@actor.CreateTime</td>
                     <td>
-                        <button>Delete</button>
+                        <button type="submit" class="ui tiny button red" asp-page-handler="delete"
+                                asp-route-id="@actor.ActorId">delete
+                        </button>
                     </td>
                 </tr>
             }
@@ -67,4 +72,11 @@
             </tbody>
         </table>
     </div>
-</div>
+</form>
+
+@if (!string.IsNullOrEmpty(Model.Message))
+{
+    <script>
+        alert('@Model.Message');
+    </script>
+}
