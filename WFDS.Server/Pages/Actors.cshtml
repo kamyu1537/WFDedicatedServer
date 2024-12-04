@@ -1,0 +1,70 @@
+﻿@page
+@model WFDS.Server.Pages.Actors
+
+@{
+    ViewData["Title"] = "Actors";
+    Layout = "_Layout";
+}
+
+<h1 class="ui header">Actors</h1>
+<div class="ui relaxed grid one column row">
+    <div class="column">
+        <h2>Owned</h2>
+        Count: @Model.GetOwnedActorCount()
+
+        <table class="ui celled table table-striped">
+            <thead>
+            <tr>
+                <th>Id</th>
+                <th>Type</th>
+                <th>DecayTimer</th>
+                <th>CreatedAt</th>
+                <th>Action</th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var actor in Model.GetOwnedActors())
+            {
+                <tr>
+                    <td>@actor.ActorId</td>
+                    <td>@actor.Type.Name</td>
+                    <td>@actor.DecayTimer</td>
+                    <td>@actor.CreateTime</td>
+                    <td>
+                        <button>Delete</button>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+
+    <div class="column">
+        <h2>All</h2>
+        Count: @Model.GetAllActorCount()
+
+        <table class="ui celled table">
+            <thead>
+            <tr>
+                <th>Id</th>
+                <th>Type</th>
+                <th>CreatorId</th>
+                <th>DecayTimer</th>
+                <th>CreatedAt</th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var actor in Model.GetAllActors())
+            {
+                <tr>
+                    <td>@actor.ActorId</td>
+                    <td>@actor.Type.Name</td>
+                    <td>@actor.CreatorId</td>
+                    <td>@actor.DecayTimer</td>
+                    <td>@actor.CreateTime</td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+</div>

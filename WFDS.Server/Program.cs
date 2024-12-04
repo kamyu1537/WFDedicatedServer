@@ -124,14 +124,11 @@ try
 
     app.UseRouting();
     app.UseStaticFiles();
+    app.MapRazorPages();
     app.MapControllers();
 
     app.UseSwagger();
-    app.UseSwaggerUI(options =>
-    {
-        options.SwaggerEndpoint("/swagger/v1/swagger.json", "WEBFISHING Dedicated Server");
-        options.RoutePrefix = "";
-    });
+    app.UseSwaggerUI();
 
     app.Urls.Add($"http://*:{setting.AdminPort}/");
 

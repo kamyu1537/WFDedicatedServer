@@ -1,0 +1,29 @@
+﻿@page "/sessions"
+@model WFDS.Server.Pages.Sessions
+
+@{
+    Layout = "_Layout";
+}
+
+<h1 class="ui header">Sessions</h1>
+Session Count: @Model.SessionCount / @Model.MaxSessionCount
+
+<table class="ui celled table">
+    <thead>
+    <tr>
+        <th>SteamId</th>
+        <th>Username</th>
+        <th>ConnectTime</th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var session in Model.GetSessions())
+    {
+        <tr>
+            <td>@session.SteamId</td>
+            <td>@session.Name</td>
+            <td>@session.ConnectTime</td>
+        </tr>
+    }
+    </tbody>
+</table>
