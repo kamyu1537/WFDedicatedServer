@@ -12,23 +12,22 @@ public class Actors(IActorManager actorManager) : PageModel
     public int GetAllActorCount() => actorManager.GetActorCount();
     public IEnumerable<IActor> GetAllActors() => actorManager.GetActors();
 
-    public string Message { get; set; } = string.Empty;
-
     public void OnGet()
     {
     }
 
     public async Task<IActionResult> OnPostDeleteAsync(long id)
     {
+        string message;
         if (actorManager.TryRemoveActor(id, ActorRemoveTypes.QueueFree, out _))
         {
-            Message = $"actor {id} deleted";   
+            message = $"actor {id} deleted";   
         }
         else
         {
-            Message = $"actor {id} deleted failed";
+            message = $"actor {id} deleted failed";
         }
         
-        return Page();
+        return RedirectToPage(new { message });
     }
 }

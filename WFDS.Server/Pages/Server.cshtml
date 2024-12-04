@@ -1,0 +1,13 @@
+﻿@page
+@model WFDS.Server.Pages.Server
+
+@{
+    ViewData["Title"] = "Server";
+    Layout = "_Layout";
+}
+
+<h1>Graceful Shutdown</h1>
+<form method="post" onsubmit="return confirm('Are you sure you want to shutdown the server?')">
+    @Html.AntiForgeryToken()
+    <button type="submit" class="ui button red" asp-page-handler="shutdown">Graceful Shutdown</button>
+</form>

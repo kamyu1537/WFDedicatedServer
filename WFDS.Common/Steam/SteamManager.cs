@@ -32,13 +32,14 @@ public class SteamManager : Singleton<SteamManager>
 
     public void Shutdown()
     {
-        SteamAPI.Shutdown();
         Initialized = false;
         _steamId = CSteamID.Nil;
+        SteamAPI.Shutdown();
     }
     
     public void RunCallbacks()
     {
+        if (!Initialized) return;
         SteamAPI.RunCallbacks();
     }
 }
