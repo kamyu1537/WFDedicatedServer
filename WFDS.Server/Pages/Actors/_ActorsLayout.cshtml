@@ -1,0 +1,12 @@
+﻿@{
+    Layout = "_Layout";
+}
+
+<h1 class="ui header">Actors</h1>
+
+<div class="ui two item menu">
+    <a asp-page="/Actors/Index" class="item">Owned</a>
+    <a asp-page="/Actors/All" class="item">All</a>
+</div>
+
+@RenderBody()

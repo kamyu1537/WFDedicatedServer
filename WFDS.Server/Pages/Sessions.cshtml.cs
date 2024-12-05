@@ -20,7 +20,7 @@ public class Sessions(SessionManager sessionManager, LobbyManager lobbyManager) 
 
     public async Task<IActionResult> OnPostKickAsync(string steamId)
     {
-        if (ulong.TryParse(steamId, out var value))
+        if (!ulong.TryParse(steamId, out var value))
         {
             return RedirectToPage();
         }
@@ -31,7 +31,7 @@ public class Sessions(SessionManager sessionManager, LobbyManager lobbyManager) 
     
     public async Task<IActionResult> OnPostBanAsync(string steamId)
     {
-        if (ulong.TryParse(steamId, out var value))
+        if (!ulong.TryParse(steamId, out var value))
         {
             return RedirectToPage();
         }

@@ -2,7 +2,33 @@
 @model WFDS.Server.Pages.Index
 
 @{
+    ViewBag.Title = "Home";
     Layout = "_Layout";
 }
 
-home
+<h1>Home</h1>
+
+<h2>Lobby Info</h2>
+<table class="ui table celled">
+    <tbody>
+    <tr>
+        <td>Lobby Id</td>
+        <td>@Model.LobbyManager.GetLobbyId()</td>
+    </tr>
+    
+    <tr>
+        <td>Lobby Type</td>
+        <td>@Model.LobbyManager.GetLobbyType()</td>
+    </tr>
+    
+    <tr>
+        <td>Lobby Name</td>
+        <td>@Model.LobbyManager.GetName()</td>
+    </tr>
+    
+    <tr>
+        <td>Lobby Code</td>
+        <td>@Model.LobbyManager.GetCode()</td>
+    </tr>
+    </tbody>
+</table>

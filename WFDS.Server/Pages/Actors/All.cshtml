@@ -1,0 +1,36 @@
+﻿@page
+@model WFDS.Server.Pages.Actors.All
+
+@{
+    Layout = "_ActorsLayout";
+    ViewBag.TItle = "Actors - All";
+}
+
+<div class="column">
+    <h2>All</h2>
+    Count: @Model.GetAllActorCount()
+
+    <table class="ui celled table">
+        <thead>
+        <tr>
+            <th>Id</th>
+            <th>Type</th>
+            <th>CreatorId</th>
+            <th>DecayTimer</th>
+            <th>CreatedAt</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var actor in Model.GetAllActors())
+        {
+            <tr>
+                <td>@actor.ActorId</td>
+                <td>@actor.Type.Name</td>
+                <td>@actor.CreatorId</td>
+                <td>@actor.DecayTimer</td>
+                <td>@actor.CreateTime</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>

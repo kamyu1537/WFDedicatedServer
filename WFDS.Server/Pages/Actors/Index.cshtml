@@ -1,9 +1,9 @@
 ﻿@page
-@model WFDS.Server.Pages.Actors
+@model WFDS.Server.Pages.Actors.Index
 
 @{
-    ViewData["Title"] = "Actors";
-    Layout = "_Layout";
+    Layout = "_ActorsLayout";
+    ViewBag.TItle = "Actors - Owned";
 }
 
 @if (!string.IsNullOrEmpty(Request.Query["message"]))
@@ -15,7 +15,7 @@
 }
 else
 {
-    <h1 class="ui header">Actors</h1>
+
     <form method="post" class="ui relaxed grid one column row">
         @Html.AntiForgeryToken()
 
@@ -46,35 +46,6 @@ else
                                     asp-route-id="@actor.ActorId">delete
                             </button>
                         </td>
-                    </tr>
-                }
-                </tbody>
-            </table>
-        </div>
-
-        <div class="column">
-            <h2>All</h2>
-            Count: @Model.GetAllActorCount()
-
-            <table class="ui celled table">
-                <thead>
-                <tr>
-                    <th>Id</th>
-                    <th>Type</th>
-                    <th>CreatorId</th>
-                    <th>DecayTimer</th>
-                    <th>CreatedAt</th>
-                </tr>
-                </thead>
-                <tbody>
-                @foreach (var actor in Model.GetAllActors())
-                {
-                    <tr>
-                        <td>@actor.ActorId</td>
-                        <td>@actor.Type.Name</td>
-                        <td>@actor.CreatorId</td>
-                        <td>@actor.DecayTimer</td>
-                        <td>@actor.CreateTime</td>
                     </tr>
                 }
                 </tbody>
