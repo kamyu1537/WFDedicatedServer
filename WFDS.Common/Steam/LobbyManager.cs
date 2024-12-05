@@ -113,6 +113,11 @@ public class LobbyManager : Singleton<LobbyManager>, IDisposable
             return false;
         }
 
+        if (!SteamManager.Inst.Initialized)
+        {
+            return false;
+        }
+
         try
         {
             var lobbyOwner = SteamMatchmaking.GetLobbyOwner(_lobbyId);
