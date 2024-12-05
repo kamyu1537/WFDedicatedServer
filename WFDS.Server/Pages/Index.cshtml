@@ -6,7 +6,16 @@
     Layout = "_Layout";
 }
 
-<h1>Home</h1>
+<h1>WFDS</h1>
+
+<h2>Server Status</h2>
+<div id="server-status">
+    <h3>CPU Usage</h3>
+    <canvas id="cpuChart" height="50"></canvas>
+
+    <h3>Memory Usage</h3>
+    <canvas id="memoryChart" height="50"></canvas>
+</div>
 
 <h2>Lobby Info</h2>
 <table class="ui table celled">
@@ -15,20 +24,124 @@
         <td>Lobby Id</td>
         <td>@Model.LobbyManager.GetLobbyId()</td>
     </tr>
-    
+
     <tr>
         <td>Lobby Type</td>
         <td>@Model.LobbyManager.GetLobbyType()</td>
     </tr>
-    
+
     <tr>
         <td>Lobby Name</td>
         <td>@Model.LobbyManager.GetName()</td>
     </tr>
-    
+
     <tr>
         <td>Lobby Code</td>
         <td>@Model.LobbyManager.GetCode()</td>
     </tr>
     </tbody>
 </table>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        let cpuCtx = document.getElementById('cpuChart').getContext('2d');
+        let cpuChart = new Chart(cpuCtx, {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'CPU Usage (%)',
+                    data: [],
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1,
+                    fill: true,
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        suggestedMin: 0,
+                        suggestedMax: 100
+                    }
+                }
+            }
+        });
+        
+        let memoryCtx = document.getElementById('memoryChart').getContext('2d');
+        let memoryChart = new Chart(memoryCtx, {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'Memory Usage (MB)',
+                    data: [],
+                    borderColor: 'rgb(120,75,192)',
+                    borderWidth: 1,
+                    fill: true,
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        suggestedMin: 0,
+                    }
+                }
+            }
+        });
+
+        function updateCpuChart(cpu_usage) {
+            cpuChart.data.labels.push(new Date().toISOString());
+            cpuChart.data.datasets.forEach((dataset) => {
+                dataset.data.push(cpu_usage);
+
+                if (dataset.data.length > 5) {
+                    dataset.data.shift();
+                }
+            });
+
+            if (cpuChart.data.labels.length > 5) {
+                cpuChart.data.labels.shift();
+            }
+            cpuChart.update();
+        }
+        
+        function updateMemoryChart(memory) {
+            memoryChart.data.labels.push(new Date().toISOString());
+            memoryChart.data.datasets.forEach((dataset) => {
+                dataset.data.push(memory);
+
+                if (dataset.data.length > 5) {
+                    dataset.data.shift();
+                }
+            });
+
+            if (memoryChart.data.labels.length > 5) {
+                memoryChart.data.labels.shift();
+            }
+            memoryChart.update();
+        }
+
+        function pollData() {
+            $.ajax({
+                url: '/api/v1/server/status',
+                type: 'GET',
+                success: function (result) {
+                    updateCpuChart(result.cpu_usage * 100);
+                    updateMemoryChart(result.total_heap_memory_mb);
+                    setTimeout(pollData, 5000);
+                },
+                error: function (error) {
+                    console.log(error);
+                    setTimeout(pollData, 5000);
+                }
+            });
+        }
+
+        $(document).ready(function () {
+            pollData();
+        });
+
+
+    </script>
+    }

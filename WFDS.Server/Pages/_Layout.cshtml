@@ -1,4 +1,5 @@
-﻿<!DOCTYPE html>
+﻿@using System.Collections.Specialized
+<!DOCTYPE html>
 
 <html lang="en">
 <head>
@@ -17,5 +18,7 @@
         @RenderBody()
     </div>
 </main>
+
+@await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
