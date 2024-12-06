@@ -1,0 +1,25 @@
+﻿@page
+@model WFDS.Server.Pages.Session.Banned
+
+@{
+    ViewBag.Title = "Session - Banned";
+    Layout = "_SessionLayout";
+}
+
+<form method="post" class="column">
+    <table class="ui table celled">
+        <thead>
+        <tr>
+            <th>SteamId</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var steamId in Model.GetBannedPlayers())
+        {
+            <tr>
+                <td>@steamId</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</form>

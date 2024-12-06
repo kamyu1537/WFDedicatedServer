@@ -1,0 +1,43 @@
+﻿@page "/sessions"
+@model WFDS.Server.Pages.Session.Index
+
+@{
+    ViewBag.Title = "Session - CurrentPlayers";
+    Layout = "_SessionLayout";
+}
+
+<div class="ui relaxed grid one column row">
+    <div class="column">
+        Count: @Model.SessionCount / @Model.MaxSessionCount
+
+        <table class="ui celled table">
+            <thead>
+            <tr>
+                <th>SteamId</th>
+                <th>Username</th>
+                <th>ConnectTime</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var session in Model.GetSessions())
+            {
+                <tr>
+                    <td>@session.SteamId</td>
+                    <td>@session.Name</td>
+                    <td>@session.ConnectTime</td>
+                    <td>
+                        <form method="post" style="display: inline;">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="steamId" value="@session.SteamId"/>
+                            <button class="ui button orange tiny" type="submit" asp-page-handler="kick">kick
+                            </button>
+                            <button class="ui button red tiny" type="submit" asp-page-handler="ban">boot</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+</div>

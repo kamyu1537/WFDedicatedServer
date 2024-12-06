@@ -2,9 +2,9 @@
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using WFDS.Common.Actor;
 
-namespace WFDS.Server.Pages;
+namespace WFDS.Server.Pages.Event;
 
-public class Events(IActorSpawnManager spawnManager) : PageModel
+public class Index(IActorSpawnManager spawnManager) : PageModel
 {
     public readonly Dictionary<string, Action> SpawnEvents = new()
     {
@@ -20,7 +20,7 @@ public class Events(IActorSpawnManager spawnManager) : PageModel
     {
     }
 
-    public async Task<IActionResult> OnPostSpawnAsync(string eventName)
+    public IActionResult OnPostSpawnAsync(string eventName)
     {
         if (!SpawnEvents.TryGetValue(eventName, out var action))
             return RedirectToPage(new { message = "event not found!" });

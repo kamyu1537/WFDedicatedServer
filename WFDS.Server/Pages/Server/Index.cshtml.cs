@@ -1,15 +1,15 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace WFDS.Server.Pages;
+namespace WFDS.Server.Pages.Server;
 
-public class Server(IHostApplicationLifetime lifetime) : PageModel
+public class Index(IHostApplicationLifetime lifetime) : PageModel
 {
     public void OnGet()
     {
     }
 
-    public async Task<IActionResult> OnPostShutdownAsync()
+    public IActionResult OnPostShutdown()
     {
         lifetime.StopApplication();
         return RedirectToPage();

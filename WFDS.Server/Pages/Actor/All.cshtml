@@ -1,13 +1,12 @@
 ﻿@page
-@model WFDS.Server.Pages.Actors.All
+@model WFDS.Server.Pages.Actor.All
 
 @{
-    Layout = "_ActorsLayout";
-    ViewBag.TItle = "Actors - All";
+    Layout = "_ActorLayout";
+    ViewBag.TItle = "Actor - All";
 }
 
 <div class="column">
-    <h2>All</h2>
     Count: @Model.GetAllActorCount()
 
     <table class="ui celled table">

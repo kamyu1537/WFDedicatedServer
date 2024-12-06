@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc.RazorPages;
 using WFDS.Common.Actor;
 
-namespace WFDS.Server.Pages.Actors;
+namespace WFDS.Server.Pages.Actor;
 
 public class All(IActorManager actorManager) : PageModel
 {

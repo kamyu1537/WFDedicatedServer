@@ -1,12 +1,24 @@
-﻿@using System.Collections.Specialized
+﻿@{
+    var queryValue = Context.Request.Query["message"];
+}
+
 <!DOCTYPE html>
 
 <html lang="en">
 <head>
-    <title>@ViewBag.TItle - WFDS</title>
-    
+    @if (string.IsNullOrWhiteSpace(ViewBag.Title))
+    {
+        <title>WFDS</title>
+    }
+    else
+    {
+        <title>@ViewBag.TItle - WFDS</title>
+    }
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <link rel="stylesheet" type="text/css" href="/semantic/semantic.min.css">
-    <script src="https://code.jquery.com/jquery-3.1.1.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js"
+            integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
     <script src="/semantic/semantic.min.js"></script>
 </head>
 <body>
@@ -15,10 +27,23 @@
 
 <main style="padding-bottom: 5em">
     <div class="ui container">
+        <h1 class="ui header">@ViewBag.Title</h1>
+        
         @RenderBody()
     </div>
 </main>
 
 @await RenderSectionAsync("Scripts", required: false)
+
+@if (!string.IsNullOrWhiteSpace(queryValue))
+{
+    <script>
+        $(document).ready(() => {
+            alert('@queryValue');
+            window.location.assign(window.location.pathname);
+        });
+    </script>
+}
+
 </body>
 </html>

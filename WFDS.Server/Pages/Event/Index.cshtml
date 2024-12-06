@@ -1,0 +1,33 @@
+﻿@page
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model WFDS.Server.Pages.Event.Index
+
+@{
+    ViewBag.Title = "Event";
+    Layout = "_EventLayout";
+}
+
+<div class="ui stackable relaxed doubling four column grid">
+    @foreach (var eventName in Model.SpawnEvents.Keys)
+    {
+        <div class="column">
+            <form method="post" class="ui card">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="eventName" value="@eventName"/>
+                <div class="content">
+                    <div class="header">
+                        @eventName
+                    </div>
+                </div>
+                <div class="content">
+                    spawn @eventName actor
+                </div>
+                <div class="extra content">
+                    <button type="submit" class="ui small button" asp-page-handler="spawn">
+                        spawn
+                    </button>
+                </div>
+            </form>
+        </div>
+    }
+</div>

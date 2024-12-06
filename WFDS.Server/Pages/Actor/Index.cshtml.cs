@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using WFDS.Common.Actor;
 
-namespace WFDS.Server.Pages.Actors;
+namespace WFDS.Server.Pages.Actor;
 
 public class Index(IActorManager actorManager) : PageModel
 {
@@ -13,7 +13,7 @@ public class Index(IActorManager actorManager) : PageModel
     {
     }
 
-    public async Task<IActionResult> OnPostDeleteAsync(long id)
+    public IActionResult OnPostDelete(long id)
     {
         string message;
         if (actorManager.TryRemoveActor(id, ActorRemoveTypes.QueueFree, out _))
