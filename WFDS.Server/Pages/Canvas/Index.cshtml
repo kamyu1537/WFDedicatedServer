@@ -1,0 +1,112 @@
+﻿@page
+@model WFDS.Server.Pages.Canvas.Index
+
+@{
+    ViewBag.Title = "Canvas";
+    Layout = "_CanvasLayout";
+}
+
+<form method="post" onsubmit="return confirm('Are you sure you want to clear all canvas?');" style="margin-bottom: 1em">
+    <button type="submit" class="ui button red" asp-page-handler="clear">Clear All</button>
+</form>
+
+<div id="canvas_block" style="display: flex; flex-wrap: wrap; flex-shrink: 0; gap: 1em">
+</div>
+
+<script>
+    const canvas = @Json.Serialize(Model.CanvasData);
+    const doc = document.getElementById("canvas_block");
+
+    const colors = {
+        0: ['#fde7c3'],
+        1: ['#293843'],
+        2: ['#d60a5b'],
+        3: ['#0cb29c'],
+        4: ['#f2bf07'],
+        5: (function () {
+            const rainbowColors = [];
+            for (let i = 0; i < 360; i += 60) {
+                rainbowColors.push(hsvToHex(i, 100, 100));
+            }
+            return rainbowColors;
+        })(),
+        6: ['#b8c255']
+    }
+    
+    console.info(colors);
+
+    function hsvToHex(h, s, v) {
+        s = s / 100;
+        v = v / 100;
+
+        let c = v * s;
+        let x = c * (1 - Math.abs(((h / 60) % 2) - 1));
+        let m = v - c;
+
+        let r, g, b;
+
+        if (h >= 0 && h < 60) {
+            [r, g, b] = [c, x, 0];
+        } else if (h >= 60 && h < 120) {
+            [r, g, b] = [x, c, 0];
+        } else if (h >= 120 && h < 180) {
+            [r, g, b] = [0, c, x];
+        } else if (h >= 180 && h < 240) {
+            [r, g, b] = [0, x, c];
+        } else if (h >= 240 && h < 300) {
+            [r, g, b] = [x, 0, c];
+        } else {
+            [r, g, b] = [c, 0, x];
+        }
+
+        r = Math.round((r + m) * 255);
+        g = Math.round((g + m) * 255);
+        b = Math.round((b + m) * 255);
+
+        const toHex = (n) => {
+            const hex = n.toString(16);
+            return hex.length === 1 ? '0' + hex : hex;
+        };
+
+        return `#${toHex(r)}${toHex(g)}${toHex(b)}`.toUpperCase();
+    }
+
+
+    for (const data of canvas) {
+        let canvas = document.createElement("canvas");
+        canvas.id = "canvas_" + data.canvas_id;
+        canvas.width = 200;
+        canvas.height = 200;
+        doc.appendChild(canvas);
+    }
+
+    let tick = 0;
+    updateCanvas();
+    setInterval(function () {
+        if (tick >= 256) tick = 0;
+        updateCanvas();
+        tick++;
+    }, 500);
+
+    function updateCanvas() {
+        for (const data of canvas) {
+            const doc = document.getElementById("canvas_" + data.canvas_id);
+            if (doc == null) continue;
+
+            let ctx = doc.getContext("2d");
+            ctx.clearRect(0, 0, doc.width, doc.height);
+            
+            ctx.fillStyle = "#c7924f";
+            ctx.beginPath()
+            ctx.arc(100, 100, 100, 0, Math.PI * 2);
+            ctx.fill();
+        
+
+            for (let use of data.data) {
+                const color = colors[use.color];
+                ctx.fillStyle = color[tick % color.length] ?? '#ff00ff';
+                ctx.fillRect(use.pos.x, use.pos.y, 1, 1);
+            }
+        }
+    }
+</script>
