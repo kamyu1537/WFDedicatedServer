@@ -5,7 +5,7 @@ using ZLogger;
 
 namespace WFDS.Server.EventHandler;
 
-public class PlayerLeaveGameEventHandler(ILogger<PlayerLeaveGameEventHandler> logger, IActorManager actorManager) : GameEventHandler<PlayerLeaveEvent>
+public class CleanupLeavePlayerActors(ILogger<CleanupLeavePlayerActors> logger, IActorManager actorManager) : GameEventHandler<PlayerLeaveEvent>
 {
     protected override void Handle(PlayerLeaveEvent e)
     {

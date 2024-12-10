@@ -10,7 +10,7 @@ public abstract class GameEventHandler
     public abstract void Handle(GameEvent e);
 }
 
-public abstract class GameEventHandler<T> : GameEventHandler where T : GameEvent
+public abstract class GameEventHandler<T> : GameEventHandler
 {
     public override Type EventType { get; } = typeof(T);
 

@@ -37,7 +37,7 @@ public class Index(SessionManager sessionManager, LobbyManager lobbyManager, Dat
             return RedirectToPage();
         }
 
-        sessionManager.TempBanPlayer(lobbyManager.GetLobbyId(), new CSteamID(value));
+        sessionManager.BanPlayer(lobbyManager.GetLobbyId(), new CSteamID(value));
         return RedirectToPage(new { message = $"banned {steamId}" });
     }
 

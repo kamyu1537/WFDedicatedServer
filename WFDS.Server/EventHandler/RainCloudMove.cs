@@ -7,7 +7,7 @@ using WFDS.Common.GameEvents.Events;
 
 namespace WFDS.Server.EventHandler;
 
-public class RainCloudTickGameEventHandler(IActorManager actorManager) : GameEventHandler<ActorTickEvent>
+public class RainCloudMove(IActorManager actorManager) : GameEventHandler<ActorTickEvent>
 {
     protected override void Handle(ActorTickEvent e)
     {

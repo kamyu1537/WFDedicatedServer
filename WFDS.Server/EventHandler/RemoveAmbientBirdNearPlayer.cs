@@ -7,7 +7,7 @@ using ZLogger;
 
 namespace WFDS.Server.EventHandler;
 
-public class AmbientBirdTickGameEventHandler(ILogger<AmbientBirdTickGameEventHandler> logger, IActorManager actorManager) : GameEventHandler<ActorTickEvent>
+public class RemoveAmbientBirdNearPlayer(ILogger<RemoveAmbientBirdNearPlayer> logger, IActorManager actorManager) : GameEventHandler<ActorTickEvent>
 {
     protected override void Handle(ActorTickEvent e)
     {

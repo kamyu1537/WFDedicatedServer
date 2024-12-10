@@ -1,6 +1,8 @@
 ﻿using System.Globalization;
 using Microsoft.Extensions.Logging;
 using Steamworks;
+using WFDS.Common.GameEvents;
+using WFDS.Common.GameEvents.Events;
 using WFDS.Common.Helpers;
 using WFDS.Common.Types;
 using ZLogger;
@@ -102,7 +104,6 @@ public class LobbyManager : Singleton<LobbyManager>, IDisposable
 
         lobbyId = _lobbyId;
         _lobbyId = CSteamID.Nil;
-        // SteamMatchmaking.LeaveLobby(_lobbyId);
         return true;
     }
 
@@ -219,11 +220,17 @@ public class LobbyManager : Singleton<LobbyManager>, IDisposable
         SteamMatchmaking.SetLobbyData(_lobbyId, "server_browser_value", (random.Next() % 20).ToString(CultureInfo.InvariantCulture));
     }
 
-    #region steam callbacks
+    public void UpdateBannedPlayers(IEnumerable<string> bannedPlayers)
+    {
+        if (!IsInLobby())
+        {
+            return;
+        }
+        
+        SteamMatchmaking.SetLobbyData(_lobbyId, "banned_players", string.Join(",", bannedPlayers));
+    }
 
-    /* ************************************************************************* */
-    /* Steamworks Callbacks                                                      */
-    /* ************************************************************************* */
+    #region steam callbacks
 
     private void OnLobbyCreated(LobbyCreated_t param)
     {
@@ -236,6 +243,8 @@ public class LobbyManager : Singleton<LobbyManager>, IDisposable
         var lobbyId = new CSteamID(param.m_ulSteamIDLobby);
         _logger.ZLogInformation($"lobby created: {param.m_ulSteamIDLobby}");
         UpdateLobbyData(lobbyId);
+
+        GameEventBus.Publish(new LobbyCreatedEvent(lobbyId));
     }
 
     private void OnLobbyEntered(LobbyEnter_t param)

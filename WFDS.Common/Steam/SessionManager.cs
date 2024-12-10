@@ -100,9 +100,10 @@ public sealed class SessionManager : Singleton<SessionManager>, IDisposable
             return false;
         }
 
-        if (_banned.Contains(steamId.m_SteamID.ToString(CultureInfo.InvariantCulture)))
+        if (IsBannedPlayer(steamId))
         {
             _logger.ZLogWarning($"banned player: {steamId.m_SteamID.ToString(CultureInfo.InvariantCulture)}");
+            BanPlayerNoEvent(LobbyManager.Inst.GetLobbyId(), steamId);
             return false;
         }
 
@@ -132,7 +133,6 @@ public sealed class SessionManager : Singleton<SessionManager>, IDisposable
         GameEventBus.Publish(new PlayerLeaveEvent(steamId));
     }
 
-
     public void KickPlayer(CSteamID target)
     {
         if (target == SteamManager.Inst.SteamId)
@@ -144,19 +144,24 @@ public sealed class SessionManager : Singleton<SessionManager>, IDisposable
         SendP2PPacket(target, NetChannel.GameState, new KickPacket(), false);
     }
 
-
     public bool IsBannedPlayer(CSteamID target)
     {
         return _banned.Contains(target.m_SteamID.ToString(CultureInfo.InvariantCulture));
     }
 
-    public void TempBanPlayer(CSteamID lobbyId, CSteamID target)
+    public void BanPlayerNoEvent(CSteamID lobbyId, CSteamID target)
     {
         _logger.ZLogInformation($"try ban player: {target.m_SteamID.ToString(CultureInfo.InvariantCulture)}");
         SendP2PPacket(target, NetChannel.GameState, new BanPacket(), false);
         BroadcastP2PPacket(lobbyId, NetChannel.GameState, new ForceDisconnectPlayerPacket { UserId = target }, false);
 
         _banned.Add(target.m_SteamID.ToString(CultureInfo.InvariantCulture));
+        LobbyManager.Inst.UpdateBannedPlayers(_banned);
+    }
+    
+    public void BanPlayer(CSteamID lobbyId, CSteamID target)
+    {
+        BanPlayerNoEvent(lobbyId, target);
         GameEventBus.Publish(new PlayerBanEvent(target));
     }
 
@@ -166,7 +171,7 @@ public sealed class SessionManager : Singleton<SessionManager>, IDisposable
         {
             if (ulong.TryParse(banPlayer, NumberStyles.Any, CultureInfo.InvariantCulture, out var steamId))
             {
-                TempBanPlayer(lobbyId, new CSteamID(steamId));
+                BanPlayer(lobbyId, new CSteamID(steamId));
             }
         }
     }
@@ -185,7 +190,6 @@ public sealed class SessionManager : Singleton<SessionManager>, IDisposable
     {
         return _banned.Select(x => x.ToString(CultureInfo.InvariantCulture));
     }
-
 
     public void SendP2PPacket(CSteamID steamId, NetChannel channel, Packet packet, bool useSession = true)
     {
@@ -285,7 +289,7 @@ public sealed class SessionManager : Singleton<SessionManager>, IDisposable
     {
         _logger.ZLogWarning($"p2p session request: {param.m_steamIDRemote}");
 
-        if (_banned.Contains(param.m_steamIDRemote.m_SteamID.ToString(CultureInfo.InvariantCulture)))
+        if (IsBannedPlayer(param.m_steamIDRemote))
         {
             _logger.ZLogWarning($"banned player request: {param.m_steamIDRemote}");
             SteamNetworking.CloseP2PSessionWithUser(param.m_steamIDRemote);

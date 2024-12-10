@@ -1,18 +1,14 @@
 using WFDS.Common.GameEvents;
 using WFDS.Common.GameEvents.Events;
-using WFDS.Common.Helpers;
-using WFDS.Common.Steam;
 using WFDS.Database;
 using WFDS.Database.DbSet;
 
 namespace WFDS.Server.EventHandler;
 
-public class PlayerJoinedHandler(LobbyManager lobby, SessionManager session, DataDbContext dbContext) : GameEventHandler<PlayerJoinedEvent>
+public class AddPlayerToDb(DataDbContext dbContext) : GameEventHandler<PlayerJoinedEvent>
 {
     protected override void Handle(PlayerJoinedEvent e)
     {
-        ConsoleHelper.UpdateConsoleTitle(lobby.GetName(), lobby.GetCode(), session.GetSessionCount(), lobby.GetCap());
-
         var playerName = Steamworks.SteamFriends.GetFriendPersonaName(e.PlayerId);
         if (playerName is null)
         {

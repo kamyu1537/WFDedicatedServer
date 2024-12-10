@@ -77,7 +77,7 @@ public class SessionController(SessionManager manager, LobbyManager lobby) : Con
     [SwaggerOperation("ban player")]
     public IActionResult TempBanPlayer(ulong steamId)
     {
-        manager.TempBanPlayer(lobby.GetLobbyId(), steamId.ToSteamID());
+        manager.BanPlayer(lobby.GetLobbyId(), steamId.ToSteamID());
         return Ok();
     }
     
