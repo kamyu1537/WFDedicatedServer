@@ -41,7 +41,6 @@ internal class WebFishingServer(
         lobby.Initialize(settings.Value.ServerName, settings.Value.LobbyType, settings.Value.MaxPlayers, settings.Value.Adult, settings.Value.RoomCode);
         lobby.CreateLobby();
 
-        session.BanPlayers(lobby.GetLobbyId(), settings.Value.BannedPlayers);
         while (!stoppingToken.IsCancellationRequested)
         {
             if (lobby.GetLobbyId().IsValid())

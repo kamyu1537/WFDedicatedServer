@@ -8,6 +8,5 @@ public interface IServerSetting
     int MaxPlayers { get; set; }
     GameLobbyType LobbyType { get; set; }
     bool Adult { get; set; }
-    string[] BannedPlayers { get; set; }
     bool SaveChalkData { get; set; }
 }

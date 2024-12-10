@@ -10,6 +10,5 @@ internal class ServerSetting : IServerSetting
     public int MaxPlayers { get; set; } = 12;
     public GameLobbyType LobbyType { get; set; } = GameLobbyType.Public;
     public bool Adult { get; set; }
-    public string[] BannedPlayers { get; set; } = [];
     public bool SaveChalkData { get; set; }
 }

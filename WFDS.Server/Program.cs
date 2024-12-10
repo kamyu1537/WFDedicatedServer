@@ -80,7 +80,6 @@ try
     /////////////////////////////////////////////////////////////////
 
     builder.Services.AddHostedService<WebFishingServer>();
-    builder.Services.AddHostedService<ConfigurationChangeService>();
 
     builder.Services.AddHostedService<PacketProcessService>();
     builder.Services.AddHostedService<PacketSendService>();
