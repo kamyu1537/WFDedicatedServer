@@ -59,7 +59,8 @@ internal class PacketHandleManager
 
             session.PacketReceiveTime = DateTimeOffset.UtcNow;
             if (!_handlerTypes.TryGetValue(typeName, out var handlerTypes)) return;
-            foreach (var handler in handlerTypes.Select(handlerType => _provider.GetRequiredService(handlerType) as Common.Network.PacketHandler).Where(x => x != null))
+            using var scope = _provider.CreateScope();
+            foreach (var handler in handlerTypes.Select(handlerType => scope.ServiceProvider.GetRequiredService(handlerType) as Common.Network.PacketHandler).Where(x => x != null))
             {
                 handler!.Handle(session, channel, dic);
             }

@@ -110,6 +110,7 @@ public sealed class SessionManager : Singleton<SessionManager>, IDisposable
         var session = new Session(steamId);
         if (_sessions.TryAdd(steamId.m_SteamID, session))
         {
+            GameEventBus.Publish(new PlayerJoinedEvent(steamId));
             return true;
         }
 
@@ -249,10 +250,6 @@ public sealed class SessionManager : Singleton<SessionManager>, IDisposable
             SteamNetworkingHelper.BroadcastP2PPacket(lobbyId, channel, data);
         }
     }
-
-    /* ************************************************************************ */
-    /* Steamworks Callbacks                                                     */
-    /* ************************************************************************ */
 
     #region Steamworks Callbacks
 

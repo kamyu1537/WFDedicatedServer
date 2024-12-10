@@ -1,11 +1,13 @@
 using System.Text.Json;
 using Cysharp.Threading;
+using Microsoft.EntityFrameworkCore;
 using WFDS.Common;
 using WFDS.Common.Actor;
 using WFDS.Common.Plugin;
 using WFDS.Common.Steam;
 using WFDS.Common.Types;
 using WFDS.Common.Types.Manager;
+using WFDS.Database;
 using WFDS.Server.Core;
 using WFDS.Server.Core.Actor;
 using WFDS.Server.Core.Chalk;
@@ -40,13 +42,22 @@ try
     var section = configuration.GetSection("Server");
     var setting = section.Get<ServerSetting>();
 
-    ArgumentNullException.ThrowIfNull(setting, nameof(setting));
+    ArgumentNullException.ThrowIfNull(setting);
 
     builder.Logging.ClearProviders();
     builder.Services.AddSingleton(Log.Factory);
 
     builder.Services.Configure<ServerSetting>(section);
     builder.UseActorSettings();
+    
+    /////////////////////////////////////////////////////////////////
+
+    builder.Services.AddDbContext<DataDbContext>(d =>
+    {
+        d.UseSqlite("Data Source=./data.db;Cache=Shared");
+    });
+    
+    /////////////////////////////////////////////////////////////////
 
     builder.Services.AddSingleton(SteamManager.Inst);
     builder.Services.AddSingleton(LobbyManager.Inst);
@@ -113,6 +124,14 @@ try
     // server start
     var app = builder.Build();
     
+    // db
+    using (var scope = app.Services.CreateScope())
+    {
+        var services = scope.ServiceProvider;
+        var context = services.GetRequiredService<DataDbContext>();
+        await context.Database.MigrateAsync();
+    }
+    
     app.Services.GetRequiredService<IHostApplicationLifetime>()
         .ApplicationStopped
         .Register(() => LogicLooperPool.Shared.ShutdownAsync(TimeSpan.Zero).Wait());
@@ -137,7 +156,7 @@ try
 }
 catch (Exception ex)
 {
-    Log.Logger.ZLogCritical(ex, $"host terminated unexpectedly");
+    Log.Logger.ZLogCritical(ex, $"host terminated unexpectedly\n");
 }
 finally
 {

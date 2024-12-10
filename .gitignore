@@ -406,3 +406,6 @@ Canvas/
 Zones/
 
 !WFDS.Server/Pages/Canvas/
+
+data.db
+data.db-*

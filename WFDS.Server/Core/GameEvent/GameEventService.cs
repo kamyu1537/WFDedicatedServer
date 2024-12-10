@@ -32,7 +32,7 @@ internal sealed class GameEventService(IServiceProvider provider, ILogger<GameEv
         try
         {
             await using var scope = provider.CreateAsyncScope();
-            var handlers = provider.GetServices<GameEventHandler>();
+            var handlers = scope.ServiceProvider.GetServices<GameEventHandler>();
             foreach (var handler in handlers.Where(x => x.EventType == e.GetType()))
             {
                 handler.Handle(e);

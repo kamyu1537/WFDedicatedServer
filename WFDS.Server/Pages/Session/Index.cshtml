@@ -2,12 +2,13 @@
 @model WFDS.Server.Pages.Session.Index
 
 @{
-    ViewBag.Title = "Session - CurrentPlayers";
+    ViewBag.Title = "Session - Players";
     Layout = "_SessionLayout";
 }
 
 <div class="ui relaxed grid one column row">
     <div class="column">
+        <h2>Current</h2>
         Count: @Model.SessionCount / @Model.MaxSessionCount
 
         <table class="ui celled table">
@@ -25,7 +26,7 @@
                 <tr>
                     <td>@session.SteamId</td>
                     <td>@session.Name</td>
-                    <td>@session.ConnectTime</td>
+                    <td>@session.ConnectTime.ToString("O")</td>
                     <td>
                         <form method="post" style="display: inline;">
                             @Html.AntiForgeryToken()
@@ -35,6 +36,33 @@
                             <button class="ui button red tiny" type="submit" asp-page-handler="ban">boot</button>
                         </form>
                     </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+    
+    <div>
+        <h2>All</h2>
+        Total: @Model.GetTotalPlayerCount() 
+        
+        <table class="ui celled table">
+            <thead>
+            <tr>
+                <th>SteamId</th>
+                <th>Username</th>
+                <th>LastJoinedAt</th>
+                <th>FirstConnectedAt</th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var player in Model.GetPlayers())
+            {
+                <tr>
+                    <td>@player.SteamId</td>
+                    <td>@player.DisplayName</td>
+                    <td>@player.LastJoinedAt.ToString("O")</td>
+                    <td>@player.CreatedAt.ToString("O")</td>
                 </tr>
             }
             </tbody>

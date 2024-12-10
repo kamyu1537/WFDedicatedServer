@@ -2,10 +2,12 @@
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Steamworks;
 using WFDS.Common.Steam;
+using WFDS.Database;
+using WFDS.Database.DbSet;
 
 namespace WFDS.Server.Pages.Session;
 
-public class Index(SessionManager sessionManager, LobbyManager lobbyManager) : PageModel
+public class Index(SessionManager sessionManager, LobbyManager lobbyManager, DataDbContext dbContext) : PageModel
 {
     public int MaxSessionCount { get; } = lobbyManager.GetCap();
     public int SessionCount { get; } = sessionManager.GetSessionCount();
@@ -38,4 +40,11 @@ public class Index(SessionManager sessionManager, LobbyManager lobbyManager) : P
         sessionManager.TempBanPlayer(lobbyManager.GetLobbyId(), new CSteamID(value));
         return RedirectToPage(new { message = $"banned {steamId}" });
     }
+
+    public long GetTotalPlayerCount()
+    {
+        return dbContext.Players.LongCount();
+    }
+    
+    public IEnumerable<Player> GetPlayers() => dbContext.Players;
 }
