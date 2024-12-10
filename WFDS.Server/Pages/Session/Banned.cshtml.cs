@@ -1,11 +1,14 @@
 ﻿using Microsoft.AspNetCore.Mvc.RazorPages;
 using WFDS.Common.Steam;
+using WFDS.Database;
+using WFDS.Database.DbSet;
 
 namespace WFDS.Server.Pages.Session;
 
-public class Banned(SessionManager sessionManager) : PageModel
+public class Banned(DataDbContext dbContext) : PageModel
 {
-    public IEnumerable<string> GetBannedPlayers() => sessionManager.GetBannedPlayers();
+    public int GetBannedPlayerCount() => dbContext.BannedPlayers.Count();
+    public IEnumerable<BannedPlayer> GetBannedPlayers() => dbContext.BannedPlayers;
     
     public void OnGet()
     {

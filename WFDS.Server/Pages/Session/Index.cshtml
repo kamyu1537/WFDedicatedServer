@@ -15,8 +15,8 @@
             <thead>
             <tr>
                 <th>SteamId</th>
-                <th>Username</th>
-                <th>ConnectTime</th>
+                <th>Display Name</th>
+                <th>Connected At</th>
                 <th>Actions</th>
             </tr>
             </thead>
@@ -49,16 +49,18 @@
         <table class="ui celled table">
             <thead>
             <tr>
+                <th>#</th>
                 <th>SteamId</th>
-                <th>Username</th>
-                <th>LastJoinedAt</th>
-                <th>FirstConnectedAt</th>
+                <th>Display Name</th>
+                <th>Last Joined At</th>
+                <th>First Connection Time</th>
             </tr>
             </thead>
             <tbody>
             @foreach (var player in Model.GetPlayers())
             {
                 <tr>
+                    <td>@player.Id</td>
                     <td>@player.SteamId</td>
                     <td>@player.DisplayName</td>
                     <td>@player.LastJoinedAt.ToString("O")</td>

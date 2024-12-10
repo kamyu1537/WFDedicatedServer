@@ -7,17 +7,26 @@
 }
 
 <form method="post" class="column">
+    Count: @Model.GetBannedPlayerCount()
+
     <table class="ui table celled">
         <thead>
         <tr>
+            <th>#</th>
             <th>SteamId</th>
+            <th>DisplayName</th>
+            <th>Banned At</th>
+            <th>Actions</th>
         </tr>
         </thead>
         <tbody>
-        @foreach (var steamId in Model.GetBannedPlayers())
+        @foreach (var player in Model.GetBannedPlayers())
         {
             <tr>
-                <td>@steamId</td>
+                <td>@player.Id</td>
+                <td>@player.SteamId</td>
+                <td>@player.DisplayName</td>
+                <td>@player.BannedAt</td>
             </tr>
         }
         </tbody>
