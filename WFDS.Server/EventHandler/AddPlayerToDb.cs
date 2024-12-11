@@ -5,7 +5,7 @@ using WFDS.Database.DbSet;
 
 namespace WFDS.Server.EventHandler;
 
-public class AddPlayerToDb(DataDbContext dbContext) : GameEventHandler<PlayerJoinedEvent>
+public class AddPlayerToDb(DatabaseContext dbContext) : GameEventHandler<PlayerJoinedEvent>
 {
     protected override void Handle(PlayerJoinedEvent e)
     {
@@ -22,9 +22,9 @@ public class AddPlayerToDb(DataDbContext dbContext) : GameEventHandler<PlayerJoi
             {
                 SteamId = e.PlayerId.m_SteamID,
                 DisplayName = playerName,
-                CreatedAt = DateTime.UtcNow,
-                UpdatedAt = DateTime.UtcNow,
-                LastJoinedAt = DateTime.UtcNow
+                CreatedAt = DateTimeOffset.UtcNow,
+                UpdatedAt = DateTimeOffset.UtcNow,
+                LastJoinedAt = DateTimeOffset.UtcNow
             };
 
             dbContext.Players.Add(player);
@@ -32,8 +32,8 @@ public class AddPlayerToDb(DataDbContext dbContext) : GameEventHandler<PlayerJoi
         else
         {
             player.DisplayName = playerName;
-            player.LastJoinedAt = DateTime.UtcNow;
-            player.UpdatedAt = DateTime.UtcNow;
+            player.LastJoinedAt = DateTimeOffset.UtcNow;
+            player.UpdatedAt = DateTimeOffset.UtcNow;
         }
 
         dbContext.SaveChanges();

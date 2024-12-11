@@ -1,0 +1,96 @@
+﻿@page
+@model WFDS.Server.Pages.Session.All
+
+@{
+    ViewBag.Title = "All Players";
+    Layout = "_SessionLayout";
+
+    var pageQueryCount = Request.Query["page"].Count;
+    var page = 0;
+    if (int.TryParse(Request.Query["page"], out var parsedPage))
+    {
+        page = (parsedPage - 1);
+    }
+
+    var totalPlayerCount = Model.GetTotalPlayerCount();
+}
+
+    Total: @totalPlayerCount
+        
+    <table class="ui celled table">
+        <thead>
+        <tr>
+            <th>#</th>
+            <th>SteamId</th>
+            <th>Display Name</th>
+            <th>Last Joined At</th>
+            <th>First Connection Time</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        
+        <tbody>
+        @foreach (var player in Model.GetPlayers(page))
+        {
+            <tr>
+                <td>@player.Id</td>
+                <td>@player.SteamId</td>
+                <td>@player.DisplayName</td>
+                <td x-data="{ date: new Date('@player.LastJoinedAt.ToString("O")').toLocaleString() }" x-text="date"></td>
+                <td x-data="{ date: new Date('@player.CreatedAt.ToString("O")').toLocaleString() }" x-text="date"></td>
+                <td>
+                    @if (Model.IsOnline(player))
+                    {
+                        <div class="ui green label">online</div>
+                    }
+                    else
+                    {
+                        <div class="ui grey label">offline</div>
+                    }
+                </td>
+                <td>
+                    <form method="post" style="display: inline;">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="steamId" value="@player.SteamId"/>
+                        <button class="ui button red mini" type="submit" asp-page-handler="ban">ban</button>
+                    </form>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+    
+
+    <div class="ui pagination menu">
+        @if (page > 1)
+        {
+            <a class="item" href="?page=@(page)">Previous</a>
+        }
+        else
+        {
+            <div class="item disabled">Previous</div>
+        }
+
+        @for (int i = 1; i <= Math.Ceiling((double)totalPlayerCount / 50); i++)
+        {
+            if (i == page + 1)
+            {
+                <div class="active item">@i</div>
+            }
+            else
+            {
+                <a class="item" href="?page=@i">@i</a>
+            }
+        }
+
+        @if ((page + 1) * 50 < totalPlayerCount)
+        {
+            <a class="item" href="?page=@(page + 2)">Next</a>
+        }
+        else
+        {
+            <div class="item disabled">Next</div>
+        }
+    </div>
+    

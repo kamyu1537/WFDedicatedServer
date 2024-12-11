@@ -183,6 +183,7 @@ public sealed class SessionManager : Singleton<SessionManager>, IDisposable
             return;
         }
 
+        LobbyManager.Inst.UpdateBannedPlayers(_banned);
         GameEventBus.Publish(new PlayerUnBanEvent(target));
     }
 

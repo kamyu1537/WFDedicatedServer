@@ -52,7 +52,7 @@ try
     
     /////////////////////////////////////////////////////////////////
 
-    builder.Services.AddDbContext<DataDbContext>(d =>
+    builder.Services.AddDbContext<DatabaseContext>(d =>
     {
         d.UseSqlite("Data Source=./data.db;Cache=Shared");
     });
@@ -127,7 +127,7 @@ try
     using (var scope = app.Services.CreateScope())
     {
         var services = scope.ServiceProvider;
-        var context = services.GetRequiredService<DataDbContext>();
+        var context = services.GetRequiredService<DatabaseContext>();
         await context.Database.MigrateAsync();
     }
     

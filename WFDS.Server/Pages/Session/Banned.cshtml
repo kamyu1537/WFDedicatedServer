@@ -2,11 +2,10 @@
 @model WFDS.Server.Pages.Session.Banned
 
 @{
-    ViewBag.Title = "Session - Banned";
+    ViewBag.Title = "Banned";
     Layout = "_SessionLayout";
 }
 
-<form method="post" class="column">
     Count: @Model.GetBannedPlayerCount()
 
     <table class="ui table celled">
@@ -27,8 +26,14 @@
                 <td>@player.SteamId</td>
                 <td>@player.DisplayName</td>
                 <td>@player.BannedAt</td>
+                <td>
+                    <form method="post" style="display: inline;">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="steamId" value="@player.SteamId"/>
+                        <button class="ui button green mini" type="submit" asp-page-handler="unban">unban</button>
+                    </form>
+                </td>
             </tr>
         }
         </tbody>
     </table>
-</form>

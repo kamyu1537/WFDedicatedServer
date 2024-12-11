@@ -5,7 +5,7 @@ using ZLogger;
 
 namespace WFDS.Server.EventHandler;
 
-public class RemovePlayerFromBannedPlayers(ILogger<RemovePlayerFromBannedPlayers> logger, DataDbContext dbContext) : GameEventHandler<PlayerUnBanEvent>
+public class RemovePlayerFromBannedPlayers(ILogger<RemovePlayerFromBannedPlayers> logger, DatabaseContext dbContext) : GameEventHandler<PlayerUnBanEvent>
 {
     protected override void Handle(PlayerUnBanEvent e)
     {

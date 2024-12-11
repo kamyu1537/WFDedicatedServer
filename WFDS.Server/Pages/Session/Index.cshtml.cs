@@ -7,7 +7,7 @@ using WFDS.Database.DbSet;
 
 namespace WFDS.Server.Pages.Session;
 
-public class Index(SessionManager sessionManager, LobbyManager lobbyManager, DataDbContext dbContext) : PageModel
+public class Index(SessionManager sessionManager, LobbyManager lobbyManager, DatabaseContext dbContext) : PageModel
 {
     public int MaxSessionCount { get; } = lobbyManager.GetCap();
     public int SessionCount { get; } = sessionManager.GetSessionCount();
@@ -40,11 +40,4 @@ public class Index(SessionManager sessionManager, LobbyManager lobbyManager, Dat
         sessionManager.BanPlayer(lobbyManager.GetLobbyId(), new CSteamID(value));
         return RedirectToPage(new { message = $"banned {steamId}" });
     }
-
-    public long GetTotalPlayerCount()
-    {
-        return dbContext.Players.LongCount();
-    }
-    
-    public IEnumerable<Player> GetPlayers() => dbContext.Players;
 }

@@ -6,7 +6,7 @@ using ZLogger;
 
 namespace WFDS.Server.EventHandler;
 
-public class UpdateBannedPlayer(DataDbContext dbContext, ILogger<UpdateBannedPlayer> logger) : GameEventHandler<PlayerBanEvent>
+public class UpdateBannedPlayer(DatabaseContext dbContext, ILogger<UpdateBannedPlayer> logger) : GameEventHandler<PlayerBanEvent>
 {
     protected override void Handle(PlayerBanEvent e)
     {

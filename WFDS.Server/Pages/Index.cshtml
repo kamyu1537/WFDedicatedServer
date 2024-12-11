@@ -54,9 +54,16 @@
                     borderColor: 'rgba(75, 192, 192, 1)',
                     borderWidth: 1,
                     fill: true,
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    tension: 0.1
                 }]
             },
             options: {
+                transitions: {
+                    'active': {
+                        duration: 0
+                    }
+                },
                 scales: {
                     y: {
                         suggestedMin: 0,
@@ -65,7 +72,7 @@
                 }
             }
         });
-        
+
         let memoryCtx = document.getElementById('memoryChart').getContext('2d');
         let memoryChart = new Chart(memoryCtx, {
             type: 'line',
@@ -75,11 +82,18 @@
                     label: 'Memory Usage (MB)',
                     data: [],
                     borderColor: 'rgb(120,75,192)',
+                    backgroundColor: 'rgb(120,75,192, 0.2)',
                     borderWidth: 1,
                     fill: true,
+                    tension: 0.1
                 }]
             },
             options: {
+                transitions: {
+                    'active': {
+                        duration: 0
+                    }
+                },
                 scales: {
                     y: {
                         suggestedMin: 0,
@@ -88,8 +102,16 @@
             }
         });
 
+        function formatTime(date) {
+            const hours = String(date.getHours()).padStart(2, '0');
+            const minutes = String(date.getMinutes()).padStart(2, '0');
+            const seconds = String(date.getSeconds()).padStart(2, '0');
+
+            return `${hours}:${minutes}:${seconds}`;
+        }
+
         function updateCpuChart(cpu_usage) {
-            cpuChart.data.labels.push(new Date().toISOString());
+            cpuChart.data.labels.push(formatTime(new Date()));
             cpuChart.data.datasets.forEach((dataset) => {
                 dataset.data.push(cpu_usage);
 
@@ -103,9 +125,9 @@
             }
             cpuChart.update();
         }
-        
+
         function updateMemoryChart(memory) {
-            memoryChart.data.labels.push(new Date().toISOString());
+            memoryChart.data.labels.push(formatTime(new Date()));
             memoryChart.data.datasets.forEach((dataset) => {
                 dataset.data.push(memory);
 
@@ -142,4 +164,4 @@
 
 
     </script>
-    }
+}
