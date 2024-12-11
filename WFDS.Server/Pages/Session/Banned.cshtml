@@ -6,34 +6,45 @@
     Layout = "_SessionLayout";
 }
 
-    Count: @Model.GetBannedPlayerCount()
+<div class="ui one column relaxed grid">
+    <div class="column">
+        <form method="post" class="ui fluid action input">
+            <input type="text" name="steamId" placeholder="SteamID"/>
+            <button class="ui red button" asp-page-handler="ban">Ban</button>
+        </form>
+    </div>
 
-    <table class="ui table celled">
-        <thead>
-        <tr>
-            <th>#</th>
-            <th>SteamId</th>
-            <th>DisplayName</th>
-            <th>Banned At</th>
-            <th>Actions</th>
-        </tr>
-        </thead>
-        <tbody>
-        @foreach (var player in Model.GetBannedPlayers())
-        {
+    <div class="column">
+        Count: @Model.GetBannedPlayerCount()
+
+        <table class="ui table celled">
+            <thead>
             <tr>
-                <td>@player.Id</td>
-                <td>@player.SteamId</td>
-                <td>@player.DisplayName</td>
-                <td>@player.BannedAt</td>
-                <td>
-                    <form method="post" style="display: inline;">
-                        @Html.AntiForgeryToken()
-                        <input type="hidden" name="steamId" value="@player.SteamId"/>
-                        <button class="ui button green mini" type="submit" asp-page-handler="unban">unban</button>
-                    </form>
-                </td>
+                <th>#</th>
+                <th>SteamId</th>
+                <th>DisplayName</th>
+                <th>Banned At</th>
+                <th>Actions</th>
             </tr>
-        }
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+            @foreach (var player in Model.GetBannedPlayers())
+            {
+                <tr>
+                    <td>@player.Id</td>
+                    <td>@player.SteamId</td>
+                    <td>@player.DisplayName</td>
+                    <td>@player.BannedAt</td>
+                    <td>
+                        <form method="post" style="display: inline;">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="steamId" value="@player.SteamId"/>
+                            <button class="ui button green mini" type="submit" asp-page-handler="unban">unban</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+</div>

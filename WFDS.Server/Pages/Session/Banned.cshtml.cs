@@ -16,11 +16,33 @@ public class Banned(DatabaseContext dbContext, SessionManager sessionManager, Lo
     {
         
     }
+
+    public IActionResult OnPostBan(string steamId)
+    {
+        if (!lobbyManager.IsInLobby())
+        {
+            return RedirectToPage(new { message = "server is not in lobby" });
+        }
+        
+        if (!ulong.TryParse(steamId, out var value))
+        {
+            return RedirectToPage(new { message = "invalid steam id" });
+        }
+        
+        var steamIdValue = new CSteamID(value);
+        if (!steamIdValue.IsValid() || steamIdValue.IsLobby())
+        {
+            return RedirectToPage(new { message = "invalid steam id" });
+        }
+        
+        sessionManager.BanPlayer(lobbyManager.GetLobbyId(), new CSteamID(value));
+        return RedirectToPage(new { message = $"player {steamId} banned."});
+    }
     
     public IActionResult OnPostUnban(ulong steamId)
     {
         var steamIdValue = new CSteamID(steamId);
-        if (!steamIdValue.IsValid() && !steamIdValue.IsLobby())
+        if (!steamIdValue.IsValid() || steamIdValue.IsLobby())
         {
             return RedirectToPage(new { message = "invalid steam id" });
         }

@@ -29,7 +29,7 @@ public class All(DatabaseContext dbContext, SessionManager sessionManager, Lobby
     public IActionResult OnPostBan(ulong steamId)
     {
         var steamIdValue = new CSteamID(steamId);
-        if (!steamIdValue.IsValid() && !steamIdValue.IsLobby())
+        if (!steamIdValue.IsValid() || steamIdValue.IsLobby())
         {
             return RedirectToPage(new { message = "invalid steam id" });
         }

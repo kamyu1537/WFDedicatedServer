@@ -25,8 +25,14 @@ public class Index(SessionManager sessionManager, LobbyManager lobbyManager, Dat
         {
             return RedirectToPage();
         }
+        
+        var steamIdValue = new CSteamID(value);
+        if (!steamIdValue.IsValid() || steamIdValue.IsLobby())
+        {
+            return RedirectToPage(new { message = "invalid steam id" });
+        }
 
-        sessionManager.KickPlayer(new CSteamID(value));
+        sessionManager.KickPlayer(steamIdValue);
         return RedirectToPage(new { message = $"kicked {steamId}" });
     }
     
@@ -36,8 +42,14 @@ public class Index(SessionManager sessionManager, LobbyManager lobbyManager, Dat
         {
             return RedirectToPage();
         }
+        
+        var steamIdValue = new CSteamID(value);
+        if (!steamIdValue.IsValid() || steamIdValue.IsLobby())
+        {
+            return RedirectToPage(new { message = "invalid steam id" });
+        }
 
-        sessionManager.BanPlayer(lobbyManager.GetLobbyId(), new CSteamID(value));
+        sessionManager.BanPlayer(lobbyManager.GetLobbyId(), steamIdValue);
         return RedirectToPage(new { message = $"banned {steamId}" });
     }
 }
