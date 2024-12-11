@@ -4,7 +4,7 @@ using WFDS.Common.Helpers;
 using WFDS.Common.Steam;
 using WFDS.Common.Types;
 using WFDS.Godot.Binary;
-using ZLogger;
+
 
 namespace WFDS.Server.Core.Network;
 
@@ -12,7 +12,7 @@ internal class PacketProcessService(ILogger<PacketProcessService> logger, Packet
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        logger.ZLogInformation($"PacketProcessService is starting.");
+        logger.LogInformation("PacketProcessService is starting.");
 
         while (!stoppingToken.IsCancellationRequested)
         {
@@ -24,7 +24,7 @@ internal class PacketProcessService(ILogger<PacketProcessService> logger, Packet
             await Task.Delay(10, stoppingToken);
         }
 
-        logger.ZLogInformation($"PacketProcessService is stopping.");
+        logger.LogInformation("PacketProcessService is stopping.");
     }
 
     private void TryProcessChannel(NetChannel channel)
@@ -35,7 +35,7 @@ internal class PacketProcessService(ILogger<PacketProcessService> logger, Packet
         }
         catch (Exception ex)
         {
-            logger.ZLogError(ex, $"failed to process channel {channel}");
+            logger.LogError(ex, "failed to process channel {Channel}", channel);
         }
     }
 
@@ -43,14 +43,14 @@ internal class PacketProcessService(ILogger<PacketProcessService> logger, Packet
     {
         if (msgSize != readSize)
         {
-            logger.ZLogError($"failed to read packet from {channel} (size mismatch {msgSize}/{readSize})");
+            logger.LogError("failed to read packet from {Channel} (size mismatch {MessageSize}/{ReadSize})", channel, msgSize, readSize);
             return false;
         }
 
         if (sessionManager.IsBannedPlayer(steamId))
         {
             var packetDataBase64 = Convert.ToBase64String(bytes);
-            logger.ZLogError($"banned player {steamId} tried to send packet: {packetDataBase64}");
+            logger.LogError("banned player {SteamId} tried to send packet: {PacketBytes}", steamId, packetDataBase64);
             return false;
         }
 
@@ -59,7 +59,7 @@ internal class PacketProcessService(ILogger<PacketProcessService> logger, Packet
             return true;
         }
 
-        logger.ZLogError($"empty packet from {steamId}");
+        logger.LogError("empty packet from {SteamId}", steamId);
         return false;
 
     }
@@ -79,7 +79,7 @@ internal class PacketProcessService(ILogger<PacketProcessService> logger, Packet
                 var success = SteamNetworking.ReadP2PPacket(bytes, size, out var readSize, out var steamId, channel.Value);
                 if (!success)
                 {
-                    logger.ZLogError($"failed to read packet from {channel}");
+                    logger.LogError("failed to read packet from {Channel}", channel);
                     continue;
                 }
 
@@ -96,7 +96,7 @@ internal class PacketProcessService(ILogger<PacketProcessService> logger, Packet
             }
             catch (Exception ex)
             {
-                logger.ZLogError(ex, $"failed to packet processing");
+                logger.LogError(ex, "failed to packet processing");
                 break;
             }
             finally

@@ -7,7 +7,7 @@ using WFDS.Common.Steam;
 using WFDS.Common.Types;
 using WFDS.Godot.Binary;
 using WFDS.Server.Core.Configuration;
-using ZLogger;
+
 
 namespace WFDS.Server.Core.Chalk;
 
@@ -54,12 +54,11 @@ internal class CanvasManager(IOptions<ServerSetting> setting, SessionManager ses
         if (!setting.Value.SaveChalkData) return;
         
         if (Updated) return;
-        if (DateTimeOffset.UtcNow - UpdateTime < UpdateInterval)
+        
+        if (DateTimeOffset.UtcNow - UpdateTime < UpdateInterval &&
+            DateTimeOffset.UtcNow - SaveTime < ForceUpdateInterval)
         {
-            if (DateTimeOffset.UtcNow - SaveTime < ForceUpdateInterval)
-            {
-                return;
-            }
+            return;
         }
         
         Updated = true;
@@ -71,7 +70,7 @@ internal class CanvasManager(IOptions<ServerSetting> setting, SessionManager ses
         {
             var fileName = Path.Join(CanvasPath, $"canvas_{item.Key}.bin");
             File.WriteAllBytes(fileName, GodotBinaryConverter.Serialize(item.Value.ToPacket().ToDictionary()));
-            Logger.ZLogInformation($"saved canvas {item.Key}");
+            Logger.LogInformation("saved canvas {CanvasId}", item.Key);
         }
     }
 
@@ -99,7 +98,7 @@ internal class CanvasManager(IOptions<ServerSetting> setting, SessionManager ses
             Canvases[canvasId] = canvas;
         }
         
-        Logger.ZLogInformation($"loaded {files.Length} canvas");
+        Logger.LogInformation("loaded {CanvasCount} canvas", files.Length);
     }
 
     public void ClearAll()

@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Text.Json;
 using Cysharp.Threading;
 using Microsoft.EntityFrameworkCore;
@@ -16,15 +17,15 @@ using WFDS.Server.Core.GameEvent;
 using WFDS.Server.Core.Network;
 using WFDS.Server.Core.Utils;
 using WFDS.Server.Core.Zone;
-using ZLogger;
 
 try
 {
+    CultureInfo.DefaultThreadCurrentCulture = CultureInfo.InvariantCulture;
     SystemMonitor.Start();
     LogicLooperPool.InitializeSharedPool(100, Environment.ProcessorCount, RoundRobinLogicLooperPoolBalancer.Instance);
 
-    AppDomain.CurrentDomain.UnhandledException += (_, e) => Log.Logger.ZLogCritical(e.ExceptionObject as Exception, $"unhandled exception");
-    AppDomain.CurrentDomain.ProcessExit += (_, _) => Log.Logger.ZLogInformation($"process exit");
+    AppDomain.CurrentDomain.UnhandledException += (_, e) => Log.Logger.LogCritical(e.ExceptionObject as Exception, "unhandled exception");
+    AppDomain.CurrentDomain.ProcessExit += (_, _) => Log.Logger.LogWarning("process exit");
 
     var plugins = PluginManager.LoadPlugins();
     var builder = WebApplication.CreateBuilder(args);
@@ -44,19 +45,16 @@ try
 
     ArgumentNullException.ThrowIfNull(setting);
 
-    builder.Logging.ClearProviders();
     builder.Services.AddSingleton(Log.Factory);
+    builder.Services.AddSingleton(Log.Logger);
 
     builder.Services.Configure<ServerSetting>(section);
     builder.UseActorSettings();
-    
+
     /////////////////////////////////////////////////////////////////
 
-    builder.Services.AddDbContext<DatabaseContext>(d =>
-    {
-        d.UseSqlite("Data Source=./data.db;Cache=Shared");
-    });
-    
+    builder.Services.AddDbContext<DatabaseContext>(d => { d.UseSqlite("Data Source=./data.db;Cache=Shared"); });
+
     /////////////////////////////////////////////////////////////////
 
     builder.Services.AddSingleton(SteamManager.Inst);
@@ -111,7 +109,7 @@ try
         options.SupportNonNullableReferenceTypes();
         options.EnableAnnotations();
     });
-    
+
     builder.Services.Configure<RouteOptions>(x => x.LowercaseUrls = true);
     builder.Services.AddRazorPages();
     builder.Services.AddMvc().AddJsonOptions(x =>
@@ -122,7 +120,7 @@ try
 
     // server start
     var app = builder.Build();
-    
+
     // db
     using (var scope = app.Services.CreateScope())
     {
@@ -130,15 +128,15 @@ try
         var context = services.GetRequiredService<DatabaseContext>();
         await context.Database.MigrateAsync();
     }
-    
+
     app.Services.GetRequiredService<IHostApplicationLifetime>()
         .ApplicationStopped
         .Register(() => LogicLooperPool.Shared.ShutdownAsync(TimeSpan.Zero).Wait());
-    
+
     app.Services.GetRequiredService<IHostApplicationLifetime>()
         .ApplicationStopped
         .Register(() => LogicLooperPool.Shared.ShutdownAsync(TimeSpan.Zero).Wait());
-    
+
     app.LoadZones();
 
     app.UseRouting();
@@ -155,10 +153,10 @@ try
 }
 catch (Exception ex)
 {
-    Log.Logger.ZLogCritical(ex, $"host terminated unexpectedly\n");
+    Log.Logger.LogCritical(ex, "host terminated unexpectedly");
 }
 finally
 {
-    Log.Factory.Dispose();
+    await Serilog.Log.CloseAndFlushAsync();
     Environment.Exit(0);
 }

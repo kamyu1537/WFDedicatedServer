@@ -5,11 +5,11 @@ using WFDS.Common.GameEvents;
 using WFDS.Common.GameEvents.Events;
 using WFDS.Common.Helpers;
 using WFDS.Common.Types;
-using ZLogger;
+
 
 namespace WFDS.Common.Steam;
 
-public class LobbyManager : Singleton<LobbyManager>, IDisposable
+public sealed class LobbyManager : Singleton<LobbyManager>, IDisposable
 {
     private const int RoomCodeLength = 6;
     private const string LobbyMode = "GodotsteamLobby";
@@ -64,8 +64,8 @@ public class LobbyManager : Singleton<LobbyManager>, IDisposable
         {
             _code = RandomHelper.RandomRoomCode(RoomCodeLength);
         }
-        
-        _logger.ZLogInformation($"lobby initialized: {_name}, {_lobbyType}, {_cap}, {_adult}, {_code}");
+
+        _logger.LogInformation("lobby initialized: {LobbyName}, {LobbyType}, {LobbyCap}, {LobbyAgeLimit}, {LobbyCode}", _name, _lobbyType, _cap, _adult, _code);
     }
 
     public bool LeaveLobby(out CSteamID lobbyId)
@@ -182,6 +182,7 @@ public class LobbyManager : Singleton<LobbyManager>, IDisposable
 
     public void CreateLobby()
     {
+        if (!_initialized) return;
         SteamMatchmaking.CreateLobby(ELobbyType.k_ELobbyTypePublic, 1);
     }
 
@@ -226,7 +227,7 @@ public class LobbyManager : Singleton<LobbyManager>, IDisposable
         {
             return;
         }
-        
+
         SteamMatchmaking.SetLobbyData(_lobbyId, "banned_players", string.Join(",", bannedPlayers));
     }
 
@@ -236,12 +237,12 @@ public class LobbyManager : Singleton<LobbyManager>, IDisposable
     {
         if (param.m_eResult != EResult.k_EResultOK)
         {
-            _logger.ZLogError($"failed to create lobby: {param.m_eResult}");
+            _logger.LogError("failed to create lobby: {Result}", param.m_eResult);
             return;
         }
 
         var lobbyId = new CSteamID(param.m_ulSteamIDLobby);
-        _logger.ZLogInformation($"lobby created: {param.m_ulSteamIDLobby}");
+        _logger.LogInformation("lobby created: {LobbyId}", param.m_ulSteamIDLobby);
         UpdateLobbyData(lobbyId);
 
         GameEventBus.Publish(new LobbyCreatedEvent(lobbyId));
@@ -251,18 +252,18 @@ public class LobbyManager : Singleton<LobbyManager>, IDisposable
     {
         if (param.m_EChatRoomEnterResponse != 1) // not success
         {
-            _logger.ZLogError($"failed to enter lobby: {param.m_EChatRoomEnterResponse}");
+            _logger.LogError("failed to enter lobby: {EnterResponse}", param.m_EChatRoomEnterResponse);
             return;
         }
 
         _lobbyId = new CSteamID(param.m_ulSteamIDLobby);
-        _logger.ZLogInformation($"lobby entered: {_lobbyId}");
+        _logger.LogInformation("lobby entered: {LobbyId}", _lobbyId);
     }
 
     private void OnLobbyDataChanged(LobbyDataUpdate_t param)
     {
         var lobbyId = new CSteamID(param.m_ulSteamIDLobby);
-        _logger.ZLogDebug($"lobby data updated: {lobbyId}");
+        _logger.LogDebug("lobby data updated: {LobbyId}", lobbyId);
     }
 
     #endregion

@@ -1,7 +1,7 @@
 ﻿using WFDS.Common.Actor;
 using WFDS.Common.Steam;
 using WFDS.Common.Types;
-using ZLogger;
+
 
 namespace WFDS.Server.Core.Actor;
 
@@ -41,7 +41,7 @@ internal sealed class HostSpawnScheduleService(ILogger<HostSpawnScheduleService>
         var ownedActorCount = actor.GetOwnedActorCount();
         var ownedActorTypes = actor.GetOwnedActorTypes();
 
-        logger.ZLogInformation($"owned_actors: {ownedActorCount}, owned_actors_types: {string.Join(',', ownedActorTypes)}");
+        logger.LogInformation("owned_actors: {OwnedActorCount}, owned_actors_types: {OwnedActorTypes}", ownedActorCount, string.Join(',', ownedActorTypes));
 
         var type = RandomPickSpawnType();
         IActor? spawnedActor = null;
@@ -69,7 +69,7 @@ internal sealed class HostSpawnScheduleService(ILogger<HostSpawnScheduleService>
             return;
         }
 
-        logger.ZLogInformation($"spawn {spawnedActor.Type} ({spawnedActor.ActorId}) at {spawnedActor.Position}");
+        logger.LogInformation("spawn {ActorType} ({ActorId}) at {ActorPosition}", spawnedActor.Type, spawnedActor.ActorId, spawnedActor.Position);
     }
 
     private HostSpawnTypes RandomPickSpawnType()

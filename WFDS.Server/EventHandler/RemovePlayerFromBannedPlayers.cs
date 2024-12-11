@@ -1,7 +1,7 @@
 ﻿using WFDS.Common.GameEvents;
 using WFDS.Common.GameEvents.Events;
 using WFDS.Database;
-using ZLogger;
+
 
 namespace WFDS.Server.EventHandler;
 
@@ -12,7 +12,7 @@ public class RemovePlayerFromBannedPlayers(ILogger<RemovePlayerFromBannedPlayers
         var player = dbContext.BannedPlayers.FirstOrDefault(x => x.SteamId == e.PlayerId.m_SteamID);
         if (player is null)
         {
-            logger.ZLogWarning($"Player {e.PlayerId.m_SteamID} is not banned");
+            logger.LogWarning("Player {SteamId} is not banned", e.PlayerId.m_SteamID);
             return;
         }
         

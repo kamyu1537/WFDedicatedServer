@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
 using Microsoft.Extensions.Logging;
-using ZLogger;
+
 
 namespace WFDS.Common.Plugin;
 
@@ -32,7 +32,7 @@ public static class PluginManager
 
     private static IEnumerable<Plugin> LoadAssembly(string pluginFile)
     {
-        var assembly = Assembly.LoadFrom(pluginFile);
+        var assembly = Assembly.Load(pluginFile);
         var types = assembly.GetExportedTypes();
         foreach (var type in types)
         {
@@ -51,7 +51,7 @@ public static class PluginManager
         var instance = Activator.CreateInstance(type);
         if (instance is not Plugin plugin) return null;
         
-        Logger.ZLogInformation($"loading plugin {plugin.Name} {plugin.Version} by {plugin.Author}");
+        Logger.LogInformation("loading plugin {PluginName} {PluginVersion} by {PluginAuthor}", plugin.Name, plugin.Version, plugin.Author);
         plugin.Load();
 
         return plugin;

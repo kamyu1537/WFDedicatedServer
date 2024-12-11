@@ -1,13 +1,13 @@
 using System.Reflection;
 using WFDS.Common;
 using WFDS.Common.Network;
-using ZLogger;
+
 
 namespace WFDS.Server.Core.Network;
 
 internal static class PacketHandlerExtensions
 {
-    private static readonly ILogger Logger = Log.Factory.CreateLogger(typeof(PacketHandlerExtensions).FullName ?? nameof(PacketHandlerExtensions));
+    private static readonly ILogger Logger = Log.Factory.CreateLogger(nameof(PacketHandlerExtensions));
     
     public static IServiceCollection AddPacketHandlers(this IServiceCollection service)
     {
@@ -20,7 +20,7 @@ internal static class PacketHandlerExtensions
             .Select(x => x.Item2)
             .Select(service.AddTransient).ToArray().Length;
         
-        Logger.ZLogInformation($"added {count} packet handlers");
+        Logger.LogInformation("added {PacketHandlerCount} packet handlers", count);
         return service;
     }
 }

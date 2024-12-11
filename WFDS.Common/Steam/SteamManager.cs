@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using Steamworks;
 using WFDS.Common.Types;
-using ZLogger;
+
 
 namespace WFDS.Common.Steam;
 
@@ -20,13 +20,13 @@ public class SteamManager : Singleton<SteamManager>
         var result = SteamAPI.InitEx(out var errMsg);
         if (result != ESteamAPIInitResult.k_ESteamAPIInitResult_OK)
         {
-            _logger.ZLogError($"SteamAPI.Init failed: {result} {errMsg}");
+            _logger.LogError("SteamAPI.Init failed: {Result} {ErrorMessage}", result, errMsg);
             return false;
         }
         
         Initialized = true;
         _steamId = SteamUser.GetSteamID();
-        _logger.ZLogInformation($"SteamAPI.Init success");
+        _logger.LogInformation("SteamAPI.Init success");
         return true;
     }
 

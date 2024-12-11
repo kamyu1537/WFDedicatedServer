@@ -1,38 +1,35 @@
 ﻿using Microsoft.Extensions.Logging;
-using Utf8StringInterpolation;
-using ZLogger;
-using ZLogger.Providers;
+using Serilog;
+using Serilog.Extensions.Logging;
+using Serilog.Formatting.Compact;
+using Serilog.Formatting.Json;
+using Serilog.Sinks.SystemConsole.Themes;
+using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 namespace WFDS.Common;
 
 public static class Log
 {
-    public static readonly ILoggerFactory Factory = LoggerFactory.Create(logging =>
-    {
+    private const string LogOutputTemplate = "[{Timestamp:O}] [{Level:u3}] [{SourceContext}] {Message:lj}{NewLine}{Exception}";
+
+    private static readonly Lazy<Serilog.ILogger> SerilogLogger = new(() => new LoggerConfiguration()
 #if DEBUG
-        logging.SetMinimumLevel(LogLevel.Debug);
+        .MinimumLevel.Debug()
 #else
-        logging.SetMinimumLevel(LogLevel.Information);
+        .MinimumLevel.Information()
 #endif
+        .WriteTo.Console(outputTemplate: LogOutputTemplate, theme: AnsiConsoleTheme.Code)
+        .WriteTo.File(
+            new JsonFormatter(),
+            path: "Logs/log-.log",
+            rollingInterval: RollingInterval.Day,
+            retainedFileCountLimit: 5,
+            fileSizeLimitBytes: 256 * 1024 * 1024,
+            rollOnFileSizeLimit: true
+        )
+        .CreateLogger());
 
-        logging.AddZLoggerConsole(options =>
-        {
-            options.IncludeScopes = true;
-            options.UsePlainTextFormatter(formatter =>
-            {
-                formatter.SetPrefixFormatter($"[{0}] [{1:short}] [{2}] [{3}:{4}] ", (in MessageTemplate template, in LogInfo info) => template.Format(info.Timestamp.Utc.ToString("O"), info.LogLevel, info.Category, info.MemberName, info.LineNumber));
-                formatter.SetExceptionFormatter((writer, ex) => Utf8String.Format(writer, $"{ex.Message}"));
-            });
-        });
-        
-        logging.AddZLoggerRollingFile(options =>
-        {
-            options.UseJsonFormatter();
-            options.FilePathSelector = (DateTimeOffset timestamp, int sequenceNumber) => $"logs/{timestamp.ToLocalTime():yyyyMMdd}_{sequenceNumber:000}.log";
-            options.RollingInterval = RollingInterval.Day;
-            options.RollingSizeKB = 1024;
-        });
-    });
+    public static ILoggerFactory Factory { get; } = new SerilogLoggerFactory(SerilogLogger.Value, dispose: true);
 
-    public static readonly ILogger Logger = Factory.CreateLogger("");
+    public static ILogger Logger { get; } = Factory.CreateLogger(string.Empty);
 }

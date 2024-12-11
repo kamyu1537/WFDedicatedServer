@@ -2,7 +2,7 @@
 using WFDS.Common.Actor;
 using WFDS.Common.Types;
 using WFDS.Common.Types.Manager;
-using ZLogger;
+
 
 namespace WFDS.Server.Core.Actor;
 
@@ -27,7 +27,7 @@ internal sealed class ActorSpawnManager(ILogger<ActorSpawnManager> logger, IZone
             }
             else
             {
-                logger.ZLogError($"no fish spawn point found");
+                logger.LogError("no fish spawn point found");
             }
         }
     }
@@ -40,7 +40,7 @@ internal sealed class ActorSpawnManager(ILogger<ActorSpawnManager> logger, IZone
             return actor.SpawnFishSpawnActor(point.Transform.Origin);
         }
         
-        logger.ZLogError($"no fish spawn point found");
+        logger.LogError("no fish spawn point found");
         return null;
     }
 
@@ -52,7 +52,7 @@ internal sealed class ActorSpawnManager(ILogger<ActorSpawnManager> logger, IZone
             return actor.SpawnFishSpawnAlienActor(point.Transform.Origin);
         }
 
-        logger.ZLogError($"no fish spawn point found");
+        logger.LogError("no fish spawn point found");
         return null;
     }
 
@@ -77,7 +77,7 @@ internal sealed class ActorSpawnManager(ILogger<ActorSpawnManager> logger, IZone
             return actor.SpawnVoidPortalActor(pos);
         }
 
-        logger.ZLogError($"no hidden spot found");
+        logger.LogError("no hidden spot found");
         return null;
     }
 
@@ -86,7 +86,7 @@ internal sealed class ActorSpawnManager(ILogger<ActorSpawnManager> logger, IZone
         var point = RandomPickMetalPoint();
         if (point == null)
         {
-            logger.ZLogError($"no metal point found");
+            logger.LogError("no metal point found");
             return null;
         }
 
@@ -123,7 +123,7 @@ internal sealed class ActorSpawnManager(ILogger<ActorSpawnManager> logger, IZone
         point = default!;
         if (nodes.Count == 0)
         {
-            logger.ZLogError($"no node found");
+            logger.LogError("no node found");
             return false;
         }
 

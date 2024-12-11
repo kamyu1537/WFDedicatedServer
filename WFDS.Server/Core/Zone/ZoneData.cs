@@ -5,7 +5,7 @@ using System.Text.Json;
 using WFDS.Common.Extensions;
 using WFDS.Common.Types;
 using WFDS.Godot.Types;
-using ZLogger;
+
 
 namespace WFDS.Server.Core.Zone;
 
@@ -24,7 +24,7 @@ internal sealed class ZoneData(string fileName, string filePath) : IZoneData
         using var file = new FileStream(FilePath, FileMode.Open);
         using var reader = new StreamReader(file, Encoding.UTF8);
 
-        logger.ZLogInformation($"loading zone from {FileName}");
+        logger.LogInformation("loading zone from {FileName}", FileName);
         var nodes = LoadPositionNodeList(reader)
             .Select(ParsePositionNode)
             .Where(x => x != null)

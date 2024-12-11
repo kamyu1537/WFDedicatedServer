@@ -1,7 +1,7 @@
 ﻿using System.Numerics;
 using Microsoft.Extensions.Logging;
 using WFDS.Common.Extensions;
-using ZLogger;
+
 
 namespace WFDS.Common.Network.Packets;
 
@@ -32,7 +32,7 @@ public class ChalkPacket : Packet
         {
             if (item.Count != 2)
             {
-                Logger.ZLogError($"Invalid chalk data item");
+                Logger.LogError("Invalid chalk data item");
                 continue;
             }
 

@@ -20,6 +20,10 @@
           <PrivateAssets>all</PrivateAssets>
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
+        <PackageReference Include="Serilog" Version="4.2.0" />
+        <PackageReference Include="Serilog.AspNetCore" Version="9.0.0" />
+        <PackageReference Include="Serilog.Sinks.Console" Version="6.0.0" />
+        <PackageReference Include="Serilog.Sinks.File" Version="6.0.0" />
         <PackageReference Include="Steamworks.NET" Version="2024.8.0" />
         <PackageReference Include="System.Text.Json" Version="9.0.0"/>
         <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.0"/>
@@ -76,7 +80,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Logs\" />
       <Folder Include="wwwroot\" />
     </ItemGroup>
 </Project>

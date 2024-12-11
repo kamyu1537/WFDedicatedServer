@@ -3,7 +3,7 @@ using WFDS.Common.GameEvents;
 using WFDS.Common.GameEvents.Events;
 using WFDS.Common.Steam;
 using WFDS.Database;
-using ZLogger;
+
 
 namespace WFDS.Server.EventHandler;
 
@@ -12,12 +12,12 @@ public class LoadBanListFromDb(ILogger<LoadBanListFromDb> logger, DatabaseContex
     protected override void Handle(LobbyCreatedEvent e)
     {
         var count = dbContext.BannedPlayers.Count();
-        logger.ZLogInformation($"Load {count} banned players from database");
+        logger.LogInformation("load {Count} banned players from database", count);
         
         if (count == 0) return;
         foreach (var banned in dbContext.BannedPlayers)
         {
-            logger.ZLogInformation($"Banned player {banned.DisplayName}[{banned.SteamId}] is banned");
+            logger.LogInformation("banned player {DisplayName}[{SteamId}] is banned", banned.DisplayName, banned.SteamId);
             sessionManager.BanPlayerNoEvent(e.LobbyId, new CSteamID(banned.SteamId));
         }
     }

@@ -7,7 +7,7 @@ using WFDS.Database.DbSet;
 
 namespace WFDS.Server.Pages.Session;
 
-public class Index(SessionManager sessionManager, LobbyManager lobbyManager, DatabaseContext dbContext) : PageModel
+public class Index(SessionManager sessionManager, LobbyManager lobbyManager) : PageModel
 {
     public int MaxSessionCount { get; } = lobbyManager.GetCap();
     public int SessionCount { get; } = sessionManager.GetSessionCount();

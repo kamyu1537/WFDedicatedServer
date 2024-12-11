@@ -3,7 +3,7 @@ using Microsoft.Extensions.Options;
 using WFDS.Common.Steam;
 using WFDS.Common.Types;
 using WFDS.Server.Core.Configuration;
-using ZLogger;
+
 
 namespace WFDS.Server.Core;
 
@@ -23,12 +23,12 @@ internal class WebFishingServer(
     {
         if (!_mutex.WaitOne(0, false))
         {
-            logger.ZLogError($"WFDS.Server is already running");
+            logger.LogError("WFDS.Server is already running");
             lifetime.StopApplication();
             return;
         }
 
-        logger.ZLogInformation($"WebFishingServer start");
+        logger.LogInformation("WebFishingServer start");
         _ = LogicLooperPool.Shared.RegisterActionAsync(Update).ConfigureAwait(false);
 
         if (!steam.Init())
@@ -43,12 +43,9 @@ internal class WebFishingServer(
 
         while (!stoppingToken.IsCancellationRequested)
         {
-            if (lobby.GetLobbyId().IsValid())
+            if (lobby.GetLobbyId().IsValid() && !lobby.IsInLobby())
             {
-                if (!lobby.IsInLobby())
-                {
-                    break;
-                }
+                break;
             }
 
             canvas.SaveChanges();
@@ -57,7 +54,7 @@ internal class WebFishingServer(
 
         // 프로그램을 를 종료한다.
         lobby.LeaveLobby(out _);
-        logger.ZLogInformation($"WebFishingServer stop");
+        logger.LogInformation("WebFishingServer stop");
         lifetime.StopApplication();
     }
 
@@ -65,7 +62,7 @@ internal class WebFishingServer(
     {
         if (ctx.CancellationToken.IsCancellationRequested)
         {
-            logger.ZLogError($"update canceled");
+            logger.LogError("update canceled");
             return false;
         }
 
@@ -78,17 +75,26 @@ internal class WebFishingServer(
         return true;
     }
 
+    private void ServerClose()
+    {
+        logger.LogInformation("try session close");
+        session.ServerClose();
+    }
+
+    private void Shutdown()
+    {
+        logger.LogInformation("steam api shutdown");
+        steam.Shutdown();
+    }
+
     public override async Task StopAsync(CancellationToken cancellationToken)
     {
-        logger.ZLogInformation($"try session close");
-        session.ServerClose();
+        ServerClose();
+        Shutdown();
 
-        logger.ZLogInformation($"steam api shutdown");
-        steam.Shutdown();
-
-        logger.ZLogInformation($"try steam looper is stopping");
-
+        logger.LogInformation("try steam looper is stopping");
         await base.StopAsync(cancellationToken);
-        logger.ZLogInformation($"WebFishingServer stopped");
+
+        logger.LogInformation("WebFishingServer stopped");
     }
 }

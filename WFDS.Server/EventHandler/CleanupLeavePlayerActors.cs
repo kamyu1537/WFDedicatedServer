@@ -1,7 +1,7 @@
 ﻿using WFDS.Common.Actor;
 using WFDS.Common.GameEvents;
 using WFDS.Common.GameEvents.Events;
-using ZLogger;
+
 
 namespace WFDS.Server.EventHandler;
 
@@ -9,13 +9,13 @@ public class CleanupLeavePlayerActors(ILogger<CleanupLeavePlayerActors> logger, 
 {
     protected override void Handle(PlayerLeaveEvent e)
     {
-        logger.ZLogInformation($"player {e.PlayerId} has left the game");
+        logger.LogInformation("player {PlayerId} has left the game", e.PlayerId);
 
         var actors = actorManager.GetActorsByCreatorId(e.PlayerId);
-        foreach (var actor in actors)
+        foreach (var actorId in actors.Select(x => x.ActorId))
         {
-            logger.ZLogInformation($"try remove actor: {actor.ActorId}");
-            if (actorManager.TryRemoveActor(actor.ActorId, ActorRemoveTypes.Disconnect, out _)) logger.LogDebug("removed actor: {ActorId}", actor.ActorId);
+            logger.LogInformation("try remove actor: {ActorId}", actorId);
+            if (actorManager.TryRemoveActor(actorId, ActorRemoveTypes.Disconnect, out _)) logger.LogDebug("removed actor: {ActorId}", actorId);
         }
     }
 }

@@ -1,5 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
-using ZLogger;
+
 
 namespace WFDS.Common.Helpers;
 
@@ -11,6 +11,6 @@ public static class ConsoleHelper
     {
         var title = $"[{cur}/{cap - 1}] {name} [{code}]";
         Console.Title = title;
-        Logger.ZLogInformation($"update console title : {title}");
+        Logger.LogInformation("update console title : {Title}", title);
     }
 }

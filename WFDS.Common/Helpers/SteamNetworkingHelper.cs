@@ -3,7 +3,7 @@ using Steamworks;
 using WFDS.Common.Steam;
 using WFDS.Common.Types;
 using WFDS.Godot.Binary;
-using ZLogger;
+
 
 namespace WFDS.Common.Helpers;
 
@@ -30,7 +30,7 @@ public static class SteamNetworkingHelper
         }
         catch (Exception ex)
         {
-            Logger.ZLogError(ex, $"failed to rent bytes for P2P packet");
+            Logger.LogError(ex, "failed to rent bytes for P2P packet");
             return false;
         }
     }
@@ -63,7 +63,7 @@ public static class SteamNetworkingHelper
         }
         catch (Exception ex)
         {
-            Logger.ZLogError($"failed to rent bytes for broadcast P2P packet : \n{ex}");
+            Logger.LogError(ex, "failed to rent bytes for broadcast P2P packet");
         }
     }
 }

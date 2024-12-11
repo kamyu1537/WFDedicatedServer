@@ -3,7 +3,7 @@ using WFDS.Common.Actor;
 using WFDS.Common.Actor.Actors;
 using WFDS.Common.GameEvents;
 using WFDS.Common.GameEvents.Events;
-using ZLogger;
+
 
 namespace WFDS.Server.EventHandler;
 
@@ -20,7 +20,7 @@ public class RemoveAmbientBirdNearPlayer(ILogger<RemoveAmbientBirdNearPlayer> lo
             var distance = Vector3.Distance(bird.Position, player.Position);
             if (distance <= 10)
             {
-                logger.ZLogInformation($"bird {actor.ActorId} is near player {player.ActorId}");
+                logger.LogInformation("bird {BirdActorId} is near player {PlayerActorId}", actor.ActorId, player.ActorId);
                 actorManager.TryRemoveActor(actor.ActorId, ActorRemoveTypes.QueueFree, out _);
                 break;
             }

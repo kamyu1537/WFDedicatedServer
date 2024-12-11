@@ -1,7 +1,7 @@
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using WFDS.Common;
 using WFDS.Common.GameEvents;
-using ZLogger;
+
 
 namespace WFDS.Server.Core.GameEvent;
 
@@ -20,7 +20,7 @@ internal static class GameEventServiceCollectionExtensions
             .Where(type => gameEventHandlerType.IsAssignableFrom(type) && !type.IsAbstract && !type.IsInterface)
             .ToArray();
 
-        Logger.ZLogInformation($"added {gameEventHandlerTypes.Length} game event handlers");
+        Logger.LogInformation("added {EventHandlerCount} game event handlers", gameEventHandlerTypes.Length);
         services.TryAddEnumerable(gameEventHandlerTypes.Select(CreateServiceDescriptor));
     }
 

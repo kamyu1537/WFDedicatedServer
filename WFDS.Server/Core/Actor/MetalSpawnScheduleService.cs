@@ -1,6 +1,6 @@
 ﻿using WFDS.Common.Actor;
 using WFDS.Common.Steam;
-using ZLogger;
+
 
 namespace WFDS.Server.Core.Actor;
 
@@ -31,7 +31,7 @@ internal sealed class MetalSpawnScheduleService(ILogger<MetalSpawnScheduleServic
         var metal = spawn.SpawnMetalActor();
         if (metal != null)
         {
-            logger.ZLogInformation($"spawn {metal.Type} ({metal.ActorId}) at {metal.Position}");
+            logger.LogInformation("spawn {ActorType} ({ActorId}) at {ActorPosition}", metal.Type, metal.ActorId, metal.Position);
         }
     }
 
