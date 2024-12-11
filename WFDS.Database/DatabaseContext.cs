@@ -3,7 +3,7 @@ using WFDS.Database.DbSet;
 
 namespace WFDS.Database;
 
-public class DataDbContext(DbContextOptions<DataDbContext> options) : DbContext(options)
+public class DatabaseContext(DbContextOptions<DatabaseContext> options) : DbContext(options)
 {
     public DbSet<Player> Players { get; set; }
     public DbSet<BannedPlayer> BannedPlayers { get; set; } 

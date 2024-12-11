@@ -19,5 +19,5 @@ public class BannedPlayer
     public string DisplayName { get; set; } = string.Empty;
 
     [Column("banned_at")]
-    public DateTime BannedAt { get; set; } = DateTime.UtcNow;
+    public DateTimeOffset BannedAt { get; set; } = DateTimeOffset.UtcNow;
 }

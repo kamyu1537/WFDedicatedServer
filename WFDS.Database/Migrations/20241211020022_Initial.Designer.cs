@@ -10,9 +10,9 @@ using WFDS.Database;
 
 namespace WFDS.Database.Migrations
 {
-    [DbContext(typeof(DataDbContext))]
-    [Migration("20241210075705_ChangeColumnNameAndUpdateBannedPlayers")]
-    partial class ChangeColumnNameAndUpdateBannedPlayers
+    [DbContext(typeof(DatabaseContext))]
+    [Migration("20241211020022_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -27,7 +27,7 @@ namespace WFDS.Database.Migrations
                         .HasColumnType("INTEGER")
                         .HasColumnName("id");
 
-                    b.Property<DateTime>("BannedAt")
+                    b.Property<DateTimeOffset>("BannedAt")
                         .HasColumnType("TEXT")
                         .HasColumnName("banned_at");
 
@@ -56,7 +56,7 @@ namespace WFDS.Database.Migrations
                         .HasColumnType("INTEGER")
                         .HasColumnName("id");
 
-                    b.Property<DateTime>("CreatedAt")
+                    b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("TEXT")
                         .HasColumnName("created_at");
 
@@ -66,7 +66,7 @@ namespace WFDS.Database.Migrations
                         .HasColumnType("TEXT")
                         .HasColumnName("display_name");
 
-                    b.Property<DateTime>("LastJoinedAt")
+                    b.Property<DateTimeOffset>("LastJoinedAt")
                         .HasColumnType("TEXT")
                         .HasColumnName("last_joined_at");
 
@@ -74,7 +74,7 @@ namespace WFDS.Database.Migrations
                         .HasColumnType("INTEGER")
                         .HasColumnName("steam_id");
 
-                    b.Property<DateTime>("UpdatedAt")
+                    b.Property<DateTimeOffset>("UpdatedAt")
                         .HasColumnType("TEXT")
                         .HasColumnName("updated_at");
 

@@ -17,9 +17,9 @@ public class Player
     [Column("display_name")]
     public string DisplayName { get; set; } = string.Empty;
     [Column("last_joined_at")]
-    public DateTime LastJoinedAt { get; set; } = DateTime.UtcNow;
+    public DateTimeOffset LastJoinedAt { get; set; } = DateTimeOffset.UtcNow;
     [Column("created_at")]
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
     [Column("updated_at")]
-    public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+    public DateTimeOffset UpdatedAt { get; set; } = DateTimeOffset.UtcNow;
 }

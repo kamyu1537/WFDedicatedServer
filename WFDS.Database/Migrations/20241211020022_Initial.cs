@@ -15,44 +15,44 @@ namespace WFDS.Database.Migrations
                 name: "banned_players",
                 columns: table => new
                 {
-                    Id = table.Column<long>(type: "INTEGER", nullable: false)
+                    id = table.Column<long>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    SteamId = table.Column<ulong>(type: "INTEGER", nullable: false),
-                    DisplayName = table.Column<string>(type: "TEXT", maxLength: 32, nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false)
+                    steam_id = table.Column<ulong>(type: "INTEGER", nullable: false),
+                    display_name = table.Column<string>(type: "TEXT", maxLength: 32, nullable: false),
+                    banned_at = table.Column<DateTimeOffset>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_banned_players", x => x.Id);
+                    table.PrimaryKey("PK_banned_players", x => x.id);
                 });
 
             migrationBuilder.CreateTable(
                 name: "players",
                 columns: table => new
                 {
-                    Id = table.Column<long>(type: "INTEGER", nullable: false)
+                    id = table.Column<long>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    SteamId = table.Column<ulong>(type: "INTEGER", nullable: false),
-                    DisplayName = table.Column<string>(type: "TEXT", maxLength: 32, nullable: false),
-                    LastJoinedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "TEXT", nullable: false)
+                    steam_id = table.Column<ulong>(type: "INTEGER", nullable: false),
+                    display_name = table.Column<string>(type: "TEXT", maxLength: 32, nullable: false),
+                    last_joined_at = table.Column<DateTimeOffset>(type: "TEXT", nullable: false),
+                    created_at = table.Column<DateTimeOffset>(type: "TEXT", nullable: false),
+                    updated_at = table.Column<DateTimeOffset>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_players", x => x.Id);
+                    table.PrimaryKey("PK_players", x => x.id);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_banned_players_SteamId",
+                name: "IX_banned_players_steam_id",
                 table: "banned_players",
-                column: "SteamId",
+                column: "steam_id",
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_players_SteamId",
+                name: "IX_players_steam_id",
                 table: "players",
-                column: "SteamId",
+                column: "steam_id",
                 unique: true);
         }
 

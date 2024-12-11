@@ -9,8 +9,8 @@ using WFDS.Database;
 
 namespace WFDS.Database.Migrations
 {
-    [DbContext(typeof(DataDbContext))]
-    partial class DataDbContextModelSnapshot : ModelSnapshot
+    [DbContext(typeof(DatabaseContext))]
+    partial class DatabaseContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
@@ -24,7 +24,7 @@ namespace WFDS.Database.Migrations
                         .HasColumnType("INTEGER")
                         .HasColumnName("id");
 
-                    b.Property<DateTime>("BannedAt")
+                    b.Property<DateTimeOffset>("BannedAt")
                         .HasColumnType("TEXT")
                         .HasColumnName("banned_at");
 
@@ -53,7 +53,7 @@ namespace WFDS.Database.Migrations
                         .HasColumnType("INTEGER")
                         .HasColumnName("id");
 
-                    b.Property<DateTime>("CreatedAt")
+                    b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("TEXT")
                         .HasColumnName("created_at");
 
@@ -63,7 +63,7 @@ namespace WFDS.Database.Migrations
                         .HasColumnType("TEXT")
                         .HasColumnName("display_name");
 
-                    b.Property<DateTime>("LastJoinedAt")
+                    b.Property<DateTimeOffset>("LastJoinedAt")
                         .HasColumnType("TEXT")
                         .HasColumnName("last_joined_at");
 
@@ -71,7 +71,7 @@ namespace WFDS.Database.Migrations
                         .HasColumnType("INTEGER")
                         .HasColumnName("steam_id");
 
-                    b.Property<DateTime>("UpdatedAt")
+                    b.Property<DateTimeOffset>("UpdatedAt")
                         .HasColumnType("TEXT")
                         .HasColumnName("updated_at");
 
