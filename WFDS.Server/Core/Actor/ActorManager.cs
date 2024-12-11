@@ -199,7 +199,7 @@ internal sealed class ActorManager(ILogger<ActorManager> logger, IActorIdManager
                 return TryRemoveActorFirstByType(actorType, ActorRemoveTypes.ActorCountOver, out _);
             }
 
-            logger.LogWarning("{ActorType} actor limit reached ({MaxCount})", ActorType.RainCloud.Name, ActorType.RainCloud.MaxCount);
+            logger.LogWarning("{ActorType} actor limit reached ({MaxCount})", actorType.Name, maxCount);
             return false;
         }
 

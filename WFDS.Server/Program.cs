@@ -33,8 +33,8 @@ try
 
     var configuration = new ConfigurationBuilder()
         .AddJsonFile("appsettings.json", false, true)
-        .AddJsonFile("appsettings.local.json", true, true)
         .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", true)
+        .AddJsonFile("appsettings.local.json", true, true)
         .AddEnvironmentVariables()
         .Build();
 
@@ -48,8 +48,11 @@ try
     builder.Services.AddSingleton(Log.Factory);
     builder.Services.AddSingleton(Log.Logger);
 
+    builder.Configuration.Sources.Clear();
+    
     builder.Services.Configure<ServerSetting>(section);
-    builder.UseActorSettings();
+    builder.UseMaxCountConfigure(configuration);
+    builder.UseDecayTimerConfigure(configuration);
 
     /////////////////////////////////////////////////////////////////
 
