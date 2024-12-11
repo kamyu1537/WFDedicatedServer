@@ -4,7 +4,7 @@ using WFDS.Common.GameEvents.Events;
 
 namespace WFDS.Server.EventHandler;
 
-public class UpdatePlayerHeldItem(IActorManager actorManager) : GameEventHandler<PlayerHeldItemUpdateEvent>
+public sealed class UpdatePlayerHeldItem(IActorManager actorManager) : GameEventHandler<PlayerHeldItemUpdateEvent>
 {
     protected override void Handle(PlayerHeldItemUpdateEvent e)
     {

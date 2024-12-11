@@ -6,7 +6,7 @@ using WFDS.Common.Types;
 namespace WFDS.Server.PacketHandler;
 
 [PacketType("chalk_packet")]
-public class ChalkPacketHandler(ICanvasManager canvas, LobbyManager lobby, SessionManager session) : PacketHandler<ChalkPacket>
+public sealed class ChalkPacketHandler(ICanvasManager canvas, LobbyManager lobby, SessionManager session) : PacketHandler<ChalkPacket>
 {
     protected override void Handle(Session sender, NetChannel channel, ChalkPacket packet)
     {

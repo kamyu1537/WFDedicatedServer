@@ -6,7 +6,7 @@ using WFDS.Common.Types;
 
 namespace WFDS.Server.EventHandler;
 
-public class ActorRemoveBroadcast(SessionManager sessionManager, LobbyManager lobby, SteamManager steam) : GameEventHandler<ActorRemoveEvent>
+public sealed class ActorRemoveBroadcast(SessionManager sessionManager, LobbyManager lobby, SteamManager steam) : GameEventHandler<ActorRemoveEvent>
 {
     protected override void Handle(ActorRemoveEvent e)
     {

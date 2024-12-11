@@ -8,7 +8,7 @@ using Session = WFDS.Common.Network.Session;
 namespace WFDS.Server.PacketHandler;
 
 [PacketType("request_actors")]
-public class RequestActorsHandler(ILogger<RequestActorsHandler> logger, IActorManager actorManager, SessionManager sessionManager) : PacketHandler<RequestActorsPacket>
+public sealed class RequestActorsHandler(ILogger<RequestActorsHandler> logger, IActorManager actorManager, SessionManager sessionManager) : PacketHandler<RequestActorsPacket>
 {
     protected override void Handle(Session sender, NetChannel channel, RequestActorsPacket _)
     {

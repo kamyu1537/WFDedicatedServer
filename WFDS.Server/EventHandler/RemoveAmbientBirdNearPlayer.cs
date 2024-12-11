@@ -7,7 +7,7 @@ using WFDS.Common.GameEvents.Events;
 
 namespace WFDS.Server.EventHandler;
 
-public class RemoveAmbientBirdNearPlayer(ILogger<RemoveAmbientBirdNearPlayer> logger, IActorManager actorManager) : GameEventHandler<ActorTickEvent>
+public sealed class RemoveAmbientBirdNearPlayer(ILogger<RemoveAmbientBirdNearPlayer> logger, IActorManager actorManager) : GameEventHandler<ActorTickEvent>
 {
     protected override void Handle(ActorTickEvent e)
     {

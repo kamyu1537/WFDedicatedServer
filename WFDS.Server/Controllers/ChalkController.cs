@@ -7,7 +7,7 @@ namespace WFDS.Server.Controllers;
 [ApiController]
 [Route("api/v1/chalk")]
 [Tags("chalk")]
-public class ChalkController(ICanvasManager canvas) : Controller
+public sealed class ChalkController(ICanvasManager canvas) : ControllerBase
 {
     [HttpDelete]
     [SwaggerOperation("clear all chalk")]

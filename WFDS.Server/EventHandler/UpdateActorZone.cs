@@ -4,7 +4,7 @@ using WFDS.Common.GameEvents.Events;
 
 namespace WFDS.Server.EventHandler;
 
-public class UpdateActorZone(IActorManager actorManager) : GameEventHandler<ActorZoneUpdateEvent>
+public sealed class UpdateActorZone(IActorManager actorManager) : GameEventHandler<ActorZoneUpdateEvent>
 {
     protected override void Handle(ActorZoneUpdateEvent e)
     {

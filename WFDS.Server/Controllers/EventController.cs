@@ -8,7 +8,7 @@ namespace WFDS.Server.Controllers;
 [ApiController]
 [Tags("event")]
 [Route("api/v1/event")]
-public class EventController(IActorSpawnManager manager) : Controller
+public sealed class EventController(IActorSpawnManager manager) : Controller
 {
     [HttpPost("bird")]
     [SwaggerOperation("spawn ambient bird actor")]

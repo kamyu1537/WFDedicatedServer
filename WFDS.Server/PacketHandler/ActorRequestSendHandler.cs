@@ -9,7 +9,7 @@ using Session = WFDS.Common.Network.Session;
 namespace WFDS.Server.PacketHandler;
 
 [PacketType("actor_request_send")]
-public class ActorRequestSendHandler(ILogger<ActorRequestSendHandler> logger, IActorManager actorManager, SessionManager sessionManager) : PacketHandler<ActorRequestSendPacket>
+public sealed class ActorRequestSendHandler(ILogger<ActorRequestSendHandler> logger, IActorManager actorManager, SessionManager sessionManager) : PacketHandler<ActorRequestSendPacket>
 {
     protected override void Handle(Session sender, NetChannel channel, ActorRequestSendPacket packet)
     {

@@ -4,7 +4,7 @@ using WFDS.Common.Network.Packets;
 
 namespace WFDS.Server.Core.Chalk;
 
-public class Canvas
+public sealed class Canvas
 {
     public long CanvasId { get; init; }
     private Dictionary<(int, int), long> Data { get; } = [];

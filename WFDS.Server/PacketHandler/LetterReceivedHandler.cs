@@ -8,7 +8,7 @@ using Session = WFDS.Common.Network.Session;
 namespace WFDS.Server.Handlers;
 
 [PacketType("letter_recieved")]
-public class LetterReceivedHandler(ILogger<LetterReceivedHandler> logger, SessionManager sessionManager, SteamManager steam) : PacketHandler<LetterReceivedPacket>
+public sealed class LetterReceivedHandler(ILogger<LetterReceivedHandler> logger, SessionManager sessionManager, SteamManager steam) : PacketHandler<LetterReceivedPacket>
 {
     protected override void Handle(Session sender, NetChannel channel, LetterReceivedPacket packet)
     {

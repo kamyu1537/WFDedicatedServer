@@ -5,7 +5,7 @@ using WFDS.Common.Steam;
 
 namespace WFDS.Server.EventHandler;
 
-public class PlayerJoinUpdateTitle(LobbyManager lobby, SessionManager session) : GameEventHandler<PlayerJoinedEvent>
+public sealed class PlayerJoinUpdateTitle(LobbyManager lobby, SessionManager session) : GameEventHandler<PlayerJoinedEvent>
 {
     protected override void Handle(PlayerJoinedEvent e)
     {

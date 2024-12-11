@@ -4,7 +4,7 @@ using WFDS.Common.GameEvents.Events;
 
 namespace WFDS.Server.EventHandler;
 
-public class UpdatePlayerCosmetics(IActorManager actorManager) : GameEventHandler<PlayerCosmeticsUpdateEvent>
+public sealed class UpdatePlayerCosmetics(IActorManager actorManager) : GameEventHandler<PlayerCosmeticsUpdateEvent>
 {
     protected override void Handle(PlayerCosmeticsUpdateEvent e)
     {

@@ -6,7 +6,7 @@ using Session = WFDS.Common.Network.Session;
 namespace WFDS.Server.PacketHandler;
 
 [PacketType("handshake")]
-public class HandshakeHandler(ILogger<HandshakeHandler> logger) : PacketHandler<HandshakePacket>
+public sealed class HandshakeHandler(ILogger<HandshakeHandler> logger) : PacketHandler<HandshakePacket>
 {
     protected override void Handle(Session sender, NetChannel channel, HandshakePacket packet)
     {

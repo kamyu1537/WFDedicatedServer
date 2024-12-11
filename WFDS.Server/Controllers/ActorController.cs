@@ -10,7 +10,7 @@ namespace WFDS.Server.Controllers;
 [ApiController]
 [Tags("actor")]
 [Route("api/v1/actor")]
-public class ActorController(IActorManager manager) : Controller
+public sealed class ActorController(IActorManager manager) : Controller
 {
     [HttpGet("list")]
     public IActionResult GetActors()

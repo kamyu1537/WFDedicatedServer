@@ -7,7 +7,7 @@ using WFDS.Common.GameEvents.Events;
 
 namespace WFDS.Server.EventHandler;
 
-public class RainCloudInitializer(IActorManager actorManager) : GameEventHandler<ActorCreateEvent>
+public sealed class RainCloudInitializer(IActorManager actorManager) : GameEventHandler<ActorCreateEvent>
 {
     protected override void Handle(ActorCreateEvent e)
     {

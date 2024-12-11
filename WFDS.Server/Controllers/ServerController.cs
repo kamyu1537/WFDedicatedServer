@@ -6,7 +6,7 @@ namespace WFDS.Server.Controllers;
 [ApiController]
 [Tags("server")]
 [Route("api/v1/server")]
-public class ServerController(IHostApplicationLifetime lifetime) : Controller
+public sealed class ServerController(IHostApplicationLifetime lifetime) : Controller
 {
     [HttpGet("status")]
     public IActionResult GetStatus()

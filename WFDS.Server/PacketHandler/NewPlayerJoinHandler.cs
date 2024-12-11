@@ -9,7 +9,7 @@ using Session = WFDS.Common.Network.Session;
 namespace WFDS.Server.PacketHandler;
 
 [PacketType("new_player_join")]
-public class NewPlayerJoinHandler(ILogger<NewPlayerJoinHandler> logger, ICanvasManager canvas, SessionManager session) : PacketHandler<NewPlayerJoinPacket>
+public sealed class NewPlayerJoinHandler(ILogger<NewPlayerJoinHandler> logger, ICanvasManager canvas, SessionManager session) : PacketHandler<NewPlayerJoinPacket>
 {
     protected override void Handle(Session sender, NetChannel channel, NewPlayerJoinPacket packet)
     {

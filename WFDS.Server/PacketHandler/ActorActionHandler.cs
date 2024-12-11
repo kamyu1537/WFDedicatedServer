@@ -12,7 +12,7 @@ using Session = WFDS.Common.Network.Session;
 namespace WFDS.Server.PacketHandler;
 
 [PacketType("actor_action")]
-public class ActorActionHandler(ILogger<ActorActionHandler> logger, IActorManager actorManager, SteamManager steam) : PacketHandler<ActorActionPacket>
+public sealed class ActorActionHandler(ILogger<ActorActionHandler> logger, IActorManager actorManager, SteamManager steam) : PacketHandler<ActorActionPacket>
 {
     protected override void Handle(Session sender, NetChannel channel, ActorActionPacket packet)
     {

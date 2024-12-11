@@ -7,7 +7,7 @@ using WFDS.Database;
 
 namespace WFDS.Server.EventHandler;
 
-public class LoadBanListFromDb(ILogger<LoadBanListFromDb> logger, DatabaseContext dbContext, SessionManager sessionManager) : GameEventHandler<LobbyCreatedEvent>
+public sealed class LoadBanListFromDb(ILogger<LoadBanListFromDb> logger, DatabaseContext dbContext, SessionManager sessionManager) : GameEventHandler<LobbyCreatedEvent>
 {
     protected override void Handle(LobbyCreatedEvent e)
     {

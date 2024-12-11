@@ -5,7 +5,7 @@ using WFDS.Common.GameEvents.Events;
 
 namespace WFDS.Server.EventHandler;
 
-public class CleanupLeavePlayerActors(ILogger<CleanupLeavePlayerActors> logger, IActorManager actorManager) : GameEventHandler<PlayerLeaveEvent>
+public sealed class CleanupLeavePlayerActors(ILogger<CleanupLeavePlayerActors> logger, IActorManager actorManager) : GameEventHandler<PlayerLeaveEvent>
 {
     protected override void Handle(PlayerLeaveEvent e)
     {

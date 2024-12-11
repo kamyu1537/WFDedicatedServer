@@ -5,7 +5,7 @@ using WFDS.Common.Steam;
 
 namespace WFDS.Server.EventHandler;
 
-public class PlayerLeaveUpdateTitle(LobbyManager lobby, SessionManager session) : GameEventHandler<PlayerLeaveEvent>
+public sealed class PlayerLeaveUpdateTitle(LobbyManager lobby, SessionManager session) : GameEventHandler<PlayerLeaveEvent>
 {
     protected override void Handle(PlayerLeaveEvent e)
     {

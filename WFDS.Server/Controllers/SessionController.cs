@@ -10,7 +10,7 @@ namespace WFDS.Server.Controllers;
 [Tags("session")]
 [Route("api/v1/session")]
 
-public class SessionController(SessionManager manager, LobbyManager lobby) : Controller
+public sealed class SessionController(SessionManager manager, LobbyManager lobby) : Controller
 {
     [HttpGet("info")]
     [SwaggerOperation("get lobby info")]

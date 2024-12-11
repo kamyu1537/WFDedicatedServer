@@ -2,14 +2,14 @@
 
 namespace WFDS.Server.Core;
 
-public class WebExceptionHandler : IExceptionHandler
+public sealed class WebExceptionHandler : IExceptionHandler
 {
-    public async ValueTask<bool> TryHandleAsync(HttpContext httpContext, Exception ex, CancellationToken cancellationToken)
+    public async ValueTask<bool> TryHandleAsync(HttpContext httpContext, Exception exception, CancellationToken cancellationToken)
     {
         httpContext.Response.StatusCode = 500 ;
         await httpContext.Response.WriteAsJsonAsync(new
         {
-            error = ex.Message
+            error = exception.Message
         }, cancellationToken);
         return true;
     }

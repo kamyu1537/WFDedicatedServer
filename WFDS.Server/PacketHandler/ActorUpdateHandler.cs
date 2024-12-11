@@ -9,7 +9,7 @@ using Session = WFDS.Common.Network.Session;
 namespace WFDS.Server.PacketHandler;
 
 [PacketType("actor_update")]
-public class ActorUpdateHandler(IActorManager actorManager) : PacketHandler<ActorUpdatePacket>
+public sealed class ActorUpdateHandler(IActorManager actorManager) : PacketHandler<ActorUpdatePacket>
 {
     protected override void Handle(Session sender, NetChannel channel, ActorUpdatePacket packet)
     {

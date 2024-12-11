@@ -7,7 +7,7 @@ using Session = WFDS.Common.Network.Session;
 namespace WFDS.Server.PacketHandler;
 
 [PacketType("request_ping")]
-public class RequestPingHandler(SessionManager sessionManager, SteamManager steam) : PacketHandler<RequestPingPacket>
+public sealed class RequestPingHandler(SessionManager sessionManager, SteamManager steam) : PacketHandler<RequestPingPacket>
 {
     protected override void Handle(Session sender, NetChannel channel, RequestPingPacket packet)
     {

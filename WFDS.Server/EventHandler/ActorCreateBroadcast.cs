@@ -7,7 +7,7 @@ using WFDS.Common.Types;
 
 namespace WFDS.Server.EventHandler;
 
-public class ActorCreateBroadcast(IActorManager actorManager, SessionManager sessionManager, LobbyManager lobby, SteamManager steam) : GameEventHandler<ActorCreateEvent>
+public sealed class ActorCreateBroadcast(IActorManager actorManager, SessionManager sessionManager, LobbyManager lobby, SteamManager steam) : GameEventHandler<ActorCreateEvent>
 {
     protected override void Handle(ActorCreateEvent e)
     {

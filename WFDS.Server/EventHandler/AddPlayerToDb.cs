@@ -5,7 +5,7 @@ using WFDS.Database.DbSet;
 
 namespace WFDS.Server.EventHandler;
 
-public class AddPlayerToDb(DatabaseContext dbContext) : GameEventHandler<PlayerJoinedEvent>
+public sealed class AddPlayerToDb(DatabaseContext dbContext) : GameEventHandler<PlayerJoinedEvent>
 {
     protected override void Handle(PlayerJoinedEvent e)
     {
