@@ -34,7 +34,7 @@
                     <td>@player.Id</td>
                     <td>@player.SteamId</td>
                     <td>@player.DisplayName</td>
-                    <td>@player.BannedAt</td>
+                    <td x-data="{ date: new Date('@player.BannedAt.ToString("O")').toLocaleString() }" x-text="date"></td>
                     <td>
                         <form method="post" style="display: inline;">
                             @Html.AntiForgeryToken()
