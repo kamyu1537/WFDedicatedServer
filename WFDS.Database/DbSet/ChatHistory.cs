@@ -5,6 +5,8 @@ using Microsoft.EntityFrameworkCore;
 namespace WFDS.Database.DbSet;
 
 [Index(nameof(PlayerId))]
+[Index(nameof(Zone), nameof(ZoneOwner))]
+[Index(nameof(CreatedAt))]
 public class ChatHistory
 {
     [Key]
