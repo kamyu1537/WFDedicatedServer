@@ -157,7 +157,7 @@ public sealed class ActorActionHandler(ILogger<ActorActionHandler> logger, IActo
         }
 
         var text = packet.Params[0].GetString();
-        GameEventBus.Publish(new PlayerChatMessageEvent(sender.SteamId, text));
+        GameEventBus.Publish(new PlayerCreateChatBubbleEvent(sender.SteamId, text));
     }
 
     private void SyncLevelBubble(Session sender, ActorActionPacket packet)
