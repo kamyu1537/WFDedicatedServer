@@ -1,0 +1,31 @@
+﻿@page
+@model WFDS.Server.Pages.Chat.Index
+
+@{
+    ViewBag.Title = "Chat";
+    Layout = "_ChatLayout";
+}
+
+<table class="ui celled table">
+    <thead>
+    <th>#</th>
+    <th>SteamId</th>
+    <th>DisplayName</th>
+    <th>Message</th>
+    <th>IsLocal</th>
+    <th>CreatedAt</th>
+    </thead>
+    <tbody>
+    @foreach (var chat in Model.ChatHistories())
+    {
+        <tr>
+            <td>@chat.Id</td>
+            <td>@chat.PlayerId</td>
+            <td>@chat.DisplayName</td>
+            <td>@chat.Message</td>
+            <td>@chat.IsLocal</td>
+            <td x-data="{ date: new Date('@chat.CreatedAt.ToString("O")').toLocaleString() }" x-text="date"></td>
+        </tr>
+    }
+    </tbody>
+</table>

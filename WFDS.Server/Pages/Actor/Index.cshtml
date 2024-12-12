@@ -29,7 +29,7 @@
                     <td>@actor.ActorId</td>
                     <td>@actor.Type.Name</td>
                     <td>@actor.DecayTimer</td>
-                    <td>@actor.CreateTime</td>
+                    <td x-data="{ date: new Date('@actor.CreateTime').toLocaleString() }" x-text="date"></td>
                     <td>
                         <button type="submit" class="ui tiny button red" asp-page-handler="delete"
                                 asp-route-id="@actor.ActorId">delete

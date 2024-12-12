@@ -27,7 +27,7 @@
                 <td>@actor.Type.Name</td>
                 <td>@actor.CreatorId</td>
                 <td>@actor.DecayTimer</td>
-                <td>@actor.CreateTime</td>
+                <td x-data="{ date: new Date('@actor.CreateTime').toLocaleString() }" x-text="date"></td>
             </tr>
         }
         </tbody>
