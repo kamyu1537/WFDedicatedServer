@@ -6,6 +6,12 @@
     Layout = "_ChatLayout";
 }
 
+
+<form method="post" class="ui action input fluid">
+    <input type="text" name="message" placeholder="Message">
+    <button type="submit" class="ui button purple" asp-page-handler="send">Send</button>
+</form>
+
 <table class="ui celled table">
     <thead>
     <th>#</th>
