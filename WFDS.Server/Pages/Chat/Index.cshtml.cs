@@ -28,7 +28,7 @@ public class Index(DatabaseContext dbContext, LobbyManager lobbyManager, Session
         {
             Local = false, Position = Vector3.Zero,
             Color = "ffffff",
-            Message = $"[SERVER : {message}]",
+            Message = $"<SERVER: {message}>",
             Zone = string.Empty,
             ZoneOwner = -1
         };
