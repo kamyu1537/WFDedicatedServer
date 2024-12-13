@@ -1,0 +1,75 @@
+﻿@page
+@model WFDS.Server.Pages.PlayerLog.Index
+
+@{
+    ViewBag.Title = "Player Logs";
+    Layout = "_PlayerLogLayout";
+
+    var totalLogCount = Model.GetTotalLogCount();
+    if (!int.TryParse(Request.Query["page"], out var page))
+    {
+        page = 1;   
+    }
+}
+
+
+<form method="post" class="ui action input fluid">
+    <input type="text" name="message" placeholder="Message">
+    <button type="submit" class="ui button purple" asp-page-handler="sendServerChat">Send</button>
+</form>
+
+<table class="ui celled table">
+    <thead>
+    <th>#</th>
+    <th>Player</th>
+    <th>Action</th>
+    <th>Message</th>
+    <th>JsonData</th>
+    <th>CreatedAt</th>
+    </thead>
+    <tbody>
+    @foreach (var log in Model.GetLogs(page))
+    {
+        <tr>
+            <td>@log.Id</td>
+            <td>@log.DisplayName [@log.PlayerId]</td>
+            <td>@log.Action</td>
+            <td>@log.Message</td>
+            <td>@log.JsonData</td>
+            <td x-data="{ date: new Date('@log.CreatedAt.ToString("O")').toLocaleString() }" x-text="date"></td>
+        </tr>
+    }
+    </tbody>
+</table>
+
+<div class="ui pagination menu">
+    @if (page > 1)
+    {
+        <a class="item" href="?page=@(page)">Previous</a>
+    }
+    else
+    {
+        <div class="item disabled">Previous</div>
+    }
+
+    @for (int i = 1; i <= Math.Ceiling((double)totalLogCount / 100); i++)
+    {
+        if (i == page + 1)
+        {
+            <div class="active item">@i</div>
+        }
+        else
+        {
+            <a class="item" href="?page=@i">@i</a>
+        }
+    }
+
+    @if ((page + 1) * 100 < totalLogCount)
+    {
+        <a class="item" href="?page=@(page + 2)">Next</a>
+    }
+    else
+    {
+        <div class="item disabled">Next</div>
+    }
+</div>

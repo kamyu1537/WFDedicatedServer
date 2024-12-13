@@ -1,13 +1,13 @@
 ﻿using System.Numerics;
+using System.Text.Json;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using WFDS.Common.Network.Packets;
 using WFDS.Common.Steam;
 using WFDS.Common.Types;
 using WFDS.Database;
-using WFDS.Database.DbSet;
 
-namespace WFDS.Server.Pages.Chat;
+namespace WFDS.Server.Pages.PlayerLog;
 
 public class Index(DatabaseContext dbContext, LobbyManager lobbyManager, SessionManager sessionManager) : PageModel
 {
@@ -15,7 +15,7 @@ public class Index(DatabaseContext dbContext, LobbyManager lobbyManager, Session
     {
     }
 
-    public IActionResult OnPostSend(string message)
+    public IActionResult OnPostSendServerChat(string message)
     {
         if (!lobbyManager.IsInLobby())
         {
@@ -34,27 +34,33 @@ public class Index(DatabaseContext dbContext, LobbyManager lobbyManager, Session
         };
 
         sessionManager.BroadcastP2PPacket(lobbyId, NetChannel.GameState, packet);
-        var messageHistory = new ChatHistory
+        var messageHistory = new Database.DbSet.PlayerLog()
         {
             PlayerId = 0,
             DisplayName = "SERVER",
+            Action = "message",
             Message = packet.Message,
             CreatedAt = DateTimeOffset.Now,
-            IsLocal = false,
+            JsonData = JsonSerializer.Serialize(new { is_local = false, color = packet.Color }),
             PositionX = 0,
             PositionY = 0,
             PositionZ = 0,
             Zone = string.Empty,
             ZoneOwner = -1,
         };
-        dbContext.ChatHistories.Add(messageHistory);
+        dbContext.PlayerLogs.Add(messageHistory);
         dbContext.SaveChanges();
 
         return RedirectToPage();
     }
 
-    public IEnumerable<ChatHistory> ChatHistories()
+    public IEnumerable<Database.DbSet.PlayerLog> GetLogs(int page = 1)
     {
-        return dbContext.ChatHistories.OrderByDescending(x => x.Id).Take(100);
+        return dbContext.PlayerLogs.OrderByDescending(x => x.Id).Skip((page - 1) * 100).Take(100);
+    }
+
+    public long GetTotalLogCount()
+    {
+        return dbContext.PlayerLogs.LongCount();
     }
 }
