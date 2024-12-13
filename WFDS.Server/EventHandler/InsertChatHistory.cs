@@ -1,33 +1,19 @@
 ﻿using WFDS.Common.GameEvents;
 using WFDS.Common.GameEvents.Events;
+using WFDS.Common.Steam;
 using WFDS.Database;
 using WFDS.Database.DbSet;
+using WFDS.Server.Core;
 
 namespace WFDS.Server.EventHandler;
 
-public sealed class InsertChatHistory(DatabaseContext dbContext) : GameEventHandler<PlayerMessageEvent>
+public sealed class InsertChatHistory(SessionManager sessionManager, PlayerLogManager playerLogManager) : GameEventHandler<PlayerMessageEvent>
 {
     protected override void Handle(PlayerMessageEvent e)
     {
-        if (string.IsNullOrWhiteSpace(e.Message))
-            return;
+        var session = sessionManager.GetSession(e.PlayerId);
+        if (session is null) return;
         
-        var displayName = Steamworks.SteamFriends.GetFriendPersonaName(e.PlayerId) ?? "";
-        var chatHistory = new ChatHistory
-        {
-            PlayerId = e.PlayerId.m_SteamID,
-            DisplayName = displayName,
-            Message = e.Message,
-            IsLocal = e.Local,
-            Zone = e.Zone,
-            ZoneOwner = e.ZoneOwner,
-            PositionX = e.Position.X,
-            PositionY = e.Position.Y,
-            PositionZ = e.Position.Z,
-            CreatedAt = DateTimeOffset.UtcNow,
-        };
-
-        dbContext.ChatHistories.Add(chatHistory);
-        dbContext.SaveChanges();
+        playerLogManager.Append(session, "message", e.Message, new { is_local = e.Local, color = e.Color });
     }
 }
