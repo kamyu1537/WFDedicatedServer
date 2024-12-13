@@ -8,7 +8,7 @@
     var totalLogCount = Model.GetTotalLogCount();
     if (!int.TryParse(Request.Query["page"], out var page))
     {
-        page = 1;   
+        page = 1;
     }
 }
 
@@ -24,7 +24,7 @@
     <th>Player</th>
     <th>Action</th>
     <th>Message</th>
-    <th>JsonData</th>
+    <th>Data</th>
     <th>CreatedAt</th>
     </thead>
     <tbody>
@@ -35,8 +35,31 @@
             <td>@log.DisplayName [@log.PlayerId]</td>
             <td>@log.Action</td>
             <td>@log.Message</td>
-            <td>@log.JsonData</td>
+            <td>
+                <button class="ui button green mini" onclick="javascript:$('#detail_@log.Id').modal('show')">show
+                    detail
+                </button>
+            </td>
             <td x-data="{ date: new Date('@log.CreatedAt.ToString("O")').toLocaleString() }" x-text="date"></td>
+
+            <div class="ui modal" id="detail_@log.Id">
+                <div class="header">Detail</div>
+                <div class="content">
+                    <div style="margin-bottom: 2em">
+                        Position: @log.PositionX, @log.PositionY, @log.PositionZ
+                        <br/>
+                        Zone: @log.Zone [@log.ZoneOwner]
+                        <br/>
+                    </div>
+                    
+                    <div class="ui form">
+                        <div class="field">
+                            <textarea rows="10" x-data="{ data: @log.JsonData }" x-model="JSON.stringify(data, null, 4)" readonly>
+                            </textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </tr>
     }
     </tbody>

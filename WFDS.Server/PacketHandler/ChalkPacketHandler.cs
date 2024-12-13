@@ -15,7 +15,7 @@ public sealed class ChalkPacketHandler(ICanvasManager canvas, LobbyManager lobby
     {
         canvas.Draw(packet);
         session.BroadcastP2PPacket(lobby.GetLobbyId(), NetChannel.Chalk, packet);
-        playerLogManager.Append(sender, "draw", "", new
+        playerLogManager.Append(sender, "draw", $"canvas_{packet.CanvasId}", new
         {
             canvas_id = packet.CanvasId,
             data = packet.GetData().Select(x => new { pos = new { x = x.pos.X, y = x.pos.Y }, color = x.color })

@@ -19,7 +19,7 @@ public sealed class InstanceActorHandler(ILogger<InstanceActorHandler> logger, I
         if (packet.Param.ActorType == "player") CreatePlayerActor(sender, packet);
         else CreateRemoteActor(sender, packet);
 
-        playerLogManager.Append(sender, "instance_actor", "", new
+        playerLogManager.Append(sender, "instance_actor", $"{packet.Param.ActorType}[{packet.Param.ActorId}]", new
         {
             id = packet.Param.ActorId,
             type = packet.Param.ActorType,
