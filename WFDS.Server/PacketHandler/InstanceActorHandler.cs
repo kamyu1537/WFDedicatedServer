@@ -1,14 +1,16 @@
 ﻿using WFDS.Common.Actor;
+using WFDS.Common.Extensions;
 using WFDS.Common.Network;
 using WFDS.Common.Network.Packets;
 using WFDS.Common.Steam;
 using WFDS.Common.Types;
+using WFDS.Server.Core;
 using Session = WFDS.Common.Network.Session;
 
 namespace WFDS.Server.PacketHandler;
 
 [PacketType("instance_actor")]
-public sealed class InstanceActorHandler(ILogger<InstanceActorHandler> logger, IActorManager actorManager, SessionManager sessionManager) : PacketHandler<InstanceActorPacket>
+public sealed class InstanceActorHandler(ILogger<InstanceActorHandler> logger, IActorManager actorManager, SessionManager sessionManager, PlayerLogManager playerLogManager) : PacketHandler<InstanceActorPacket>
 {
     protected override void Handle(Session sender, NetChannel channel, InstanceActorPacket packet)
     {
@@ -16,6 +18,16 @@ public sealed class InstanceActorHandler(ILogger<InstanceActorHandler> logger, I
 
         if (packet.Param.ActorType == "player") CreatePlayerActor(sender, packet);
         else CreateRemoteActor(sender, packet);
+
+        playerLogManager.Append(sender, "instance_actor", "", new
+        {
+            id = packet.Param.ActorId,
+            type = packet.Param.ActorType,
+            zone = packet.Param.Zone,
+            zone_owner = packet.Param.ZoneOwner,
+            position = new { x = packet.Param.Position.X, y = packet.Param.Position.Y, z = packet.Param.Position.Z },
+            rotation = new { x = packet.Param.Rotation.X, y = packet.Param.Rotation.Y, z = packet.Param.Rotation.Z },
+        });
     }
 
     private void CreateRemoteActor(Session sender, InstanceActorPacket packet)

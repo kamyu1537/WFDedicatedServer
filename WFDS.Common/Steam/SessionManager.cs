@@ -111,7 +111,7 @@ public sealed class SessionManager : Singleton<SessionManager>, IDisposable
         var session = new Session(steamId);
         if (_sessions.TryAdd(steamId.m_SteamID, session))
         {
-            GameEventBus.Publish(new PlayerJoinedEvent(steamId));
+            GameEventBus.Publish(new PlayerJoinedEvent(steamId, session.Name));
             return true;
         }
 
@@ -124,13 +124,13 @@ public sealed class SessionManager : Singleton<SessionManager>, IDisposable
         _logger.LogWarning("try remove session: {SteamId}", steamId.m_SteamID);
         SteamNetworking.CloseP2PSessionWithUser(steamId);
 
-        if (!_sessions.TryRemove(steamId.m_SteamID, out _))
+        if (!_sessions.TryRemove(steamId.m_SteamID, out var session))
         {
             _logger.LogWarning("failed to remove session: {SteamId}", steamId.m_SteamID);
             return;
         }
 
-        GameEventBus.Publish(new PlayerLeaveEvent(steamId));
+        GameEventBus.Publish(new PlayerLeaveEvent(steamId, session.Name));
     }
 
     public void KickPlayer(CSteamID target)

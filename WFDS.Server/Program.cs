@@ -64,7 +64,8 @@ try
     builder.Services.AddSingleton(LobbyManager.Inst);
     builder.Services.AddSingleton(SessionManager.Inst);
     builder.Services.AddSingleton<PacketHandleManager>();
-
+    builder.Services.AddTransient<PlayerLogManager>();
+    
     builder.Services.AddSingleton<IActorSettingManager, ActorSettingManager>();
     builder.Services.AddSingleton<IZoneManager, ZoneManager>();
     builder.Services.AddSingleton<IActorIdManager, ActorIdManager>();
