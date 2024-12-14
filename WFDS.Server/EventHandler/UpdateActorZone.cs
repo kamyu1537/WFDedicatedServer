@@ -18,7 +18,7 @@ public sealed class UpdateActorZone(IActorManager actorManager, SessionManager s
             var session = sessionManager.GetSession(actor.CreatorId);
             if (session is not null)
             {
-                playerLogManager.Append(session, "zone_change", "", new
+                playerLogManager.Append(session, "zone_change", $"{e.Zone}[{e.ZoneOwner}]", new
                 {
                     prev_zone = actor.Zone,
                     prev_zone_owner = actor.ZoneOwner,
