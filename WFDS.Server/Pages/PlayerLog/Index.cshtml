@@ -36,7 +36,7 @@
             <td>@log.Action</td>
             <td>@log.Message</td>
             <td>
-                <button class="ui button green mini" onclick="javascript:$('#detail_@log.Id').modal('show')">show
+                <button class="ui button green mini" onclick="$('#detail_@log.Id').modal('show')">
                     detail
                 </button>
             </td>
@@ -51,10 +51,11 @@
                         Zone: @log.Zone [@log.ZoneOwner]
                         <br/>
                     </div>
-                    
+
                     <div class="ui form">
                         <div class="field">
-                            <textarea rows="10" x-data="{ data: @log.JsonData }" x-model="JSON.stringify(data, null, 4)" readonly>
+                            <textarea rows="10" x-data="{ data: @log.JsonData }" x-model="JSON.stringify(data, null, 4)"
+                                      readonly>
                             </textarea>
                         </div>
                     </div>
@@ -65,7 +66,10 @@
     </tbody>
 </table>
 
-<div class="ui pagination menu">
+<div>
+    
+</div>
+<div class="ui pagination menu" style="flex-wrap: wrap;">
     @if (page > 1)
     {
         <a class="item" href="?page=@(page)">Previous</a>
@@ -75,7 +79,7 @@
         <div class="item disabled">Previous</div>
     }
 
-    @for (int i = 1; i <= Math.Ceiling((double)totalLogCount / 100); i++)
+    @for (int i = 1; i <= 100; i++)
     {
         if (i == page + 1)
         {
