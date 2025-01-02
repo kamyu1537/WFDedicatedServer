@@ -2,6 +2,7 @@
 
 public enum LobbyDenyReasons
 {
+    None,
     Denied,
     LobbyFull
 }

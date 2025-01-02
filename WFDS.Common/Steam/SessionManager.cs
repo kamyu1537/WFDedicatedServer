@@ -1,5 +1,7 @@
-﻿using System.Collections.Concurrent;
+﻿using System.Buffers;
+using System.Collections.Concurrent;
 using System.Globalization;
+using System.Text;
 using Microsoft.Extensions.Logging;
 using Steamworks;
 using WFDS.Common.GameEvents;
@@ -10,7 +12,6 @@ using WFDS.Common.Network.Packets;
 using WFDS.Common.Types;
 using WFDS.Godot.Binary;
 
-
 namespace WFDS.Common.Steam;
 
 public sealed class SessionManager : Singleton<SessionManager>, IDisposable
@@ -18,16 +19,21 @@ public sealed class SessionManager : Singleton<SessionManager>, IDisposable
     private readonly ILogger _logger;
 
     private bool _closed;
+    private readonly HashSet<ulong> _queue = [];
     private readonly HashSet<string> _banned = [];
     private readonly ConcurrentDictionary<ulong, Session> _sessions = [];
 
+    const int MaxChatMessageByteLength = 4 * 1024; // 4KB
+
     private readonly Callback<LobbyChatUpdate_t> _lobbyChatUpdateCallback;
+    private readonly Callback<LobbyChatMsg_t> _lobbyChatMsgCallback;
     private readonly Callback<P2PSessionRequest_t> _p2pSessionRequestCallback;
 
     public SessionManager()
     {
         _logger = Log.Factory.CreateLogger<SessionManager>();
         _lobbyChatUpdateCallback = Callback<LobbyChatUpdate_t>.Create(OnLobbyChatUpdate);
+        _lobbyChatMsgCallback = Callback<LobbyChatMsg_t>.Create(OnLobbyChatMsg);
         _p2pSessionRequestCallback = Callback<P2PSessionRequest_t>.Create(OnP2PSessionRequest);
     }
 
@@ -36,6 +42,7 @@ public sealed class SessionManager : Singleton<SessionManager>, IDisposable
         ServerClose();
 
         _lobbyChatUpdateCallback.Dispose();
+        _lobbyChatMsgCallback.Dispose();
         _p2pSessionRequestCallback.Dispose();
     }
 
@@ -92,10 +99,13 @@ public sealed class SessionManager : Singleton<SessionManager>, IDisposable
         return _sessions.ContainsKey(steamId.m_SteamID);
     }
 
-    private bool TryCreateSession(CSteamID steamId)
+    private bool TryCreateSession(CSteamID steamId, out LobbyDenyReasons reason)
     {
+        reason = LobbyDenyReasons.None;
+        
         if (_sessions.TryGetValue(steamId.m_SteamID, out _))
         {
+            reason = LobbyDenyReasons.Denied;
             _logger.LogWarning("session already exists: {SteamId}", steamId.m_SteamID);
             return false;
         }
@@ -103,6 +113,7 @@ public sealed class SessionManager : Singleton<SessionManager>, IDisposable
         if (IsBannedPlayer(steamId))
         {
             _logger.LogWarning("banned player: {SteamId}", steamId.m_SteamID);
+            reason = LobbyDenyReasons.Denied;
             // deny
             // SendP2PPacket(steamId, NetChannel.GameState, new UserLeftWebLobbyPacket { UserId = steamId.m_SteamID, Reason = LobbyDenyReasons.Denied }, false);
             // BanPlayerNoEvent(LobbyManager.Inst.GetLobbyId(), steamId);
@@ -111,7 +122,8 @@ public sealed class SessionManager : Singleton<SessionManager>, IDisposable
 
         // accept
         BroadcastP2PPacket(LobbyManager.Inst.GetLobbyId(), NetChannel.GameState, new UserJoinedWebLobbyPacket { UserId = (long)steamId.m_SteamID }, false);
-        
+        SendP2PPacket(steamId, NetChannel.GameState, new ReceiveWebLobbyPacket { WebLobbyMembers = _sessions.Select(object (x) => (long)x.Key).ToList() }, false);
+
         _logger.LogInformation("try create session: {SteamId}", steamId.m_SteamID);
         var session = new Session(steamId);
         if (_sessions.TryAdd(steamId.m_SteamID, session))
@@ -124,7 +136,7 @@ public sealed class SessionManager : Singleton<SessionManager>, IDisposable
         return false;
     }
 
-    private void RemoveSession(CSteamID steamId)
+    private bool TryRemoveSession(CSteamID steamId)
     {
         _logger.LogWarning("try remove session: {SteamId}", steamId.m_SteamID);
         SteamNetworking.CloseP2PSessionWithUser(steamId);
@@ -132,10 +144,11 @@ public sealed class SessionManager : Singleton<SessionManager>, IDisposable
         if (!_sessions.TryRemove(steamId.m_SteamID, out var session))
         {
             _logger.LogWarning("failed to remove session: {SteamId}", steamId.m_SteamID);
-            return;
+            return false;
         }
 
         GameEventBus.Publish(new PlayerLeaveEvent(steamId, session.Name));
+        return true;
     }
 
     public void KickPlayer(CSteamID target)
@@ -275,20 +288,23 @@ public sealed class SessionManager : Singleton<SessionManager>, IDisposable
 
         if (stateChange == EChatMemberStateChange.k_EChatMemberStateChangeEntered)
         {
-            if (TryCreateSession(changedUser))
-            {
-                GameEventBus.Publish(new CreateSessionEvent(changedUser));
-            }
+            _queue.Add(changedUser.m_SteamID);
         }
         else if (stateChange == EChatMemberStateChange.k_EChatMemberStateChangeLeft)
         {
             _logger.LogInformation("lobby member left: {ChangedUserId}", changedUser);
-            RemoveSession(changedUser);
+            if (TryRemoveSession(changedUser))
+            {
+                BroadcastP2PPacket(lobbyId, NetChannel.GameState, new UserLeftWebLobbyPacket { UserId = (long)changedUser.m_SteamID }, false);
+            }
         }
         else if (stateChange == EChatMemberStateChange.k_EChatMemberStateChangeDisconnected)
         {
             _logger.LogWarning("lobby member disconnected: {ChangedUserId}", changedUser);
-            RemoveSession(changedUser);
+            if (TryRemoveSession(changedUser))
+            {
+                BroadcastP2PPacket(lobbyId, NetChannel.GameState, new UserLeftWebLobbyPacket { UserId = (long)changedUser.m_SteamID }, false);
+            }
         }
     }
 
@@ -311,6 +327,96 @@ public sealed class SessionManager : Singleton<SessionManager>, IDisposable
         }
 
         SteamNetworking.AcceptP2PSessionWithUser(param.m_steamIDRemote);
+    }
+
+    private void OnLobbyChatMsg(LobbyChatMsg_t param)
+    {
+        if (param.m_ulSteamIDLobby != LobbyManager.Inst.GetLobbyId().m_SteamID)
+        {
+            return;
+        }
+        
+        if (param.m_ulSteamIDUser == SteamManager.Inst.SteamId.m_SteamID)
+        {
+            return;
+        }
+        
+        if (!_queue.Contains(param.m_ulSteamIDUser))
+        {
+            return;
+        }
+        
+        var lobbyId = new CSteamID(param.m_ulSteamIDLobby);
+        var userId = new CSteamID(param.m_ulSteamIDUser);
+
+        var chatEntryType = (EChatEntryType)param.m_eChatEntryType;
+        var chatId = param.m_iChatID;
+
+        var bytes = ArrayPool<byte>.Shared.Rent(MaxChatMessageByteLength);
+        try
+        {
+            var length = SteamMatchmaking.GetLobbyChatEntry(lobbyId, (int)chatId, out var steamId, bytes, MaxChatMessageByteLength, out var entryType);
+            var message = Encoding.UTF8.GetString(bytes, 0, length);
+            
+            _logger.LogInformation("lobby chat message: {LobbyId} {UserId} {ChatEntryType} {ChatId} {SteamId} {EntryType} {Message}", lobbyId, userId, chatEntryType, chatId, steamId, entryType, message);
+
+            OnJoinRequest(userId, message);
+        }
+        finally
+        {
+            ArrayPool<byte>.Shared.Return(bytes);
+            _queue.Remove(userId.m_SteamID);
+        }
+    }
+
+    private void OnJoinRequest(CSteamID sender, string message)
+    {
+        if (!message.StartsWith("$weblobby_join_request"))
+        {
+            return;
+        }
+
+        if (TryCreateSession(sender, out var reason))
+        {
+            SendAcceptMessage(sender);
+            GameEventBus.Publish(new CreateSessionEvent(sender));
+        }
+        else
+        {
+            switch (reason)
+            {
+                case LobbyDenyReasons.LobbyFull:
+                    SendLobbyFullMessage(sender);
+                    break;
+                case LobbyDenyReasons.Denied:
+                    SendDenyMessage(sender);
+                    break;
+            }
+        }
+    }
+
+    private void SendAcceptMessage(CSteamID target)
+    {
+        var lobbyId = LobbyManager.Inst.GetLobbyId();
+        const string message = "$weblobby_request_accepted-";
+        var body = Encoding.UTF8.GetBytes(message + target.m_SteamID);
+        SteamMatchmaking.SendLobbyChatMsg(lobbyId, body, body.Length);
+    }
+
+    private void SendDenyMessage(CSteamID target)
+    {
+        var lobbyId = LobbyManager.Inst.GetLobbyId();
+        const string message = "$weblobby_request_denied_deny-";
+        var body = Encoding.UTF8.GetBytes(message + target.m_SteamID);
+        SteamMatchmaking.SendLobbyChatMsg(lobbyId, body, body.Length);
+    }
+
+    private void SendLobbyFullMessage(CSteamID target)
+    {
+        var lobbyId = LobbyManager.Inst.GetLobbyId();
+        const string message = "$weblobby_request_denied_full-";
+        var body = Encoding.UTF8.GetBytes(message + target.m_SteamID);
+        SteamMatchmaking.SendLobbyChatMsg(lobbyId, body, body.Length);
     }
 
     #endregion
