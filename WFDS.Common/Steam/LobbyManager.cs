@@ -14,7 +14,7 @@ public sealed class LobbyManager : Singleton<LobbyManager>, IDisposable
     private const int RoomCodeLength = 6;
     private const string LobbyMode = "GodotsteamLobby";
     private const string LobbyRef = "webfishing_gamelobby";
-    private const string GameVersion = "1.1";
+    private const string GameVersion = "1.12";
 
     private readonly ILogger _logger;
     private CSteamID _lobbyId = CSteamID.Nil;
@@ -25,6 +25,7 @@ public sealed class LobbyManager : Singleton<LobbyManager>, IDisposable
     private int _cap;
     private bool _adult;
     private string _code = string.Empty;
+    private LobbyTag[] _lobbyTags = [];
 
     private readonly Callback<LobbyEnter_t> _lobbyEnterCallback;
     private readonly Callback<LobbyCreated_t> _lobbyCreatedCallback;
@@ -46,7 +47,7 @@ public sealed class LobbyManager : Singleton<LobbyManager>, IDisposable
         _lobbyDataUpdateCallback.Dispose();
     }
 
-    public void Initialize(string name, GameLobbyType lobbyType, int cap, bool adult, string code)
+    public void Initialize(string name, string lobbyType, int cap, bool adult, string code, LobbyTag[] lobbyTags)
     {
         if (_initialized)
         {
@@ -55,9 +56,10 @@ public sealed class LobbyManager : Singleton<LobbyManager>, IDisposable
 
         _initialized = true;
         _name = name;
-        _lobbyType = lobbyType;
-        _cap = cap;
+        _lobbyType = GameLobbyType.GetByName(lobbyType);
+        _cap = Math.Min(Math.Max(cap, 0), 249);
         _adult = adult;
+        _lobbyTags = lobbyTags;
 
         _code = code;
         if (string.IsNullOrEmpty(_code) || RoomCodeLength < _code.Length)
@@ -65,7 +67,7 @@ public sealed class LobbyManager : Singleton<LobbyManager>, IDisposable
             _code = RandomHelper.RandomRoomCode(RoomCodeLength);
         }
 
-        _logger.LogInformation("lobby initialized: {LobbyName}, {LobbyType}, {LobbyCap}, {LobbyAgeLimit}, {LobbyCode}", _name, _lobbyType, _cap, _adult, _code);
+        _logger.LogInformation("lobby initialized: {LobbyName}, {LobbyCode}, {LobbyType}, {LobbyCap}, {LobbyAgeLimit}, [{LobbyTag}]", _name, _code, _lobbyType, _cap, _adult, string.Join(",", _lobbyTags.Select(x => x.Value)));
     }
 
     public bool LeaveLobby(out CSteamID lobbyId)
@@ -88,10 +90,14 @@ public sealed class LobbyManager : Singleton<LobbyManager>, IDisposable
         SteamMatchmaking.DeleteLobbyData(_lobbyId, "server_browser_value");
         SteamMatchmaking.DeleteLobbyData(_lobbyId, "name");
         SteamMatchmaking.DeleteLobbyData(_lobbyId, "lobby_name");
-        SteamMatchmaking.DeleteLobbyData(_lobbyId, "age_limit");
         SteamMatchmaking.DeleteLobbyData(_lobbyId, "code");
         SteamMatchmaking.DeleteLobbyData(_lobbyId, "cap");
-        SteamMatchmaking.DeleteLobbyData(_lobbyId, "banned_players");
+        
+        foreach (var tag in LobbyTag.GetAll())
+        {
+            SteamMatchmaking.DeleteLobbyData(_lobbyId, "tag_" + tag.Value);
+        }
+        
         SteamMatchmaking.SetLobbyMemberLimit(_lobbyId, 1);
 
         // close all p2p session
@@ -160,26 +166,6 @@ public sealed class LobbyManager : Singleton<LobbyManager>, IDisposable
         return _code;
     }
 
-
-    public void SetLobbyType(CSteamID lobbyId, GameLobbyType type)
-    {
-        var lobbyType = type switch
-        {
-            GameLobbyType.Public => "public",
-            GameLobbyType.CodeOnly => "code_only",
-            GameLobbyType.FriendsOnly => "friends_only",
-            _ => "code_only"
-        };
-
-        SteamMatchmaking.SetLobbyData(lobbyId, "type", lobbyType);
-        SteamMatchmaking.SetLobbyData(lobbyId, "public", type == GameLobbyType.Public ? "true" : "false");
-
-        if (_lobbyType is GameLobbyType.Public or GameLobbyType.CodeOnly)
-        {
-            SteamMatchmaking.SetLobbyData(lobbyId, "code", _code);
-        }
-    }
-
     public void CreateLobby()
     {
         if (!_initialized) return;
@@ -190,23 +176,33 @@ public sealed class LobbyManager : Singleton<LobbyManager>, IDisposable
     {
         SteamMatchmaking.SetLobbyJoinable(lobbyId, false);
         SteamMatchmaking.SetLobbyOwner(lobbyId, SteamManager.Inst.SteamId);
-
+        
         SteamMatchmaking.SetLobbyData(lobbyId, "mode", LobbyMode);
         SteamMatchmaking.SetLobbyData(lobbyId, "ref", LobbyRef);
         SteamMatchmaking.SetLobbyData(lobbyId, "version", GameVersion);
-        SteamMatchmaking.SetLobbyData(lobbyId, "server_browser_value", "0");
-        SteamMatchmaking.SetLobbyData(lobbyId, "name", _name);
+        SteamMatchmaking.SetLobbyData(lobbyId, "server_browser_value", (Random.Shared.Next() % 20).ToString());
+        SteamMatchmaking.SetLobbyData(lobbyId, "name", SteamManager.Inst.PersonalName);
+
         SteamMatchmaking.SetLobbyData(lobbyId, "lobby_name", _name);
-        SteamMatchmaking.SetLobbyData(lobbyId, "age_limit", _adult ? "true" : "false");
-        SteamMatchmaking.SetLobbyData(lobbyId, "code", _code);
-        SteamMatchmaking.SetLobbyData(lobbyId, "cap", _cap.ToString());
-        SteamMatchmaking.SetLobbyData(lobbyId, "banned_players", "");
+        SteamMatchmaking.SetLobbyData(lobbyId, "type", _lobbyType.Key.ToString());
+        SteamMatchmaking.SetLobbyData(lobbyId, "public", _lobbyType.IsBrowserVisible ? "true" : "false");
+        SteamMatchmaking.SetLobbyData(lobbyId, "request", "false"); // auto accept disable
+        
+        // lobby code
+        if (_lobbyType.IsCodeButton)
+        {
+            SteamMatchmaking.SetLobbyData(lobbyId, "code", _code);
+        }
+        
+        // set tags
+        foreach (var tag in LobbyTag.GetAll())
+        {
+            var value = _lobbyTags.Contains(tag) ? "1" : "0";
+            SteamMatchmaking.SetLobbyData(lobbyId, "tag_" + tag.Value, value);
+        }
 
-        SetLobbyType(lobbyId, _lobbyType);
-
-        SteamMatchmaking.SetLobbyMemberLimit(lobbyId, _cap);
+        SteamMatchmaking.SetLobbyMemberLimit(lobbyId, _cap + 1);
         SteamMatchmaking.SetLobbyJoinable(lobbyId, true);
-
         ConsoleHelper.UpdateConsoleTitle(_name, _code, 0, _cap);
     }
 

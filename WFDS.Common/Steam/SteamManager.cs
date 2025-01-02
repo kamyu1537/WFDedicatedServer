@@ -9,9 +9,11 @@ public class SteamManager : Singleton<SteamManager>
 {
     public bool Initialized { get; private set; }
     public CSteamID SteamId => Initialized ? _steamId : CSteamID.Nil;
+    public string PersonalName => Initialized ? _personalName : string.Empty;
     
     private readonly ILogger _logger = Log.Factory.CreateLogger<SteamManager>();
     private CSteamID _steamId;
+    private string _personalName = string.Empty;
 
     public bool Init()
     {
@@ -26,6 +28,7 @@ public class SteamManager : Singleton<SteamManager>
         
         Initialized = true;
         _steamId = SteamUser.GetSteamID();
+        _personalName = SteamFriends.GetPersonaName();
         _logger.LogInformation("SteamAPI.Init success");
         return true;
     }
@@ -34,6 +37,8 @@ public class SteamManager : Singleton<SteamManager>
     {
         Initialized = false;
         _steamId = CSteamID.Nil;
+        _personalName = string.Empty;
+        
         SteamAPI.Shutdown();
     }
     

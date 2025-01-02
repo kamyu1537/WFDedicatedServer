@@ -6,7 +6,7 @@ public interface IServerSetting
     string ServerName { get; set; }
     string RoomCode { get; set; }
     int MaxPlayers { get; set; }
-    GameLobbyType LobbyType { get; set; }
-    bool Adult { get; set; }
+    string LobbyType { get; set; }
     bool SaveChalkData { get; set; }
+    string[] LobbyTags { get; set; }
 }

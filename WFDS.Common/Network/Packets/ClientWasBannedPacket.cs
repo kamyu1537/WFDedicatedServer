@@ -1,6 +1,6 @@
 ﻿namespace WFDS.Common.Network.Packets;
 
-public class KickPacket : Packet
+public class ClientWasBannedPacket : Packet
 {
     public override void Deserialize(Dictionary<object, object> data)
     {
@@ -8,6 +8,6 @@ public class KickPacket : Packet
 
     public override void Serialize(Dictionary<object, object> data)
     {
-        data.TryAdd("type", "kick");
+        data.TryAdd("type", "client_was_banned");
     }
 }

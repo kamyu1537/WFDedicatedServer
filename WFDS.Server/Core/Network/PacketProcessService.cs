@@ -16,10 +16,10 @@ internal class PacketProcessService(ILogger<PacketProcessService> logger, Packet
 
         while (!stoppingToken.IsCancellationRequested)
         {
-            TryProcessChannel(NetChannel.ActorUpdate);
-            TryProcessChannel(NetChannel.ActorAction);
-            TryProcessChannel(NetChannel.GameState);
-            TryProcessChannel(NetChannel.Chalk);
+            TryProcessChannel(NetChannel.ActorUpdate, false);
+            TryProcessChannel(NetChannel.ActorAction, false);
+            TryProcessChannel(NetChannel.GameState, true);
+            TryProcessChannel(NetChannel.Chalk, false);
 
             await Task.Delay(10, stoppingToken);
         }
@@ -27,11 +27,11 @@ internal class PacketProcessService(ILogger<PacketProcessService> logger, Packet
         logger.LogInformation("PacketProcessService is stopping.");
     }
 
-    private void TryProcessChannel(NetChannel channel)
+    private void TryProcessChannel(NetChannel channel, bool log)
     {
         try
         {
-            ProcessChannel(channel);
+            ProcessChannel(channel, log);
         }
         catch (Exception ex)
         {
@@ -64,7 +64,7 @@ internal class PacketProcessService(ILogger<PacketProcessService> logger, Packet
 
     }
 
-    private void ProcessChannel(NetChannel channel)
+    private void ProcessChannel(NetChannel channel, bool log)
     {
         if (!steam.Initialized)
         {
@@ -91,6 +91,12 @@ internal class PacketProcessService(ILogger<PacketProcessService> logger, Packet
                 using var stream = new MemoryStream(bytes, 0, (int)readSize);
                 var decompressed = GZipHelper.Decompress(stream);
                 var deserialized = GodotBinaryConverter.Deserialize(decompressed);
+
+                if (log)
+                {
+                    logger.LogDebug("received packet from {SteamId} {Channel} {Packet}", steamId, channel, deserialized);   
+                }
+                
                 packetHandleManager.OnPacketReceived(steamId, channel, deserialized);
 
             }

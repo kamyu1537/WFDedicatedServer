@@ -38,7 +38,14 @@ internal class WebFishingServer(
         }
 
         canvas.LoadAll();
-        lobby.Initialize(settings.Value.ServerName, settings.Value.LobbyType, settings.Value.MaxPlayers, settings.Value.Adult, settings.Value.RoomCode);
+        lobby.Initialize(
+            settings.Value.ServerName,
+            settings.Value.LobbyType, 
+            settings.Value.MaxPlayers, 
+            settings.Value.Adult,
+            settings.Value.RoomCode,
+            settings.Value.LobbyTags.Select(LobbyTag.Get).ToArray()
+        );
         lobby.CreateLobby();
 
         while (!stoppingToken.IsCancellationRequested)

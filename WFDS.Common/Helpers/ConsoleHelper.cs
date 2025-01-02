@@ -9,7 +9,7 @@ public static class ConsoleHelper
     
     public static void UpdateConsoleTitle(string name, string code, int cur, int cap)
     {
-        var title = $"[{cur}/{cap - 1}] {name} [{code}]";
+        var title = $"[{cur}/{cap}] {name} [{code}]";
         Console.Title = title;
         Logger.LogInformation("update console title : {Title}", title);
     }

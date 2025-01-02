@@ -103,10 +103,15 @@ public sealed class SessionManager : Singleton<SessionManager>, IDisposable
         if (IsBannedPlayer(steamId))
         {
             _logger.LogWarning("banned player: {SteamId}", steamId.m_SteamID);
-            BanPlayerNoEvent(LobbyManager.Inst.GetLobbyId(), steamId);
+            // deny
+            // SendP2PPacket(steamId, NetChannel.GameState, new UserLeftWebLobbyPacket { UserId = steamId.m_SteamID, Reason = LobbyDenyReasons.Denied }, false);
+            // BanPlayerNoEvent(LobbyManager.Inst.GetLobbyId(), steamId);
             return false;
         }
 
+        // accept
+        BroadcastP2PPacket(LobbyManager.Inst.GetLobbyId(), NetChannel.GameState, new UserJoinedWebLobbyPacket { UserId = (long)steamId.m_SteamID }, false);
+        
         _logger.LogInformation("try create session: {SteamId}", steamId.m_SteamID);
         var session = new Session(steamId);
         if (_sessions.TryAdd(steamId.m_SteamID, session))
@@ -141,7 +146,8 @@ public sealed class SessionManager : Singleton<SessionManager>, IDisposable
         }
 
         _logger.LogInformation("try kick player: {SteamId}", target.m_SteamID);
-        SendP2PPacket(target, NetChannel.GameState, new KickPacket(), false);
+        BroadcastP2PPacket(LobbyManager.Inst.GetLobbyId(), NetChannel.GameState, new PeerWasKickedPacket(), false);
+        SendP2PPacket(target, NetChannel.GameState, new ClientWasKickedPacket(), false);
     }
 
     public bool IsBannedPlayer(CSteamID target)
@@ -152,8 +158,8 @@ public sealed class SessionManager : Singleton<SessionManager>, IDisposable
     public void BanPlayerNoEvent(CSteamID lobbyId, CSteamID target)
     {
         _logger.LogInformation("try ban player: {SteamId}", target.m_SteamID);
-        SendP2PPacket(target, NetChannel.GameState, new BanPacket(), false);
-        BroadcastP2PPacket(lobbyId, NetChannel.GameState, new ForceDisconnectPlayerPacket { UserId = target }, false);
+        SendP2PPacket(target, NetChannel.GameState, new ClientWasBannedPacket(), false);
+        BroadcastP2PPacket(lobbyId, NetChannel.GameState, new PeerWasBannedPacket { UserId = (long)target.m_SteamID }, false);
 
         _banned.Add(target.m_SteamID.ToString(CultureInfo.InvariantCulture));
         LobbyManager.Inst.UpdateBannedPlayers(_banned);
