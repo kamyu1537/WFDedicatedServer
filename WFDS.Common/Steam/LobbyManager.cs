@@ -216,9 +216,9 @@ public sealed class LobbyManager : Singleton<LobbyManager>, IDisposable
         SteamMatchmaking.SetLobbyData(lobbyId, "count", "1");
         SteamMatchmaking.SetLobbyData(lobbyId, "timestamp", DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString());
         
-        SteamMatchmaking.SetLobbyMemberLimit(lobbyId, _cap + 1);
+        SteamMatchmaking.SetLobbyMemberLimit(lobbyId, _cap);
         SteamMatchmaking.SetLobbyJoinable(lobbyId, true);
-        ConsoleHelper.UpdateConsoleTitle(_name, _code, 0, _cap);
+        ConsoleHelper.UpdateConsoleTitle(GetName(), GetCode(), 0, GetCap());
     }
 
     public void UpdateBrowserValue()
