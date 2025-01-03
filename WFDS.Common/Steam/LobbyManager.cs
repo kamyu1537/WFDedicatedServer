@@ -95,6 +95,9 @@ public sealed class LobbyManager : Singleton<LobbyManager>, IDisposable
         SteamMatchmaking.DeleteLobbyData(_lobbyId, "lobby_name");
         SteamMatchmaking.DeleteLobbyData(_lobbyId, "code");
         SteamMatchmaking.DeleteLobbyData(_lobbyId, "cap");
+        SteamMatchmaking.DeleteLobbyData(_lobbyId, "count");
+        SteamMatchmaking.DeleteLobbyData(_lobbyId, "public");
+        SteamMatchmaking.DeleteLobbyData(_lobbyId, "request");
         
         foreach (var tag in LobbyTag.GetAll())
         {
