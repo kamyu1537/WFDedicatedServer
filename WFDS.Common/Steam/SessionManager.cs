@@ -25,7 +25,6 @@ public sealed class SessionManager : Singleton<SessionManager>, IDisposable
     private readonly ConcurrentDictionary<ulong, SteamNetworkingIdentity> _identities = [];
     private readonly ConcurrentDictionary<ulong, Session> _sessions = [];
 
-    private const string IdentityPrefix = "";
     private const int MaxChatMessageByteLength = 4 * 1024; // 4KB
 
     private readonly Callback<LobbyChatUpdate_t> _lobbyChatUpdateCallback;
