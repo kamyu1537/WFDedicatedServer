@@ -35,7 +35,7 @@ public class Banned(DatabaseContext dbContext, SessionManager sessionManager, Lo
             return RedirectToPage(new { message = "invalid steam id" });
         }
         
-        sessionManager.BanPlayer(lobbyManager.GetLobbyId(), new CSteamID(value));
+        sessionManager.BanPlayer(new CSteamID(value));
         return RedirectToPage(new { message = $"player {steamId} banned."});
     }
     

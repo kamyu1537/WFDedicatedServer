@@ -18,7 +18,7 @@ public sealed class LoadBanListFromDb(ILogger<LoadBanListFromDb> logger, Databas
         foreach (var banned in dbContext.BannedPlayers)
         {
             logger.LogInformation("banned player {DisplayName}[{SteamId}] is banned", banned.DisplayName, banned.SteamId);
-            sessionManager.BanPlayerNoEvent(e.LobbyId, new CSteamID(banned.SteamId));
+            sessionManager.BanPlayerNoEvent(new CSteamID(banned.SteamId));
         }
     }
 }

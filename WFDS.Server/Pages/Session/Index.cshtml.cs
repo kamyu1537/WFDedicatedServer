@@ -49,7 +49,7 @@ public class Index(SessionManager sessionManager, LobbyManager lobbyManager) : P
             return RedirectToPage(new { message = "invalid steam id" });
         }
 
-        sessionManager.BanPlayer(lobbyManager.GetLobbyId(), steamIdValue);
+        sessionManager.BanPlayer(steamIdValue);
         return RedirectToPage(new { message = $"banned {steamId}" });
     }
 }

@@ -117,8 +117,7 @@ public sealed class SessionManager : Singleton<SessionManager>, IDisposable
         {
             _logger.LogWarning("banned player: {SteamId}", steamId.m_SteamID);
             reason = LobbyDenyReasons.Denied;
-            // SendP2PPacket(steamId, NetChannel.GameState, new UserLeftWebLobbyPacket { UserId = steamId.m_SteamID, Reason = LobbyDenyReasons.Denied }, false);
-            // BanPlayerNoEvent(LobbyManager.Inst.GetLobbyId(), steamId);
+            // BanPlayerNoEvent(steamId);
             return false;
         }
 
@@ -171,29 +170,33 @@ public sealed class SessionManager : Singleton<SessionManager>, IDisposable
         return _banned.Contains(target.m_SteamID.ToString(CultureInfo.InvariantCulture));
     }
 
-    public void BanPlayerNoEvent(CSteamID lobbyId, CSteamID target)
+    public void BanPlayerNoEvent(CSteamID target)
     {
         _logger.LogInformation("try ban player: {SteamId}", target.m_SteamID);
-        SendPacket(target, NetChannel.GameState, new ClientWasBannedPacket(), false);
-        BroadcastPacket(NetChannel.GameState, new PeerWasBannedPacket { UserId = (long)target.m_SteamID }, false);
+
+        if (_sessions.ContainsKey(target.m_SteamID))
+        {
+            SendPacket(target, NetChannel.GameState, new ClientWasBannedPacket(), false);
+            BroadcastPacket(NetChannel.GameState, new PeerWasBannedPacket { UserId = (long)target.m_SteamID }, false);
+        }
 
         _banned.Add(target.m_SteamID.ToString(CultureInfo.InvariantCulture));
         LobbyManager.Inst.UpdateBannedPlayers(_banned);
     }
 
-    public void BanPlayer(CSteamID lobbyId, CSteamID target)
+    public void BanPlayer(CSteamID target)
     {
-        BanPlayerNoEvent(lobbyId, target);
+        BanPlayerNoEvent(target);
         GameEventBus.Publish(new PlayerBanEvent(target));
     }
 
-    public void BanPlayers(CSteamID lobbyId, string[] banPlayers)
+    public void BanPlayers(string[] banPlayers)
     {
         foreach (var banPlayer in banPlayers)
         {
             if (ulong.TryParse(banPlayer, NumberStyles.Any, CultureInfo.InvariantCulture, out var steamId))
             {
-                BanPlayer(lobbyId, new CSteamID(steamId));
+                BanPlayer(new CSteamID(steamId));
             }
         }
     }
@@ -297,7 +300,7 @@ public sealed class SessionManager : Singleton<SessionManager>, IDisposable
             _logger.LogInformation("lobby member left: {ChangedUserId}", changedUser);
             if (TryRemoveSession(changedUser))
             {
-                BroadcastPacket(NetChannel.GameState, new UserLeftWebLobbyPacket { UserId = (long)changedUser.m_SteamID }, false);
+                BroadcastPacket(NetChannel.GameState, new UserLeftWebLobbyPacket { UserId = (long)changedUser.m_SteamID, Reason = (long)LobbyLeftReason.UserLeave }, false);
             }
         }
         else if (stateChange == EChatMemberStateChange.k_EChatMemberStateChangeDisconnected)

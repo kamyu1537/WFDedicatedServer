@@ -39,7 +39,7 @@ public class All(DatabaseContext dbContext, SessionManager sessionManager, Lobby
             return RedirectToPage(new { message = "server is not in lobby" });
         }
         
-        sessionManager.BanPlayer(lobbyManager.GetLobbyId(), steamIdValue);
+        sessionManager.BanPlayer(steamIdValue);
         return RedirectToPage(new { message = $"player {steamId} banned." });
     }
 }
