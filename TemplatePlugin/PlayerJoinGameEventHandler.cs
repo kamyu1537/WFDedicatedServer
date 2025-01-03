@@ -15,6 +15,6 @@ public class PlayerJoinGameEventHandler(SessionManager sessionManager) : GameEve
         if (player is null) return;
 
         var packet = MessagePacket.Create("Welcome to the server!", Color.White);
-        sessionManager.SendP2PPacket(player.SteamId, NetChannel.GameState, packet);
+        sessionManager.SendPacket(player.SteamId, NetChannel.GameState, packet);
     }
 }

@@ -9,12 +9,12 @@ using WFDS.Server.Core;
 namespace WFDS.Server.PacketHandler;
 
 [PacketType("chalk_packet")]
-public sealed class ChalkPacketHandler(ICanvasManager canvas, LobbyManager lobby, SessionManager session, PlayerLogManager playerLogManager) : PacketHandler<ChalkPacket>
+public sealed class ChalkPacketHandler(ICanvasManager canvas, SessionManager session, PlayerLogManager playerLogManager) : PacketHandler<ChalkPacket>
 {
     protected override void Handle(Session sender, NetChannel channel, ChalkPacket packet)
     {
         canvas.Draw(packet);
-        session.BroadcastP2PPacket(lobby.GetLobbyId(), NetChannel.Chalk, packet);
+        session.BroadcastPacket(NetChannel.Chalk, packet);
         playerLogManager.Append(sender, "draw", $"canvas_{packet.CanvasId}", new
         {
             canvas_id = packet.CanvasId,

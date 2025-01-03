@@ -21,6 +21,6 @@ public sealed class LetterReceivedHandler(ILogger<LetterReceivedHandler> logger,
         (packet.Data.From, packet.Data.To) = (packet.To, packet.Data.From);
         packet.To = packet.Data.To;
 
-        sessionManager.SendP2PPacket(sender.SteamId, NetChannel.GameState, packet);
+        sessionManager.SendPacket(sender.SteamId, NetChannel.GameState, packet);
     }
 }

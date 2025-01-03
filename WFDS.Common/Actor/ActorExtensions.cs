@@ -28,7 +28,7 @@ public static class ActorExtensions
         {
             if (player.IsInZone(actor.Zone, actor.ZoneOwner))
             {
-                session.SendP2PPacket(player.CreatorId, channel, packet);
+                session.SendPacket(player.CreatorId, channel, packet);
             }
         }
     }

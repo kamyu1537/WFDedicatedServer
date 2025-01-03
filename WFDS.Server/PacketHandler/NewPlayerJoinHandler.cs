@@ -19,7 +19,7 @@ public sealed class NewPlayerJoinHandler(ILogger<NewPlayerJoinHandler> logger, I
         var chalks = canvas.GetCanvasPackets();
         foreach (var chalk in chalks)
         {
-            session.SendP2PPacket(sender.SteamId, NetChannel.Chalk, chalk);
+            session.SendPacket(sender.SteamId, NetChannel.Chalk, chalk);
         }
     }
 }

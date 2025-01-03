@@ -11,7 +11,7 @@ using WFDS.Server.Core.Configuration;
 
 namespace WFDS.Server.Core.Chalk;
 
-internal class CanvasManager(IOptions<ServerSetting> setting, SessionManager session, LobbyManager lobby) : ICanvasManager
+internal class CanvasManager(IOptions<ServerSetting> setting, SessionManager session) : ICanvasManager
 {
     private static readonly TimeSpan UpdateInterval = TimeSpan.FromSeconds(10);
     private static readonly TimeSpan ForceUpdateInterval = TimeSpan.FromSeconds(30);
@@ -106,7 +106,7 @@ internal class CanvasManager(IOptions<ServerSetting> setting, SessionManager ses
         foreach (var canvas in Canvases.Values)
         {
             var packet = canvas.ToClearPacket();
-            session.BroadcastP2PPacket(lobby.GetLobbyId(), NetChannel.Chalk, packet);
+            session.BroadcastPacket(NetChannel.Chalk, packet);
             canvas.Clear();
         }
         

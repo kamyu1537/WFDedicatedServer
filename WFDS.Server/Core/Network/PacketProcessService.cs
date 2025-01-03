@@ -1,4 +1,5 @@
 ﻿using System.Buffers;
+using System.Runtime.InteropServices;
 using Steamworks;
 using WFDS.Common.Helpers;
 using WFDS.Common.Steam;
@@ -39,29 +40,23 @@ internal class PacketProcessService(ILogger<PacketProcessService> logger, Packet
         }
     }
 
-    private bool ValidatePacket(NetChannel channel, in CSteamID steamId, uint msgSize, uint readSize, byte[] bytes)
+    private bool ValidatePacket(NetChannel channel, NetworkMessage message)
     {
-        if (msgSize != readSize)
-        {
-            logger.LogError("failed to read packet from {Channel} (size mismatch {MessageSize}/{ReadSize})", channel, msgSize, readSize);
-            return false;
-        }
-
+        var steamId = new CSteamID(message.Identity.GetSteamID64());
         if (sessionManager.IsBannedPlayer(steamId))
         {
-            var packetDataBase64 = Convert.ToBase64String(bytes);
+            var packetDataBase64 = Convert.ToBase64String(message.Data);
             logger.LogError("banned player {SteamId} tried to send packet: {PacketBytes}", steamId, packetDataBase64);
             return false;
         }
 
-        if (bytes.Length != 0)
+        if (message.Data.Length != 0)
         {
             return true;
         }
 
         logger.LogError("empty packet from {SteamId}", steamId);
         return false;
-
     }
 
     private void ProcessChannel(NetChannel channel, bool log)
@@ -71,44 +66,47 @@ internal class PacketProcessService(ILogger<PacketProcessService> logger, Packet
             return;
         }
 
-        while (SteamNetworking.IsP2PPacketAvailable(out var size, channel.Value))
+        var messages = SteamNetworkHelper.ReadMessagesOnChannel(channel, 8, out var count);
+        for (var i = 0; i < count; i++)
         {
-            var bytes = ArrayPool<byte>.Shared.Rent((int)size);
-            try
+            var message = messages[i];
+            if (message == null)
             {
-                var success = SteamNetworking.ReadP2PPacket(bytes, size, out var readSize, out var steamId, channel.Value);
-                if (!success)
-                {
-                    logger.LogError("failed to read packet from {Channel}", channel);
-                    continue;
-                }
-
-                if (!ValidatePacket(channel, steamId, size, readSize, bytes))
-                {
-                    continue;
-                }
-
-                using var stream = new MemoryStream(bytes, 0, (int)readSize);
-                var decompressed = GZipHelper.Decompress(stream);
-                var deserialized = GodotBinaryConverter.Deserialize(decompressed);
-
-                if (log)
-                {
-                    logger.LogDebug("received packet from {SteamId} {Channel} {Packet}", steamId, channel, deserialized);   
-                }
-                
-                packetHandleManager.OnPacketReceived(steamId, channel, deserialized);
-
+                continue;
             }
-            catch (Exception ex)
+            
+            ProcessMessage(channel, message, log);
+        }
+    }
+
+    /*
+     *
+     */
+
+    private void ProcessMessage(NetChannel channel, NetworkMessage message, bool log)
+    {
+        try
+        {
+            if (!ValidatePacket(channel, message))
             {
-                logger.LogError(ex, "failed to packet processing");
-                break;
+                return;
             }
-            finally
+
+            var steamId = new CSteamID(message.Identity.GetSteamID64());
+            using var stream = new MemoryStream(message.Data, 0, message.Data.Length);
+            var decompressed = GZipHelper.Decompress(stream);
+            var deserialized = GodotBinaryConverter.Deserialize(decompressed);
+
+            if (log)
             {
-                ArrayPool<byte>.Shared.Return(bytes);
+                logger.LogDebug("received packet from {SteamId} {Channel} {Packet}", steamId, channel, deserialized);
             }
+
+            packetHandleManager.OnPacketReceived(steamId, channel, deserialized);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "failed to packet processing");
         }
     }
 }

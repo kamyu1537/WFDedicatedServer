@@ -29,6 +29,7 @@ public class SteamManager : Singleton<SteamManager>
         Initialized = true;
         _steamId = SteamUser.GetSteamID();
         _personalName = SteamFriends.GetPersonaName();
+        
         _logger.LogInformation("SteamAPI.Init success");
         return true;
     }

@@ -17,6 +17,6 @@ public sealed class RequestActorsHandler(ILogger<RequestActorsHandler> logger, I
         var send = new ActorRequestSendPacket();
         var actors = actorManager.GetOwnedActors().Where(x => !x.IsRemoved).Select(ActorReplicationData.FromActor);
         send.Actors.AddRange(actors);
-        sessionManager.SendP2PPacket(sender.SteamId, NetChannel.GameState, send);
+        sessionManager.SendPacket(sender.SteamId, NetChannel.GameState, send);
     }
 }

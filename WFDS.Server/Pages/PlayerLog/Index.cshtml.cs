@@ -22,8 +22,6 @@ public class Index(DatabaseContext dbContext, LobbyManager lobbyManager, Session
             return RedirectToPage(new { message = "server is not in lobby" });
         }
 
-        var lobbyId = lobbyManager.GetLobbyId();
-
         var packet = new MessagePacket
         {
             Local = false, Position = Vector3.Zero,
@@ -33,7 +31,7 @@ public class Index(DatabaseContext dbContext, LobbyManager lobbyManager, Session
             ZoneOwner = -1
         };
 
-        sessionManager.BroadcastP2PPacket(lobbyId, NetChannel.GameState, packet);
+        sessionManager.BroadcastPacket(NetChannel.GameState, packet);
         var messageHistory = new Database.DbSet.PlayerLog()
         {
             PlayerId = 0,

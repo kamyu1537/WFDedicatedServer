@@ -13,7 +13,7 @@ public sealed class RequestPingHandler(SessionManager sessionManager, SteamManag
     {
         sender.PingReceiveTime = DateTimeOffset.UtcNow;
 
-        sessionManager.SendP2PPacket(sender.SteamId, NetChannel.GameState, new SendPingPacket
+        sessionManager.SendPacket(sender.SteamId, NetChannel.GameState, new SendPingPacket
         {
             FromId = steam.SteamId
         });

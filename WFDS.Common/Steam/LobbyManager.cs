@@ -27,6 +27,7 @@ public sealed class LobbyManager : Singleton<LobbyManager>, IDisposable
     private string _code = string.Empty;
     private LobbyTag[] _lobbyTags = [];
 
+    private HSteamListenSocket? _socket;
     private readonly Callback<LobbyEnter_t> _lobbyEnterCallback;
     private readonly Callback<LobbyCreated_t> _lobbyCreatedCallback;
     private readonly Callback<LobbyDataUpdate_t> _lobbyDataUpdateCallback;
@@ -83,6 +84,8 @@ public sealed class LobbyManager : Singleton<LobbyManager>, IDisposable
             return false;
         }
 
+        ResetListenSocket();
+
         SteamMatchmaking.SetLobbyJoinable(_lobbyId, false);
         SteamMatchmaking.DeleteLobbyData(_lobbyId, "mode");
         SteamMatchmaking.DeleteLobbyData(_lobbyId, "ref");
@@ -100,17 +103,17 @@ public sealed class LobbyManager : Singleton<LobbyManager>, IDisposable
         
         SteamMatchmaking.SetLobbyMemberLimit(_lobbyId, 1);
 
-        // close all p2p session
-        var memberCount = SteamMatchmaking.GetNumLobbyMembers(_lobbyId);
-        for (var i = 0; i < memberCount; ++i)
-        {
-            var member = SteamMatchmaking.GetLobbyMemberByIndex(_lobbyId, i);
-            SteamNetworking.CloseP2PSessionWithUser(member);
-        }
-
         lobbyId = _lobbyId;
         _lobbyId = CSteamID.Nil;
         return true;
+    }
+
+    private void ResetListenSocket()
+    {
+        if (_socket != null)
+        {
+            SteamNetworkingSockets.CloseListenSocket(_socket.Value);
+        }
     }
 
     public bool IsInLobby()
@@ -164,12 +167,17 @@ public sealed class LobbyManager : Singleton<LobbyManager>, IDisposable
     public string GetCode()
     {
         return _code;
-    }
+    } 
 
     public void CreateLobby()
     {
         if (!_initialized) return;
-        SteamMatchmaking.CreateLobby(ELobbyType.k_ELobbyTypePublic, 1);
+        
+        ResetListenSocket();
+        
+        _socket = SteamNetworkingSockets.CreateListenSocketP2P(0, 0, []);
+        
+        SteamMatchmaking.CreateLobby(_lobbyType.LobbyType, 1);
     }
 
     private void UpdateLobbyData(in CSteamID lobbyId)
@@ -201,6 +209,9 @@ public sealed class LobbyManager : Singleton<LobbyManager>, IDisposable
             SteamMatchmaking.SetLobbyData(lobbyId, "tag_" + tag.Value, value);
         }
 
+        SteamMatchmaking.SetLobbyData(lobbyId, "cap", _cap.ToString());
+        SteamMatchmaking.SetLobbyData(lobbyId, "count", "0");
+        
         SteamMatchmaking.SetLobbyMemberLimit(lobbyId, _cap + 1);
         SteamMatchmaking.SetLobbyJoinable(lobbyId, true);
         ConsoleHelper.UpdateConsoleTitle(_name, _code, 0, _cap);

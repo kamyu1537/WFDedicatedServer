@@ -6,7 +6,7 @@ using WFDS.Common.Types;
 
 namespace WFDS.Server.Core.Network;
 
-internal class RequestPingScheduleService(LobbyManager lobby, SessionManager sessionManager, IActorManager actorManager, SteamManager steam) : IHostedService
+internal class RequestPingScheduleService(SessionManager sessionManager, IActorManager actorManager, SteamManager steam) : IHostedService
 {
     private static readonly TimeSpan RequestPingTimeoutPeriod = TimeSpan.FromSeconds(8);
     private Timer? _timer;
@@ -31,7 +31,7 @@ internal class RequestPingScheduleService(LobbyManager lobby, SessionManager ses
             return;
         }
         
-        sessionManager.BroadcastP2PPacket(lobby.GetLobbyId(), NetChannel.GameState, new RequestPingPacket
+        sessionManager.BroadcastPacket(NetChannel.GameState, new RequestPingPacket
         {
             Sender = steam.SteamId
         });
@@ -43,7 +43,7 @@ internal class RequestPingScheduleService(LobbyManager lobby, SessionManager ses
                 continue;
             }
 
-            sessionManager.SendP2PPacket(player.CreatorId, NetChannel.GameState, new RequestActorsPacket
+            sessionManager.SendPacket(player.CreatorId, NetChannel.GameState, new RequestActorsPacket
             {
                 UserId = steam.SteamId.m_SteamID.ToString(CultureInfo.InvariantCulture)
             });
