@@ -58,7 +58,7 @@ public sealed class LobbyManager : Singleton<LobbyManager>, IDisposable
         _initialized = true;
         _name = name;
         _lobbyType = GameLobbyType.GetByName(lobbyType);
-        _cap = Math.Min(Math.Max(cap, 0), 249);
+        _cap = Math.Min(Math.Max(cap, 0), 250);
         _adult = adult;
         _lobbyTags = lobbyTags;
 
@@ -159,7 +159,7 @@ public sealed class LobbyManager : Singleton<LobbyManager>, IDisposable
 
     public int GetCap()
     {
-        return _cap;
+        return _cap - 1;
     }
 
     public bool IsAdult()
