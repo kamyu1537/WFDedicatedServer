@@ -1,6 +1,7 @@
 ﻿# WEBFISHING Dedicated Server
 
-A simple dedicated server for hosting games of WebFishing.
+A simple dedicated server for hosting games of WebFishing.  
+supported version: 1.12
 
 ## How to Run the Server
 
