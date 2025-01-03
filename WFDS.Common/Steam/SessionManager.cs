@@ -123,7 +123,7 @@ public sealed class SessionManager : Singleton<SessionManager>, IDisposable
         var session = new Session(steamId);
         if (_sessions.TryAdd(steamId.m_SteamID, session))
         {
-            SteamMatchmaking.SetLobbyData(LobbyManager.Inst.GetLobbyId(), "count", _sessions.Count.ToString());
+            SteamMatchmaking.SetLobbyData(LobbyManager.Inst.GetLobbyId(), "count", Math.Max(_sessions.Count, 1).ToString());
             BroadcastPacket(NetChannel.GameState, new UserJoinedWebLobbyPacket { UserId = (long)steamId.m_SteamID }, false);
             GameEventBus.Publish(new PlayerJoinedEvent(session.SteamId, session.Name));
             return true;

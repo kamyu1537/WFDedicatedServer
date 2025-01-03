@@ -213,7 +213,8 @@ public sealed class LobbyManager : Singleton<LobbyManager>, IDisposable
         }
 
         SteamMatchmaking.SetLobbyData(lobbyId, "cap", _cap.ToString());
-        SteamMatchmaking.SetLobbyData(lobbyId, "count", "0");
+        SteamMatchmaking.SetLobbyData(lobbyId, "count", "1");
+        SteamMatchmaking.SetLobbyData(lobbyId, "timestamp", DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString());
         
         SteamMatchmaking.SetLobbyMemberLimit(lobbyId, _cap + 1);
         SteamMatchmaking.SetLobbyJoinable(lobbyId, true);
@@ -228,7 +229,17 @@ public sealed class LobbyManager : Singleton<LobbyManager>, IDisposable
         }
 
         var random = new Random();
-        SteamMatchmaking.SetLobbyData(_lobbyId, "server_browser_value", (random.Next() % 20).ToString(CultureInfo.InvariantCulture));
+        SteamMatchmaking.SetLobbyData(_lobbyId, "server_browser_value", (random.Next() % 20).ToString());
+    }
+    
+    public void UpdateTimestamp()
+    {
+        if (!IsInLobby())
+        {
+            return;
+        }
+
+        SteamMatchmaking.SetLobbyData(_lobbyId, "timestamp", DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString());
     }
 
     public void UpdateBannedPlayers(IEnumerable<string> bannedPlayers)
